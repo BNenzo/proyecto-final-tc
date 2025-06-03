@@ -1,3 +1,1 @@
-int var1 = 2131321, a, asd = "asda", r = sads;
-int var2;
-double ras = 31312;
+(dsadas > 12 && "asda" > 123);
