@@ -38,6 +38,8 @@ MAYOR: '>';
 MENOR: '<';
 MAYOR_IGUAL: '>=';
 MENOR_IGUAL: '<=';
+IGUAL: '==';
+DISTINTO: '!=';
 AND: '&&';
 OR: '||';
 
@@ -56,10 +58,11 @@ OTRO: .;
 
 s: instruccion s |;
 
-instruccion: declaracion_variables;
+instruccion: declaracion_variables | operacion_logica;
 
 tipo_variable: INT | DOUBLE | CHAR;
 
+/* --------------------- DECLARACION VARIABLES --------------------- */
 declaracion_variables:
 	tipo_variable declaracion_variable_variantes;
 
@@ -76,6 +79,26 @@ declaracion_variable_asignacion:
 
 declaracion_variable_simple: IDENTIFICADOR;
 
+/* OPERACIONES LOGICAS */
+
+operacion_logica: expresion_logica PUNTO_COMA;
+
+expresion_logica:
+	termino_logico operador_logico termino_logico
+	| PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA
+	| expresion_logica conector_logico expresion_logica;
+
+termino_logico: CADENA | IDENTIFICADOR | NUMERO;
+
+operador_logico:
+	IGUAL
+	| DISTINTO
+	| MAYOR
+	| MENOR
+	| MAYOR_IGUAL
+	| MENOR_IGUAL;
+
+conector_logico: AND | | OR;
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
