@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -129,4 +129,54 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConector_logico(idParser.Conector_logicoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#operacion_aritmetica}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperacion_aritmetica(idParser.Operacion_aritmeticaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#operacion_aritmetica}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperacion_aritmetica(idParser.Operacion_aritmeticaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#expresion_aritmetica}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpresion_aritmetica(idParser.Expresion_aritmeticaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#expresion_aritmetica}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpresion_aritmetica(idParser.Expresion_aritmeticaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#terminos_aritmeticos}.
+	 * @param ctx the parse tree
+	 */
+	void enterTerminos_aritmeticos(idParser.Terminos_aritmeticosContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#terminos_aritmeticos}.
+	 * @param ctx the parse tree
+	 */
+	void exitTerminos_aritmeticos(idParser.Terminos_aritmeticosContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#termino_aritmetico}.
+	 * @param ctx the parse tree
+	 */
+	void enterTermino_aritmetico(idParser.Termino_aritmeticoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#termino_aritmetico}.
+	 * @param ctx the parse tree
+	 */
+	void exitTermino_aritmetico(idParser.Termino_aritmeticoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#operador_aritmetico}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperador_aritmetico(idParser.Operador_aritmeticoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#operador_aritmetico}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperador_aritmetico(idParser.Operador_aritmeticoContext ctx);
 }

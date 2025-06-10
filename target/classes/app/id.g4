@@ -25,13 +25,14 @@ SUMA: '+';
 RESTA: '-';
 MULTIPLICAR: '*';
 MODULO: '%';
+DIVISION: '/';
 EQUAL: '=';
 INCREMENTADOR: '++';
 DECREMENTADOR: '--';
 COMILLA: '"';
 COMA: ',';
 CADENA: '"' (~["\r\n])* '"';
-
+OPERADORES_NUMERICOS: '+' | '-' | '*' | '/' | '%';
 // SIMBOLOS LOGICOS
 
 MAYOR: '>';
@@ -51,6 +52,8 @@ WHILE: 'while';
 BREAK: 'break';
 CONTINUE: 'continue';
 
+// OPER
+
 IDENTIFICADOR: (LETRA | '_') (LETRA | DIGITO | '_')*;
 NUMERO: (DIGITO)+;
 
@@ -58,7 +61,10 @@ OTRO: .;
 
 s: instruccion s |;
 
-instruccion: declaracion_variables | operacion_logica;
+instruccion:
+	declaracion_variables
+	| operacion_logica
+	| operacion_aritmetica;
 
 tipo_variable: INT | DOUBLE | CHAR;
 
@@ -99,6 +105,24 @@ operador_logico:
 	| MENOR_IGUAL;
 
 conector_logico: AND | | OR;
+
+/* OPERACIONES ARITMETICAS */
+
+operacion_aritmetica: expresion_aritmetica PUNTO_COMA;
+
+expresion_aritmetica:
+	terminos_aritmeticos (
+		operador_aritmetico expresion_aritmetica
+	)*;
+
+terminos_aritmeticos:
+	termino_aritmetico
+	| PARENTESIS_APERTURA expresion_aritmetica PARENTESIS_CLAUSURA;
+
+termino_aritmetico: IDENTIFICADOR | NUMERO;
+
+operador_aritmetico: SUMA | RESTA | MULTIPLICAR | DIVISION;
+
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
