@@ -58,9 +58,15 @@ OTRO: .;
 
 s: instruccion s |;
 
-instruccion: declaracion_variables | operacion_logica;
+instruccion:
+	declaracion_variables
+	| operacion_logica
+	| declaracion_funcion
+	| definicion_funcion;
 
 tipo_variable: INT | DOUBLE | CHAR;
+tipo_funciones: INT | DOUBLE | CHAR | VOID;
+bloque: LLAVE_APERTURA s LLAVE_CLAUSURA;
 
 /* --------------------- DECLARACION VARIABLES --------------------- */
 declaracion_variables:
@@ -99,6 +105,24 @@ operador_logico:
 	| MENOR_IGUAL;
 
 conector_logico: AND | | OR;
+
+/* DECLARACION DE FUNCIONES */
+
+declaracion_funcion:
+	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones?
+		PARENTESIS_CLAUSURA PUNTO_COMA;
+
+declaracion_variables_funciones:
+	variables_funciones (COMA declaracion_variables_funciones)*;
+
+variables_funciones:
+	tipo_funciones IDENTIFICADOR (EQUAL (CADENA | NUMERO))?;
+
+/* DEFINICION DE FUNCIONES */
+definicion_funcion:
+	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones
+		PARENTESIS_CLAUSURA bloque;
+
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
