@@ -189,4 +189,24 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion(idParser.Llamada_funcionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion(idParser.Llamada_funcionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#parametros_llamada_funcion}.
+	 * @param ctx the parse tree
+	 */
+	void enterParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#parametros_llamada_funcion}.
+	 * @param ctx the parse tree
+	 */
+	void exitParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx);
 }

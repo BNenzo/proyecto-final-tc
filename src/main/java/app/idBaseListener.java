@@ -230,6 +230,30 @@ public class idBaseListener implements idListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLlamada_funcion(idParser.Llamada_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLlamada_funcion(idParser.Llamada_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

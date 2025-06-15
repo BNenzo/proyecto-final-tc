@@ -62,7 +62,8 @@ instruccion:
 	declaracion_variables
 	| operacion_logica
 	| declaracion_funcion
-	| definicion_funcion;
+	| definicion_funcion
+	| llamada_funcion;
 
 tipo_variable: INT | DOUBLE | CHAR;
 tipo_funciones: INT | DOUBLE | CHAR | VOID;
@@ -123,6 +124,13 @@ definicion_funcion:
 	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones
 		PARENTESIS_CLAUSURA bloque;
 
+/* LLAMADAS DE FUNCIONES */
+
+llamada_funcion:
+	IDENTIFICADOR PARENTESIS_APERTURA parametros_llamada_funcion? PARENTESIS_CLAUSURA PUNTO_COMA;
+
+parametros_llamada_funcion: (IDENTIFICADOR | NUMERO | CADENA) COMA parametros_llamada_funcion
+	| (IDENTIFICADOR | NUMERO | CADENA);
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
