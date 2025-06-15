@@ -269,4 +269,14 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIf(idParser.IfContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#while}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhile(idParser.WhileContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#while}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhile(idParser.WhileContext ctx);
 }
