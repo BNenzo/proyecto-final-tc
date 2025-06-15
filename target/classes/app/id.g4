@@ -67,7 +67,8 @@ instruccion:
 	| operacion_aritmetica
 	| declaracion_funcion
 	| definicion_funcion
-	| llamada_funcion;
+	| llamada_funcion
+	| if;
 
 tipo_variable: INT | DOUBLE | CHAR;
 tipo_funciones: INT | DOUBLE | CHAR | VOID;
@@ -152,6 +153,14 @@ llamada_funcion:
 
 parametros_llamada_funcion: (IDENTIFICADOR | NUMERO | CADENA) COMA parametros_llamada_funcion
 	| (IDENTIFICADOR | NUMERO | CADENA);
+
+/* IF ELSE */
+
+if:
+	IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque
+	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA instruccion
+	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque ELSE bloque
+	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque ELSE instruccion;
 
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
