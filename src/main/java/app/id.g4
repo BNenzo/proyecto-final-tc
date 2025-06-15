@@ -68,7 +68,8 @@ instruccion:
 	| declaracion_funcion
 	| definicion_funcion
 	| llamada_funcion
-	| if;
+	| if
+	| while;
 
 tipo_variable: INT | DOUBLE | CHAR;
 tipo_funciones: INT | DOUBLE | CHAR | VOID;
@@ -162,6 +163,8 @@ if:
 	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque ELSE bloque
 	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque ELSE instruccion;
 
+while:
+	WHILE PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque;
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
