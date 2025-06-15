@@ -69,7 +69,8 @@ instruccion:
 	| definicion_funcion
 	| llamada_funcion
 	| if
-	| while;
+	| while
+	| for;
 
 tipo_variable: INT | DOUBLE | CHAR;
 tipo_funciones: INT | DOUBLE | CHAR | VOID;
@@ -77,13 +78,13 @@ bloque: LLAVE_APERTURA s LLAVE_CLAUSURA;
 
 /* --------------------- DECLARACION VARIABLES --------------------- */
 declaracion_variables:
-	tipo_variable declaracion_variable_variantes;
+	tipo_variable declaracion_variable_variantes PUNTO_COMA;
 
 declaracion_variable_variantes:
 	declaracion_variable_asignacion COMA declaracion_variable_variantes
 	| declaracion_variable_simple COMA declaracion_variable_variantes
-	| declaracion_variable_asignacion PUNTO_COMA
-	| declaracion_variable_simple PUNTO_COMA;
+	| declaracion_variable_asignacion
+	| declaracion_variable_simple;
 
 declaracion_variable_asignacion:
 	IDENTIFICADOR EQUAL CADENA
@@ -165,6 +166,20 @@ if:
 
 while:
 	WHILE PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque;
+
+for:
+	FOR PARENTESIS_APERTURA for_declaracion? PUNTO_COMA expresion_logica PUNTO_COMA
+		for_autoincremental PARENTESIS_CLAUSURA bloque;
+
+for_declaracion:
+	tipo_variable declaracion_variable_asignacion (
+		COMA declaracion_variable_asignacion
+	)*;
+
+for_autoincremental:
+	IDENTIFICADOR INCREMENTADOR (COMA for_autoincremental)*
+	| IDENTIFICADOR DECREMENTADOR (COMA for_autoincremental)*;
+
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
