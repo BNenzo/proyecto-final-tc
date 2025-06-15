@@ -64,9 +64,14 @@ s: instruccion s |;
 instruccion:
 	declaracion_variables
 	| operacion_logica
-	| operacion_aritmetica;
+	| operacion_aritmetica
+	| declaracion_funcion
+	| definicion_funcion
+	| llamada_funcion;
 
 tipo_variable: INT | DOUBLE | CHAR;
+tipo_funciones: INT | DOUBLE | CHAR | VOID;
+bloque: LLAVE_APERTURA s LLAVE_CLAUSURA;
 
 /* --------------------- DECLARACION VARIABLES --------------------- */
 declaracion_variables:
@@ -122,6 +127,31 @@ terminos_aritmeticos:
 termino_aritmetico: IDENTIFICADOR | NUMERO;
 
 operador_aritmetico: SUMA | RESTA | MULTIPLICAR | DIVISION;
+
+/* DECLARACION DE FUNCIONES */
+
+declaracion_funcion:
+	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones?
+		PARENTESIS_CLAUSURA PUNTO_COMA;
+
+declaracion_variables_funciones:
+	variables_funciones (COMA declaracion_variables_funciones)*;
+
+variables_funciones:
+	tipo_funciones IDENTIFICADOR (EQUAL (CADENA | NUMERO))?;
+
+/* DEFINICION DE FUNCIONES */
+definicion_funcion:
+	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones
+		PARENTESIS_CLAUSURA bloque;
+
+/* LLAMADAS DE FUNCIONES */
+
+llamada_funcion:
+	IDENTIFICADOR PARENTESIS_APERTURA parametros_llamada_funcion? PARENTESIS_CLAUSURA PUNTO_COMA;
+
+parametros_llamada_funcion: (IDENTIFICADOR | NUMERO | CADENA) COMA parametros_llamada_funcion
+	| (IDENTIFICADOR | NUMERO | CADENA);
 
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
