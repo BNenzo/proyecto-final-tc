@@ -105,7 +105,9 @@ expresion_logica:
 	| PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA
 	| expresion_logica conector_logico expresion_logica;
 
-termino_logico: CADENA | IDENTIFICADOR | NUMERO;
+termino_logico: CADENA | identificador_logico | NUMERO;
+
+identificador_logico: IDENTIFICADOR;
 
 operador_logico:
 	IGUAL
@@ -130,7 +132,9 @@ terminos_aritmeticos:
 	termino_aritmetico
 	| PARENTESIS_APERTURA expresion_aritmetica PARENTESIS_CLAUSURA;
 
-termino_aritmetico: IDENTIFICADOR | NUMERO;
+termino_aritmetico: identificador_aritmetico | NUMERO;
+
+identificador_aritmetico: IDENTIFICADOR;
 
 operador_aritmetico: SUMA | RESTA | MULTIPLICAR | DIVISION;
 

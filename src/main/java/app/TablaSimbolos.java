@@ -27,10 +27,6 @@ public class TablaSimbolos {
     contextosLogicos.get(contextosLogicos.size() - 1).put(id.getToken(), id);
   }
 
-  public void getTabla() {
-
-  }
-
   public void removeLastContext() {
     if (contextosLogicos.size() > 0) {
       contextosLogicos.remove(getContextosLogicosSize() - 1);
@@ -47,6 +43,10 @@ public class TablaSimbolos {
 
   public Integer getContextosLogicosSize() {
     return contextosLogicos.size() - 1;
+  }
+
+  public MiId getElementByKey(String token, int index) {
+    return contextosLogicos.get(index).get(token);
   }
 
   public static TablaSimbolos getInstance() {

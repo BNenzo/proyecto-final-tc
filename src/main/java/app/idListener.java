@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -140,6 +140,16 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitTermino_logico(idParser.Termino_logicoContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link idParser#identificador_logico}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdentificador_logico(idParser.Identificador_logicoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#identificador_logico}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdentificador_logico(idParser.Identificador_logicoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link idParser#operador_logico}.
 	 * @param ctx the parse tree
 	 */
@@ -199,6 +209,16 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTermino_aritmetico(idParser.Termino_aritmeticoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#identificador_aritmetico}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#identificador_aritmetico}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#operador_aritmetico}.
 	 * @param ctx the parse tree
