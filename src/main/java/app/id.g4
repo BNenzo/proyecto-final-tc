@@ -59,7 +59,9 @@ NUMERO: (DIGITO)+;
 
 OTRO: .;
 
-s: instruccion s |;
+s: instrucciones;
+
+instrucciones: instruccion instrucciones |;
 
 instruccion:
 	declaracion_variables
@@ -70,11 +72,12 @@ instruccion:
 	| llamada_funcion
 	| if
 	| while
-	| for;
+	| for
+	| bloque;
 
 tipo_variable: INT | DOUBLE | CHAR;
 tipo_funciones: INT | DOUBLE | CHAR | VOID;
-bloque: LLAVE_APERTURA s LLAVE_CLAUSURA;
+bloque: LLAVE_APERTURA instrucciones LLAVE_CLAUSURA;
 
 /* --------------------- DECLARACION VARIABLES --------------------- */
 declaracion_variables:

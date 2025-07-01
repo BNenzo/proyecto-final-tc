@@ -27,8 +27,8 @@ public class App {
         idParser parser = new idParser(tokens);
 
         // create Listener
-        // idBaseListener escucha = new MiListener(parser);
-        // parser.addParseListener(escucha);
+        idBaseListener escucha = new MiListener(parser);
+        parser.addParseListener(escucha);
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial

@@ -1,1 +1,6 @@
-for (int x =2, f =3, s = 23; x > 2 && g < 2 ; i++, j--){ int x = 2;}
+int p = 1;
+
+{
+  int x = 2, s , l , p;
+  int p = 2;
+}
