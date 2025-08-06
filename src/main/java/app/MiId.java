@@ -26,11 +26,13 @@ enum TipoDato {
 public class MiId {
   private String Token;
 
-  public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato) {
+  public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato, Boolean isFunction) {
     this.Token = token;
     this.Inicializada = inicializada;
     this.Usada = usada;
     this.tipoDato = tipoDato;
+    this.isFunction = isFunction;
+
   }
 
   public String getToken() {
@@ -71,4 +73,22 @@ public class MiId {
     Usada = usada;
   }
 
+  private Boolean isFunction;
+
+  public Boolean getIsFunction() {
+    return isFunction;
+  }
+
+  public void setIsFunction(Boolean isFunction) {
+    this.isFunction = isFunction;
+  }
+
+  @Override
+  public String toString() {
+    return "Token: " + Token +
+        ", Inicializada: " + Inicializada +
+        ", Usada: " + Usada +
+        ", Tipo de Dato: " + tipoDato +
+        ", Funcion: " + isFunction;
+  }
 }

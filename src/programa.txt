@@ -1,7 +1,14 @@
+int suma(int, double, int, double);
 
-int p = 1;
 {
-  int x = 2, s , l , p;
+  int s = 2;
+  {
+    int e = 2;
+    int test = 3;
+  }
+}
 
-  x > s;
+
+int suma(int x, double p, int x2, double ps) { 
+  int s = 0;
 }
