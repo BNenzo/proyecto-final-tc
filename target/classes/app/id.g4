@@ -140,25 +140,47 @@ operador_aritmetico: SUMA | RESTA | MULTIPLICAR | DIVISION;
 
 /* DECLARACION DE FUNCIONES */
 
+declaracion_funcion_identificador: IDENTIFICADOR;
+
 declaracion_funcion:
-	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones?
-		PARENTESIS_CLAUSURA PUNTO_COMA;
+	tipo_funciones declaracion_funcion_identificador PARENTESIS_APERTURA
+		declaracion_funciones_parametros? PARENTESIS_CLAUSURA PUNTO_COMA;
 
-declaracion_variables_funciones:
-	variables_funciones (COMA declaracion_variables_funciones)*;
+declaracion_funciones_parametros:
+	parametro_funcion (COMA declaracion_funciones_parametros)*;
 
-variables_funciones:
-	tipo_funciones IDENTIFICADOR (EQUAL (CADENA | NUMERO))?;
+parametro_funcion:
+	tipo_variable (
+		IDENTIFICADOR declaracion_parametro_funcion_valor_por_defecto?
+	)?;
+
+declaracion_parametro_funcion_valor_por_defecto:
+	(EQUAL (CADENA | NUMERO));
 
 /* DEFINICION DE FUNCIONES */
+definicion_nombre_funcion: IDENTIFICADOR;
+
+definicion_funciones_parametros:
+	definicion_funcion_parametro (
+		COMA definicion_funcion_parametro
+	)*;
+
 definicion_funcion:
-	tipo_funciones IDENTIFICADOR PARENTESIS_APERTURA declaracion_variables_funciones
+	tipo_funciones definicion_nombre_funcion PARENTESIS_APERTURA definicion_funciones_parametros
 		PARENTESIS_CLAUSURA bloque;
 
+definicion_funcion_parametro_nombre: IDENTIFICADOR;
+
+definicion_funcion_parametro:
+	tipo_variable definicion_funcion_parametro_nombre
+		declaracion_parametro_funcion_valor_por_defecto?;
+
 /* LLAMADAS DE FUNCIONES */
+llamada_nombre_funcion: IDENTIFICADOR;
 
 llamada_funcion:
-	IDENTIFICADOR PARENTESIS_APERTURA parametros_llamada_funcion? PARENTESIS_CLAUSURA PUNTO_COMA;
+	llamada_nombre_funcion PARENTESIS_APERTURA parametros_llamada_funcion? PARENTESIS_CLAUSURA
+		PUNTO_COMA;
 
 parametros_llamada_funcion: (IDENTIFICADOR | NUMERO | CADENA) COMA parametros_llamada_funcion
 	| (IDENTIFICADOR | NUMERO | CADENA);
