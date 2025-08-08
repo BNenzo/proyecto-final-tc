@@ -32,7 +32,17 @@ public class MiId {
     this.Usada = usada;
     this.tipoDato = tipoDato;
     this.isFunction = isFunction;
+    this.propsQuantity = 0;
+  }
 
+  public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato, Boolean isFunction,
+      Number propsQuantity) {
+    this.Token = token;
+    this.Inicializada = inicializada;
+    this.Usada = usada;
+    this.tipoDato = tipoDato;
+    this.isFunction = isFunction;
+    this.propsQuantity = propsQuantity;
   }
 
   public String getToken() {
@@ -81,6 +91,16 @@ public class MiId {
 
   public void setIsFunction(Boolean isFunction) {
     this.isFunction = isFunction;
+  }
+
+  private Number propsQuantity;
+
+  public Number getPropsQuantity() {
+    return propsQuantity;
+  }
+
+  public void setPropsQuantity(Number propsQuantity) {
+    this.propsQuantity = propsQuantity;
   }
 
   @Override

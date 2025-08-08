@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -359,6 +359,26 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion_parametro_valores}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion_parametro_valores(idParser.Llamada_funcion_parametro_valoresContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion_parametro_valores}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion_parametro_valores(idParser.Llamada_funcion_parametro_valoresContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion_parametro_valor_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion_parametro_valor_identificador(idParser.Llamada_funcion_parametro_valor_identificadorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion_parametro_valor_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion_parametro_valor_identificador(idParser.Llamada_funcion_parametro_valor_identificadorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#if}.
 	 * @param ctx the parse tree
