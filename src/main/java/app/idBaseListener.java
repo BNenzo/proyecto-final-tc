@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -434,6 +434,30 @@ public class idBaseListener implements idListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLlamada_funcion_parametro_valores(idParser.Llamada_funcion_parametro_valoresContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLlamada_funcion_parametro_valores(idParser.Llamada_funcion_parametro_valoresContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLlamada_funcion_parametro_valor_identificador(idParser.Llamada_funcion_parametro_valor_identificadorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLlamada_funcion_parametro_valor_identificador(idParser.Llamada_funcion_parametro_valor_identificadorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

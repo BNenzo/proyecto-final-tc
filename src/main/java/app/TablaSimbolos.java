@@ -10,13 +10,13 @@ public class TablaSimbolos {
   private static TablaSimbolos tabla_instance = null;
 
   private List<HashMap<String, MiId>> tablaGeneral;
-  private Map<String, LinkedHashMap<String, MiId>> tablaFunciones;
+  private Map<String, List<LinkedHashMap<String, MiId>>> tablaFunciones;
 
   public List<HashMap<String, MiId>> getContextosLogicos() {
     return tablaGeneral;
   }
 
-  public Map<String, LinkedHashMap<String, MiId>> getTablaFunciones() {
+  public Map<String, List<LinkedHashMap<String, MiId>>> getTablaFunciones() {
     return tablaFunciones;
   }
 
@@ -77,7 +77,17 @@ public class TablaSimbolos {
   }
 
   public void AddFunctionToTable(String functionName) {
-    tablaFunciones.put(functionName, new LinkedHashMap<>());
+    tablaFunciones.put(functionName, new ArrayList<LinkedHashMap<String, MiId>>());
+
+  }
+
+  public MiId findByKey(String key) {
+    for (HashMap<String, MiId> map : tablaGeneral) {
+      if (map.containsKey(key)) {
+        return map.get(key);
+      }
+    }
+    return null;
   }
 
   public void readTable() {
@@ -91,19 +101,26 @@ public class TablaSimbolos {
   }
 
   public void imprimirTablaFunciones() {
-    for (Map.Entry<String, LinkedHashMap<String, MiId>> entradaFuncion : tablaFunciones.entrySet()) {
+    for (Map.Entry<String, List<LinkedHashMap<String, MiId>>> entradaFuncion : tablaFunciones.entrySet()) {
       String nombreFuncion = entradaFuncion.getKey();
-      Map<String, MiId> simbolosFuncion = entradaFuncion.getValue();
+      List<LinkedHashMap<String, MiId>> listaSimbolos = entradaFuncion.getValue();
 
       System.out.println("Función: " + nombreFuncion);
 
-      for (Map.Entry<String, MiId> entradaSimbolo : simbolosFuncion.entrySet()) {
-        MiId id = entradaSimbolo.getValue();
+      // Recorremos cada LinkedHashMap (posible bloque/ámbito)
+      for (int i = 0; i < listaSimbolos.size(); i++) {
+        LinkedHashMap<String, MiId> bloque = listaSimbolos.get(i);
 
-        System.out.println("  " + id); // gracias a tu toString()
+        System.out.println("  Bloque #" + (i + 1) + ":");
+
+        for (Map.Entry<String, MiId> entradaSimbolo : bloque.entrySet()) {
+          MiId id = entradaSimbolo.getValue();
+          System.out.println("    " + id); // Asumiendo que toString() está bien implementado
+        }
       }
 
       System.out.println(); // línea en blanco entre funciones
     }
   }
+
 }

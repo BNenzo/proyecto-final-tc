@@ -1,14 +1,11 @@
-int suma(int, double, int, double);
+int suma(int, int);
 
-{
-  int s = 2;
-  {
-    int e = 2;
-    int test = 3;
-  }
+{ 
+  int val1 = 2;
+  double s = 2.3;
+  suma(val1, s);
 }
 
-
-int suma(int x, double p, int x2, double ps) { 
+int suma(int x, int x2) { 
   int s = 0;
 }

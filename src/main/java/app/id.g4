@@ -182,8 +182,17 @@ llamada_funcion:
 	llamada_nombre_funcion PARENTESIS_APERTURA parametros_llamada_funcion? PARENTESIS_CLAUSURA
 		PUNTO_COMA;
 
-parametros_llamada_funcion: (IDENTIFICADOR | NUMERO | CADENA) COMA parametros_llamada_funcion
-	| (IDENTIFICADOR | NUMERO | CADENA);
+parametros_llamada_funcion:
+	llamada_funcion_parametro_valores COMA parametros_llamada_funcion
+	| llamada_funcion_parametro_valores;
+
+llamada_funcion_parametro_valores: (
+		llamada_funcion_parametro_valor_identificador
+		| NUMERO
+		| CADENA
+	);
+
+llamada_funcion_parametro_valor_identificador: IDENTIFICADOR;
 
 /* IF ELSE */
 
