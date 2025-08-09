@@ -49,7 +49,7 @@ public class TablaSimbolos {
 
   public void removeLastContext() {
     if (tablaGeneral.size() > 0) {
-      tablaGeneral.remove(getContextosLogicosSize() - 1);
+      tablaGeneral.remove(getGeneralTableSize() - 1);
     }
   }
 
@@ -57,16 +57,20 @@ public class TablaSimbolos {
     return tablaGeneral.get(index);
   }
 
-  public HashMap<String, MiId> getLastContext() {
-    return tablaGeneral.get(tablaGeneral.size() - 1);
-  }
-
-  public Integer getContextosLogicosSize() {
+  public Integer getGeneralTableSize() {
     return tablaGeneral.size() - 1;
   }
 
-  public MiId getElementByKey(String token, int index) {
+  public HashMap<String, MiId> getLastContext() {
+    return tablaGeneral.get(getGeneralTableSize());
+  }
+
+  public MiId getIdAtIndexByKey(String token, int index) {
     return tablaGeneral.get(index).get(token);
+  }
+
+  public MiId findIdInLastContext(String idToken) {
+    return getIdAtIndexByKey(idToken, getGeneralTableSize());
   }
 
   public static TablaSimbolos getInstance() {
@@ -78,7 +82,6 @@ public class TablaSimbolos {
 
   public void AddFunctionToTable(String functionName) {
     tablaFunciones.put(functionName, new ArrayList<LinkedHashMap<String, MiId>>());
-
   }
 
   public MiId findByKey(String key) {

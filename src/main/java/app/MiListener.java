@@ -30,50 +30,45 @@ public class MiListener extends idBaseListener {
   }
 
   // @Override
-  public void enterDeclaracion_variables(idParser.Declaracion_variablesContext ctx) {
+  public void enterDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
     this.tipoDatoAux = TipoDato.fromString(ctx.getStart().getText());
   }
 
   // @Override
-  public void exitDeclaracion_variables(idParser.Declaracion_variablesContext ctx) {
+  public void exitDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
     this.tipoDatoAux = TipoDato.UNDEFINED;
   }
 
   /* ---------------------- DECLARACIONES ------------------------------- */
   @Override
-  public void enterDeclaracion_variable_asignacion(idParser.Declaracion_variable_asignacionContext ctx) {
-    String tokenStr = ctx.getStart().getText();
+  public void enterDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) {
+    String idTokenStr = ctx.getStart().getText();
+    MiId id = tableInstance.findIdInLastContext(idTokenStr);
 
-    boolean isTokenAlreadyDeclared = tableInstance.searchIdInContext(tokenStr,
-        tableInstance.getContextosLogicosSize());
-
-    if (isTokenAlreadyDeclared) {
+    if (id != null) {
       error = true;
       System.err.println("Error: Duplicated declaration of Token: "
-          + tokenStr + ", In line: " + ctx.getStart().getLine());
+          + idTokenStr + ", In line: " + ctx.getStart().getLine());
       return;
     }
 
-    MiId newId = new MiId(tokenStr, true, false, tipoDatoAux, false);
+    MiId newId = new MiId(idTokenStr, true, false, tipoDatoAux, false);
     tableInstance.addId(newId);
   }
 
   @Override
-  public void enterDeclaracion_variable_simple(idParser.Declaracion_variable_simpleContext ctx) {
-    TablaSimbolos tableInstance = TablaSimbolos.getInstance();
-    String tokenStr = ctx.getStart().getText();
+  public void enterDeclarador_simple(idParser.Declarador_simpleContext ctx) {
+    String idTokenStr = ctx.getStart().getText();
+    MiId id = tableInstance.findIdInLastContext(idTokenStr);
 
-    boolean isTokenAlreadyDeclared = tableInstance.searchIdInContext(tokenStr,
-        tableInstance.getContextosLogicosSize());
-
-    if (isTokenAlreadyDeclared) {
+    if (id != null) {
       error = true;
       System.err.println("Error: Duplicated declaration of Token: "
-          + tokenStr + ", In line: " + ctx.getStart().getLine());
+          + idTokenStr + ", In line: " + ctx.getStart().getLine());
       return;
     }
 
-    MiId newId = new MiId(tokenStr, false, false, tipoDatoAux, false);
+    MiId newId = new MiId(idTokenStr, false, false, tipoDatoAux, false);
     tableInstance.addId(newId);
   }
 
@@ -81,12 +76,11 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterIdentificador_logico(idParser.Identificador_logicoContext ctx) {
-    TablaSimbolos tableInstance = TablaSimbolos.getInstance();
     String tokenStr = ctx.getStart().getText();
     boolean tokenAlreadyDeclarated = false;
 
-    for (int i = 0; i < tableInstance.getContextosLogicosSize() + 1; i++) {
-      MiId id = tableInstance.getElementByKey(tokenStr, i);
+    for (int i = 0; i <= tableInstance.getGeneralTableSize(); i++) {
+      MiId id = tableInstance.getIdAtIndexByKey(tokenStr, i);
 
       if (id != null) {
         tokenAlreadyDeclarated = true;
@@ -103,16 +97,15 @@ public class MiListener extends idBaseListener {
     }
   }
 
-  /* ---------------------- OPERACIONES ARITMETICAS -------------------------- */
+  /* ---------------------- OPERACIONES ARITMETICAS ---------------------- */
 
   @Override
   public void enterIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx) {
-    TablaSimbolos tableInstance = TablaSimbolos.getInstance();
     String tokenStr = ctx.getStart().getText();
     boolean tokenAlreadyDeclarated = false;
 
-    for (int i = 0; i < tableInstance.getContextosLogicosSize() + 1; i++) {
-      MiId id = tableInstance.getElementByKey(tokenStr, i);
+    for (int i = 0; i <= tableInstance.getGeneralTableSize(); i++) {
+      MiId id = tableInstance.getIdAtIndexByKey(tokenStr, i);
 
       if (id != null) {
         tokenAlreadyDeclarated = true;
@@ -127,51 +120,72 @@ public class MiListener extends idBaseListener {
       error = true;
       return;
     }
-
   }
 
-  /* --------- FUNCIONES ----------- */
+  /* ---------------------- DECLARACION FUNCION ---------------------- */
+
   @Override
   public void enterDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
-    String tokenStr = ctx.getStart().getText();
-    this.tipoDatoAux = TipoDato.fromString(tokenStr);
+    String functionTypeStr = ctx.getStart().getText();
+    this.tipoDatoAux = TipoDato.fromString(functionTypeStr);
   }
 
   public void exitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
     this.tipoDatoAux = TipoDato.UNDEFINED;
-    parameterCountAux = 0;
-    idAux = "";
+    this.parameterCountAux = 0;
+    this.idAux = "";
   }
 
   @Override
   public void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) {
     Map<String, List<LinkedHashMap<String, MiId>>> tablaFunciones = tableInstance.getTablaFunciones();
-    // idAux es el nombre de la funcion
+
+    /*
+     * Se obtiene el nombre de la funcion
+     * Se guarda en la variable auxiliar idAux para su posterior uso
+     * Se genera un nuevo map en la tabla de funciones
+     */
+
     idAux = ctx.getStart().getText();
     tableInstance.AddFunctionToTable(idAux);
-    MiId functionId = new MiId(idAux, true, false, tipoDatoAux, true);
+
+    // Se genera un MiId con el nombre de la funcion para guardar informacion
     LinkedHashMap<String, MiId> baseContextFunction = new LinkedHashMap<String, MiId>();
+    MiId functionId = new MiId(idAux, true, false, tipoDatoAux, true);
     baseContextFunction.put(idAux, functionId);
+
+    // Se inserta el LinkedHashMap en el map anteriormente declarado
     tablaFunciones.get(idAux).add(baseContextFunction);
   }
 
+  /*
+   * Variables usadas de otras reglas
+   * 
+   * enterDeclaracion_funcion_identificador -> idAux (nombre de la funcion)
+   */
   @Override
-  public void enterParametro_funcion(idParser.Parametro_funcionContext ctx) {
-    String tokenStr = ctx.getStart().getText();
+  public void enterDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) {
     Map<String, List<LinkedHashMap<String, MiId>>> tablaFunciones = tableInstance.getTablaFunciones();
-    System.out.println("parameterCountAux " + parameterCountAux);
-    String paramName = "param_" + parameterCountAux;
-    MiId paramId = new MiId(paramName, true, false, TipoDato.fromString(tokenStr), false);
-    System.out.println(paramId);
-    tablaFunciones.get(idAux).get(0).put(paramName, paramId);
+    String parameterType = ctx.getStart().getText();
+
+    /*
+     * Se generan nombres aleatorios ya que la definicion del nombre en la
+     * declaracion de una funcion no es relevante
+     * 
+     * parameterCountAux -> cantidad de parametros que van
+     */
+    String parameterName = "param_" + parameterCountAux;
+    MiId parameterId = new MiId(parameterName, true, false, TipoDato.fromString(parameterType), false);
+    tablaFunciones.get(idAux).get(0).put(parameterName, parameterId);
     parameterCountAux++;
   }
 
-  // ------------------------------- DEFINICION FUNCION --------------------------
+  // ---------------------- DEFINICION FUNCION ----------------------
+
   @Override
   public void enterDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
-    String tokenStr = ctx.getStart().getText();
-    this.tipoDatoAux = TipoDato.fromString(tokenStr);
+    String functionType = ctx.getStart().getText();
+    this.tipoDatoAux = TipoDato.fromString(functionType);
   }
 
   public void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
@@ -181,70 +195,106 @@ public class MiListener extends idBaseListener {
     this.parameterCountAux = 0;
   }
 
+  /*
+   * Variables cargadas de otras reglas
+   * 
+   * enterDefinicion_funcion -> tipoDatoAux (tipo de la funcion)
+   */
   @Override
-  public void enterDefinicion_nombre_funcion(idParser.Definicion_nombre_funcionContext ctx) {
-    String tokenStr = ctx.getStart().getText();
+  public void enterDefinicion_funcion_nombre(idParser.Definicion_funcion_nombreContext ctx) {
     Map<String, List<LinkedHashMap<String, MiId>>> tablaFunciones = tableInstance.getTablaFunciones();
-    this.functionAux = tablaFunciones.get(tokenStr);
-    idAux = tokenStr;
 
+    String functionName = ctx.getStart().getText();
+    this.functionAux = tablaFunciones.get(functionName);
+    this.idAux = functionName;
+
+    /*
+     * En caso de no existir, se inserta a la tabla de funciones
+     */
     if (functionAux == null) {
-      tableInstance.AddFunctionToTable(tokenStr);
-      MiId functionId = new MiId(tokenStr, true, false, tipoDatoAux, true);
+      tableInstance.AddFunctionToTable(functionName);
+      MiId functionId = new MiId(functionName, true, false, tipoDatoAux, true);
       LinkedHashMap<String, MiId> newFunctionMap = new LinkedHashMap<>();
-      newFunctionMap.put(tokenStr, functionId);
-      tablaFunciones.get(idAux).add(newFunctionMap);
+      newFunctionMap.put(functionName, functionId);
+      tablaFunciones.get(functionName).add(newFunctionMap);
     }
+
+    // FALTA: que pasa si la funcion existe pero su tipo es distinto al tipo que se
+    // esta definiendo
   }
 
   @Override
   public void enterDefinicion_funcion_parametro(idParser.Definicion_funcion_parametroContext ctx) {
-    String tokenStr = ctx.getStart().getText();
-    tipoDatoAux = TipoDato.fromString(tokenStr);
+    String parameterType = ctx.getStart().getText();
+    this.tipoDatoAux = TipoDato.fromString(parameterType);
   }
 
+  /*
+   * Variables cargadas de otras reglas
+   * 
+   * enterDefinicion_funcion_nombre -> functionAux (contextos de la funcion)
+   * enterDefinicion_funcion_nombre -> idAux (nombre de la funcion)
+   * enterDefinicion_funcion_parametro -> tipoDatoAux (tipo del parametro)
+   */
   @Override
   public void enterDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx) {
-
     Map<String, List<LinkedHashMap<String, MiId>>> tablaFunciones = tableInstance.getTablaFunciones();
-    List<LinkedHashMap<String, MiId>> functionMap = tablaFunciones.get(idAux);
-    String paramName = ctx.getStart().getText();
-    MiId id = new MiId(paramName, true, false, tipoDatoAux, false);
+
+    // 100% la funcion esta cargada en la tabla
+    List<LinkedHashMap<String, MiId>> functionContexts = tablaFunciones.get(idAux);
+    String parameterName = ctx.getStart().getText();
+    MiId id = new MiId(parameterName, true, false, this.tipoDatoAux, false);
     String oldParamKey = "param_" + parameterCountAux;
-    System.out.println("FLAG 1");
+
+    /*
+     * Si functionAux es null significa que es una funcion que no fue declarada
+     * Por ende no hay parametros que reemplazar
+     */
     if (functionAux == null) {
-      functionMap.get(0).put(paramName, id);
+      functionContexts.get(0).put(parameterName, id);
       return;
     }
-    System.out.println("FLAG 2");
 
-    if (functionMap.get(0).size() <= 1)
+    /*
+     * Caso en donde la funcion no fue declarada con parametros
+     */
+    if (functionContexts.get(0).size() <= 1)
       return;
 
-    // if (functionMap.get(0).size() - 2 < parameterCountAux) {
-    // error = true;
-    // System.out.println("Error: Function definition of " + idAux
-    // + " has more parameters than its declaration, at line " +
-    // ctx.getStart().getLine());
-    // return;
-    // }
+    /*
+     * Caso en donde la definicion tiene mas parametros que su declaracion
+     */
+    if (functionContexts.get(0).size() - 2 < parameterCountAux) {
+      error = true;
+      System.out.println("Error: Function definition of " + idAux
+          + " has more parameters than its declaration, at line " +
+          ctx.getStart().getLine());
+      return;
+    }
 
-    MiId paramPreviouslyDeclared = functionMap.get(0).get("param_" + parameterCountAux);
+    /*
+     * Caso donde el parametro declarado y definido difieren en su tipado
+     */
+    MiId parameterPreviouslyDeclared = functionContexts.get(0).get("param_" + parameterCountAux);
 
-    if (paramPreviouslyDeclared.getTipoDato() != tipoDatoAux) {
+    if (parameterPreviouslyDeclared.getTipoDato() != tipoDatoAux) {
       error = true;
       System.out.println("Error: Parameter should be of type " +
-          paramPreviouslyDeclared.getTipoDato()
+          parameterPreviouslyDeclared.getTipoDato()
           + " but is of type " + tipoDatoAux + ", at line " +
           ctx.getStart().getLine());
       return;
     }
 
+    /*
+     * Proceso en donde se reemplaza el parametro anteriormente declarado con el
+     * nuevo
+     */
     LinkedHashMap<String, MiId> newFunctionMap = new LinkedHashMap<>();
 
-    functionMap.get(0).forEach((key, value) -> {
+    functionContexts.get(0).forEach((key, value) -> {
       newFunctionMap.put(
-          key.equals(oldParamKey) ? paramName : key,
+          key.equals(oldParamKey) ? parameterName : key,
           key.equals(oldParamKey) ? id : value);
     });
 
@@ -253,34 +303,53 @@ public class MiListener extends idBaseListener {
     parameterCountAux++;
   }
 
+  // ---------------------- LLAMADA FUNCION ----------------------
+  @Override
+  public void exitLlamada_funcion(idParser.Llamada_funcionContext ctx) {
+    functionAux = null;
+    parameterCountAux = 0;
+  }
+
   @Override
   public void enterLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx) {
-    String functionName = ctx.getStart().getText();
     Map<String, List<LinkedHashMap<String, MiId>>> tablaFunciones = tableInstance.getTablaFunciones();
-    List<LinkedHashMap<String, MiId>> function = tablaFunciones.get(functionName);
+    String functionName = ctx.getStart().getText();
+    List<LinkedHashMap<String, MiId>> functionContexts = tablaFunciones.get(functionName);
 
-    if (function == null) {
+    if (functionContexts == null) {
       System.out.println("Error: Function " + functionName + ", is not declarated, line " + ctx.getStart().getLine());
       error = true;
       return;
     }
 
-    functionAux = function;
+    functionAux = functionContexts;
   }
 
+  /*
+   * enterLlamada_nombre_funcion -> functionAux (los contextos de la funcion
+   * llamada)
+   */
   @Override
-  public void enterLlamada_funcion_parametro_valores(idParser.Llamada_funcion_parametro_valoresContext ctx) {
+  public void enterLlamada_funcion_argumentos(idParser.Llamada_funcion_argumentosContext ctx) {
+    // Se suma 1 para evitar el token de la funcion misma
     parameterCountAux++;
+
+    // idValue puede ser, un valor nativo (int, char) o una variable
     String idValue = ctx.getStart().getText();
     String type = identificarTipo(idValue);
 
+    // Si es variable se procesa en otra regla
     if (type == "variable")
       return;
 
-    TipoDato tipoDatoParametro = TipoDato.fromString(type);
+    // el tipo del valor nativo
+    TipoDato parameterType = TipoDato.fromString(type);
+
+    // Se obtienen los valores del primer contexto de la funcion
     List<MiId> valuesList = new ArrayList<>(functionAux.get(0).values());
 
-    if (tipoDatoParametro == valuesList.get(parameterCountAux).getTipoDato())
+    // Se compara el tipo del valor nativo con el parametro relacionado
+    if (parameterType == valuesList.get(parameterCountAux).getTipoDato())
       return;
 
     System.out.println("Error: value " + idValue + " does not match with the type of the parameter num: "
@@ -290,17 +359,10 @@ public class MiListener extends idBaseListener {
   }
 
   @Override
-  public void exitLlamada_funcion(idParser.Llamada_funcionContext ctx) {
-    functionAux = null;
-    parameterCountAux = 0;
-  }
-
-  @Override
-  public void enterLlamada_funcion_parametro_valor_identificador(
-      idParser.Llamada_funcion_parametro_valor_identificadorContext ctx) {
+  public void enterLlamada_funcion_argumento_identificador(
+      idParser.Llamada_funcion_argumento_identificadorContext ctx) {
     String idValue = ctx.getStart().getText();
     MiId id = tableInstance.findByKey(idValue);
-    System.out.println("FLAG3");
 
     if (id == null) {
       System.out.println("Error");
@@ -308,17 +370,10 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    System.out.println("FLAG4");
-    System.out.println(functionAux);
     List<MiId> valuesList = new ArrayList<>(functionAux.get(0).values());
-
-    System.out.println("FLAG5");
-    System.out.println(id);
 
     if (id.getTipoDato() == valuesList.get(parameterCountAux).getTipoDato())
       return;
-
-    System.out.println("FLAG6");
 
     System.out.println("Error: value " + idValue + " does not match with the type of the parameter num: "
         + parameterCountAux + " prevoisly declarated" + " (" + id.getTipoDato() + "->"
@@ -329,8 +384,8 @@ public class MiListener extends idBaseListener {
 
   public static String identificarTipo(String input) {
 
-    if (input.matches("^\".*\"$")) {
-      return "string";
+    if (input.matches("^'([^\\\\']|\\\\[btnr0'\"\\\\])'$")) {
+      return "char";
     }
 
     if (input.matches("^-?\\d+$")) {
