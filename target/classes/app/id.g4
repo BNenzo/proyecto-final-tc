@@ -163,7 +163,7 @@ declaracion_funcion_parametro_inicializado:
 /* ---------------------  DEFINICION DE FUNCIONES ---------------------  */
 
 definicion_funcion:
-	tipo_funciones definicion_funcion_nombre PARENTESIS_APERTURA definicion_funcion_parametros
+	tipo_funciones definicion_funcion_nombre PARENTESIS_APERTURA definicion_funcion_parametros?
 		PARENTESIS_CLAUSURA bloque;
 
 definicion_funcion_nombre: IDENTIFICADOR;
@@ -193,7 +193,7 @@ llamada_funcion_parametros:
 llamada_funcion_argumentos: (
 		llamada_funcion_argumento_identificador
 		| NUMERO
-		| CADENA
+		| CARACTER
 	);
 
 llamada_funcion_argumento_identificador: IDENTIFICADOR;

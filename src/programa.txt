@@ -1,3 +1,22 @@
-char rt = '2';
-int x = 2, e = 1, p = 32;  
-double sada =123;
+int suma(int, int);
+
+int main () { 
+  {
+    int test = 2;
+  }
+
+  int test_32 = 1;
+  int probando = 32;
+  int test_333 = 231;
+  suma(probando, test_32);
+
+  test_333 + probando;
+}
+
+int suma (int x, int y) { 
+  int suma_test = 2;
+
+  if (x < suma_test) { 
+    int ifprobando = 232;
+  }
+}
