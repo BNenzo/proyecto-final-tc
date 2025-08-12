@@ -6,7 +6,7 @@ package app;
 
 fragment LETRA: [A-Za-z];
 fragment DIGITO: [0-9];
-
+fragment ESC_SEQ: '\\' [btnr0'"\\];
 WS: [ \t\r\n]+ -> skip;
 
 // TIPOS DE DATOS
@@ -32,6 +32,7 @@ DECREMENTADOR: '--';
 COMILLA: '"';
 COMA: ',';
 CADENA: '"' (~["\r\n])* '"';
+CARACTER: '\'' ( ESC_SEQ | ~['\\\r\n]) '\'';
 OPERADORES_NUMERICOS: '+' | '-' | '*' | '/' | '%';
 // SIMBOLOS LOGICOS
 
@@ -64,7 +65,7 @@ s: instrucciones;
 instrucciones: instruccion instrucciones |;
 
 instruccion:
-	declaracion_variables
+	declaracion_variable
 	| operacion_logica
 	| operacion_aritmetica
 	| declaracion_funcion
@@ -80,36 +81,36 @@ tipo_funciones: INT | DOUBLE | CHAR | VOID;
 bloque: LLAVE_APERTURA instrucciones LLAVE_CLAUSURA;
 
 /* --------------------- DECLARACION VARIABLES --------------------- */
-declaracion_variables:
-	tipo_variable declaracion_variable_variantes PUNTO_COMA;
+declaracion_variable:
+	tipo_variable declaracion_variable_declaradores PUNTO_COMA;
 
-declaracion_variable_variantes:
-	declaracion_variable_asignacion COMA declaracion_variable_variantes
-	| declaracion_variable_simple COMA declaracion_variable_variantes
-	| declaracion_variable_asignacion
-	| declaracion_variable_simple;
+declaracion_variable_declaradores:
+	declarador_inicializado COMA declaracion_variable_declaradores
+	| declarador_simple COMA declaracion_variable_declaradores
+	| declarador_inicializado
+	| declarador_simple;
 
-declaracion_variable_asignacion:
-	IDENTIFICADOR EQUAL CADENA
+declarador_inicializado:
+	IDENTIFICADOR EQUAL CARACTER
 	| IDENTIFICADOR EQUAL IDENTIFICADOR
 	| IDENTIFICADOR EQUAL NUMERO;
 
-declaracion_variable_simple: IDENTIFICADOR;
+declarador_simple: IDENTIFICADOR;
 
-/* OPERACIONES LOGICAS */
+/* ---------------------  OPERACIONES LOGICAS ---------------------  */
 
-operacion_logica: expresion_logica PUNTO_COMA;
+operacion_logica: expresion_booleana PUNTO_COMA;
 
-expresion_logica:
-	termino_logico operador_logico termino_logico
-	| PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA
-	| expresion_logica conector_logico expresion_logica;
+expresion_booleana:
+	termino_comparacion operador_comparacion termino_comparacion
+	| PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA
+	| expresion_booleana operador_logico expresion_booleana;
 
-termino_logico: CADENA | identificador_logico | NUMERO;
+termino_comparacion: CADENA | identificador_logico | NUMERO;
 
 identificador_logico: IDENTIFICADOR;
 
-operador_logico:
+operador_comparacion:
 	IGUAL
 	| DISTINTO
 	| MAYOR
@@ -117,9 +118,9 @@ operador_logico:
 	| MAYOR_IGUAL
 	| MENOR_IGUAL;
 
-conector_logico: AND | | OR;
+operador_logico: AND | | OR;
 
-/* OPERACIONES ARITMETICAS */
+/* --------------------- OPERACIONES ARITMETICAS ---------------------	*/
 
 operacion_aritmetica: expresion_aritmetica PUNTO_COMA;
 
@@ -138,80 +139,85 @@ identificador_aritmetico: IDENTIFICADOR;
 
 operador_aritmetico: SUMA | RESTA | MULTIPLICAR | DIVISION;
 
-/* DECLARACION DE FUNCIONES */
-
-declaracion_funcion_identificador: IDENTIFICADOR;
+/* ---------------------  DECLARACION DE FUNCIONES ---------------------  */
 
 declaracion_funcion:
 	tipo_funciones declaracion_funcion_identificador PARENTESIS_APERTURA
 		declaracion_funciones_parametros? PARENTESIS_CLAUSURA PUNTO_COMA;
 
-declaracion_funciones_parametros:
-	parametro_funcion (COMA declaracion_funciones_parametros)*;
+declaracion_funcion_identificador: IDENTIFICADOR;
 
-parametro_funcion:
+declaracion_funciones_parametros:
+	declaracion_funcion_parametro (
+		COMA declaracion_funciones_parametros
+	)*;
+
+declaracion_funcion_parametro:
 	tipo_variable (
-		IDENTIFICADOR declaracion_parametro_funcion_valor_por_defecto?
+		IDENTIFICADOR declaracion_funcion_parametro_inicializado?
 	)?;
 
-declaracion_parametro_funcion_valor_por_defecto:
+declaracion_funcion_parametro_inicializado:
 	(EQUAL (CADENA | NUMERO));
 
-/* DEFINICION DE FUNCIONES */
-definicion_nombre_funcion: IDENTIFICADOR;
+/* ---------------------  DEFINICION DE FUNCIONES ---------------------  */
 
-definicion_funciones_parametros:
+definicion_funcion:
+	tipo_funciones definicion_funcion_nombre PARENTESIS_APERTURA definicion_funcion_parametros?
+		PARENTESIS_CLAUSURA bloque;
+
+definicion_funcion_nombre: IDENTIFICADOR;
+
+definicion_funcion_parametros:
 	definicion_funcion_parametro (
 		COMA definicion_funcion_parametro
 	)*;
 
-definicion_funcion:
-	tipo_funciones definicion_nombre_funcion PARENTESIS_APERTURA definicion_funciones_parametros
-		PARENTESIS_CLAUSURA bloque;
+definicion_funcion_parametro:
+	tipo_variable definicion_funcion_parametro_nombre declaracion_funcion_parametro_inicializado?;
 
 definicion_funcion_parametro_nombre: IDENTIFICADOR;
 
-definicion_funcion_parametro:
-	tipo_variable definicion_funcion_parametro_nombre
-		declaracion_parametro_funcion_valor_por_defecto?;
-
-/* LLAMADAS DE FUNCIONES */
-llamada_nombre_funcion: IDENTIFICADOR;
+/* ---------------------  LLAMADAS DE FUNCIONES ---------------------  */
 
 llamada_funcion:
-	llamada_nombre_funcion PARENTESIS_APERTURA parametros_llamada_funcion? PARENTESIS_CLAUSURA
+	llamada_nombre_funcion PARENTESIS_APERTURA llamada_funcion_parametros? PARENTESIS_CLAUSURA
 		PUNTO_COMA;
 
-parametros_llamada_funcion:
-	llamada_funcion_parametro_valores COMA parametros_llamada_funcion
-	| llamada_funcion_parametro_valores;
+llamada_nombre_funcion: IDENTIFICADOR;
 
-llamada_funcion_parametro_valores: (
-		llamada_funcion_parametro_valor_identificador
+llamada_funcion_parametros:
+	llamada_funcion_argumentos COMA llamada_funcion_parametros
+	| llamada_funcion_argumentos;
+
+llamada_funcion_argumentos: (
+		llamada_funcion_argumento_identificador
 		| NUMERO
-		| CADENA
+		| CARACTER
 	);
 
-llamada_funcion_parametro_valor_identificador: IDENTIFICADOR;
+llamada_funcion_argumento_identificador: IDENTIFICADOR;
 
-/* IF ELSE */
+/* ---------------------  IF ELSE ---------------------  */
 
 if:
-	IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque
-	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA instruccion
-	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque ELSE bloque
-	| IF PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque ELSE instruccion;
+	IF PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque
+	| IF PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA instruccion
+	| IF PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque ELSE bloque
+	| IF PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque ELSE instruccion;
 
+/* ---------------------  WHILE ---------------------  */
 while:
-	WHILE PARENTESIS_APERTURA expresion_logica PARENTESIS_CLAUSURA bloque;
+	WHILE PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque;
 
+/* ---------------------  FOR ---------------------  */
 for:
-	FOR PARENTESIS_APERTURA for_declaracion? PUNTO_COMA expresion_logica PUNTO_COMA
+	FOR PARENTESIS_APERTURA for_declaracion? PUNTO_COMA expresion_booleana PUNTO_COMA
 		for_autoincremental PARENTESIS_CLAUSURA bloque;
 
 for_declaracion:
-	tipo_variable declaracion_variable_asignacion (
-		COMA declaracion_variable_asignacion
+	tipo_variable declarador_inicializado (
+		COMA declarador_inicializado
 	)*;
 
 for_autoincremental:

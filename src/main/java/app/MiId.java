@@ -5,6 +5,7 @@ enum TipoDato {
   INT,
   DOUBLE,
   FLOAT,
+  CHAR,
   UNDEFINED;
 
   public static TipoDato fromString(String str) {
@@ -17,8 +18,8 @@ enum TipoDato {
       return INT;
     if (str.equals("double"))
       return DOUBLE;
-    if (str.equals("float"))
-      return FLOAT;
+    if (str.equals("char"))
+      return CHAR;
     return UNDEFINED;
   }
 }

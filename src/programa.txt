@@ -1,11 +1,22 @@
 int suma(int, int);
 
-{ 
-  int val1 = 2;
-  double s = 2.3;
-  suma(val1, s);
+int main () { 
+  {
+    int test = 2;
+  }
+
+  int test_32 = 1;
+  int probando = 32;
+  int test_333 = 231;
+  suma(probando, test_32);
+
+  test_333 + probando;
 }
 
-int suma(int x, int x2) { 
-  int s = 0;
+int suma (int x, int y) { 
+  int suma_test = 2;
+
+  if (x < suma_test) { 
+    int ifprobando = 232;
+  }
 }
