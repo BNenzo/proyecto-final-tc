@@ -8,6 +8,7 @@ public class TablaSimbolos {
   private static TablaSimbolos tabla_instance = null;
 
   private Map<String, Function> tablaFunciones;
+  private Map<String, MiId> globalVariables;
 
   public Map<String, Function> getTablaFunciones() {
     return tablaFunciones;
@@ -15,6 +16,7 @@ public class TablaSimbolos {
 
   private TablaSimbolos() {
     this.tablaFunciones = new HashMap<>();
+    this.globalVariables = new HashMap<>();
   }
 
   public void AddFunctionToTable(String functionName) {
@@ -33,6 +35,12 @@ public class TablaSimbolos {
   }
 
   public void addId(MiId id, String functionName) {
+
+    if (functionName == "") {
+      globalVariables.put(id.getToken(), id);
+      return;
+    }
+
     Context lastActiveContext = Utils.getLastActiveContext(tablaFunciones.get(functionName).getFunctionContexts());
     lastActiveContext.getVariables().put(id.getToken(), id);
   }
@@ -42,6 +50,17 @@ public class TablaSimbolos {
   }
 
   public void displayTable() {
+
+    System.out.println("VARIABLES GLOBALES");
+    for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
+      MiId valor = entry.getValue();
+
+      System.out.println(valor);
+    }
+
+    System.out.println("");
+
+    System.out.println("Contextos");
     for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
       System.out.println(entry.getValue());
     }
@@ -67,8 +86,15 @@ public class TablaSimbolos {
       id = function.getFunctionParameters().get(idToken);
     }
 
-    // todo: global variables
+    if (id == null) {
+      id = globalVariables.get(idToken);
+    }
 
+    return id;
+  }
+
+  public MiId checkIfGlobalVariableAlreadyDeclarated(String idToken) {
+    MiId id = globalVariables.get(idToken);
     return id;
   }
 

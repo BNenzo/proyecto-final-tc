@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -70,45 +70,45 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitBloque(idParser.BloqueContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#declaracion_variables}.
+	 * Enter a parse tree produced by {@link idParser#declaracion_variable}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaracion_variables(idParser.Declaracion_variablesContext ctx);
+	void enterDeclaracion_variable(idParser.Declaracion_variableContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#declaracion_variables}.
+	 * Exit a parse tree produced by {@link idParser#declaracion_variable}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaracion_variables(idParser.Declaracion_variablesContext ctx);
+	void exitDeclaracion_variable(idParser.Declaracion_variableContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#declaracion_variable_variantes}.
+	 * Enter a parse tree produced by {@link idParser#declaracion_variable_declaradores}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaracion_variable_variantes(idParser.Declaracion_variable_variantesContext ctx);
+	void enterDeclaracion_variable_declaradores(idParser.Declaracion_variable_declaradoresContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#declaracion_variable_variantes}.
+	 * Exit a parse tree produced by {@link idParser#declaracion_variable_declaradores}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaracion_variable_variantes(idParser.Declaracion_variable_variantesContext ctx);
+	void exitDeclaracion_variable_declaradores(idParser.Declaracion_variable_declaradoresContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#declaracion_variable_asignacion}.
+	 * Enter a parse tree produced by {@link idParser#declarador_inicializado}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaracion_variable_asignacion(idParser.Declaracion_variable_asignacionContext ctx);
+	void enterDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#declaracion_variable_asignacion}.
+	 * Exit a parse tree produced by {@link idParser#declarador_inicializado}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaracion_variable_asignacion(idParser.Declaracion_variable_asignacionContext ctx);
+	void exitDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#declaracion_variable_simple}.
+	 * Enter a parse tree produced by {@link idParser#declarador_simple}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaracion_variable_simple(idParser.Declaracion_variable_simpleContext ctx);
+	void enterDeclarador_simple(idParser.Declarador_simpleContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#declaracion_variable_simple}.
+	 * Exit a parse tree produced by {@link idParser#declarador_simple}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaracion_variable_simple(idParser.Declaracion_variable_simpleContext ctx);
+	void exitDeclarador_simple(idParser.Declarador_simpleContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#operacion_logica}.
 	 * @param ctx the parse tree
@@ -120,25 +120,25 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitOperacion_logica(idParser.Operacion_logicaContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#expresion_logica}.
+	 * Enter a parse tree produced by {@link idParser#expresion_booleana}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpresion_logica(idParser.Expresion_logicaContext ctx);
+	void enterExpresion_booleana(idParser.Expresion_booleanaContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#expresion_logica}.
+	 * Exit a parse tree produced by {@link idParser#expresion_booleana}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpresion_logica(idParser.Expresion_logicaContext ctx);
+	void exitExpresion_booleana(idParser.Expresion_booleanaContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#termino_logico}.
+	 * Enter a parse tree produced by {@link idParser#termino_comparacion}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermino_logico(idParser.Termino_logicoContext ctx);
+	void enterTermino_comparacion(idParser.Termino_comparacionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#termino_logico}.
+	 * Exit a parse tree produced by {@link idParser#termino_comparacion}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermino_logico(idParser.Termino_logicoContext ctx);
+	void exitTermino_comparacion(idParser.Termino_comparacionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#identificador_logico}.
 	 * @param ctx the parse tree
@@ -150,6 +150,16 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitIdentificador_logico(idParser.Identificador_logicoContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link idParser#operador_comparacion}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperador_comparacion(idParser.Operador_comparacionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#operador_comparacion}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperador_comparacion(idParser.Operador_comparacionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link idParser#operador_logico}.
 	 * @param ctx the parse tree
 	 */
@@ -159,16 +169,6 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOperador_logico(idParser.Operador_logicoContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link idParser#conector_logico}.
-	 * @param ctx the parse tree
-	 */
-	void enterConector_logico(idParser.Conector_logicoContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link idParser#conector_logico}.
-	 * @param ctx the parse tree
-	 */
-	void exitConector_logico(idParser.Conector_logicoContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#operacion_aritmetica}.
 	 * @param ctx the parse tree
@@ -230,16 +230,6 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitOperador_aritmetico(idParser.Operador_aritmeticoContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#declaracion_funcion_identificador}.
-	 * @param ctx the parse tree
-	 */
-	void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link idParser#declaracion_funcion_identificador}.
-	 * @param ctx the parse tree
-	 */
-	void exitDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link idParser#declaracion_funcion}.
 	 * @param ctx the parse tree
 	 */
@@ -249,6 +239,16 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#declaracion_funcion_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#declaracion_funcion_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#declaracion_funciones_parametros}.
 	 * @param ctx the parse tree
@@ -260,45 +260,25 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitDeclaracion_funciones_parametros(idParser.Declaracion_funciones_parametrosContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#parametro_funcion}.
+	 * Enter a parse tree produced by {@link idParser#declaracion_funcion_parametro}.
 	 * @param ctx the parse tree
 	 */
-	void enterParametro_funcion(idParser.Parametro_funcionContext ctx);
+	void enterDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#parametro_funcion}.
+	 * Exit a parse tree produced by {@link idParser#declaracion_funcion_parametro}.
 	 * @param ctx the parse tree
 	 */
-	void exitParametro_funcion(idParser.Parametro_funcionContext ctx);
+	void exitDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#declaracion_parametro_funcion_valor_por_defecto}.
+	 * Enter a parse tree produced by {@link idParser#declaracion_funcion_parametro_inicializado}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaracion_parametro_funcion_valor_por_defecto(idParser.Declaracion_parametro_funcion_valor_por_defectoContext ctx);
+	void enterDeclaracion_funcion_parametro_inicializado(idParser.Declaracion_funcion_parametro_inicializadoContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#declaracion_parametro_funcion_valor_por_defecto}.
+	 * Exit a parse tree produced by {@link idParser#declaracion_funcion_parametro_inicializado}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaracion_parametro_funcion_valor_por_defecto(idParser.Declaracion_parametro_funcion_valor_por_defectoContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link idParser#definicion_nombre_funcion}.
-	 * @param ctx the parse tree
-	 */
-	void enterDefinicion_nombre_funcion(idParser.Definicion_nombre_funcionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link idParser#definicion_nombre_funcion}.
-	 * @param ctx the parse tree
-	 */
-	void exitDefinicion_nombre_funcion(idParser.Definicion_nombre_funcionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link idParser#definicion_funciones_parametros}.
-	 * @param ctx the parse tree
-	 */
-	void enterDefinicion_funciones_parametros(idParser.Definicion_funciones_parametrosContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link idParser#definicion_funciones_parametros}.
-	 * @param ctx the parse tree
-	 */
-	void exitDefinicion_funciones_parametros(idParser.Definicion_funciones_parametrosContext ctx);
+	void exitDeclaracion_funcion_parametro_inicializado(idParser.Declaracion_funcion_parametro_inicializadoContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#definicion_funcion}.
 	 * @param ctx the parse tree
@@ -310,15 +290,25 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#definicion_funcion_parametro_nombre}.
+	 * Enter a parse tree produced by {@link idParser#definicion_funcion_nombre}.
 	 * @param ctx the parse tree
 	 */
-	void enterDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx);
+	void enterDefinicion_funcion_nombre(idParser.Definicion_funcion_nombreContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#definicion_funcion_parametro_nombre}.
+	 * Exit a parse tree produced by {@link idParser#definicion_funcion_nombre}.
 	 * @param ctx the parse tree
 	 */
-	void exitDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx);
+	void exitDefinicion_funcion_nombre(idParser.Definicion_funcion_nombreContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#definicion_funcion_parametros}.
+	 * @param ctx the parse tree
+	 */
+	void enterDefinicion_funcion_parametros(idParser.Definicion_funcion_parametrosContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#definicion_funcion_parametros}.
+	 * @param ctx the parse tree
+	 */
+	void exitDefinicion_funcion_parametros(idParser.Definicion_funcion_parametrosContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#definicion_funcion_parametro}.
 	 * @param ctx the parse tree
@@ -330,15 +320,15 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitDefinicion_funcion_parametro(idParser.Definicion_funcion_parametroContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#llamada_nombre_funcion}.
+	 * Enter a parse tree produced by {@link idParser#definicion_funcion_parametro_nombre}.
 	 * @param ctx the parse tree
 	 */
-	void enterLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx);
+	void enterDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#llamada_nombre_funcion}.
+	 * Exit a parse tree produced by {@link idParser#definicion_funcion_parametro_nombre}.
 	 * @param ctx the parse tree
 	 */
-	void exitLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx);
+	void exitDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#llamada_funcion}.
 	 * @param ctx the parse tree
@@ -350,15 +340,45 @@ public interface idListener extends ParseTreeListener {
 	 */
 	void exitLlamada_funcion(idParser.Llamada_funcionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link idParser#parametros_llamada_funcion}.
+	 * Enter a parse tree produced by {@link idParser#llamada_nombre_funcion}.
 	 * @param ctx the parse tree
 	 */
-	void enterParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx);
+	void enterLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link idParser#parametros_llamada_funcion}.
+	 * Exit a parse tree produced by {@link idParser#llamada_nombre_funcion}.
 	 * @param ctx the parse tree
 	 */
-	void exitParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx);
+	void exitLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion_parametros}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion_parametros(idParser.Llamada_funcion_parametrosContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion_parametros}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion_parametros(idParser.Llamada_funcion_parametrosContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion_argumentos}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion_argumentos(idParser.Llamada_funcion_argumentosContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion_argumentos}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion_argumentos(idParser.Llamada_funcion_argumentosContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion_argumento_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion_argumento_identificador(idParser.Llamada_funcion_argumento_identificadorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion_argumento_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion_argumento_identificador(idParser.Llamada_funcion_argumento_identificadorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#if}.
 	 * @param ctx the parse tree
@@ -409,4 +429,34 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFor_autoincremental(idParser.For_autoincrementalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#return}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn(idParser.ReturnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#return}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn(idParser.ReturnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#return_variables}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_variables(idParser.Return_variablesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#return_variables}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_variables(idParser.Return_variablesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#return_variable_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#return_variable_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx);
 }

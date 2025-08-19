@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -91,49 +91,49 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaracion_variables(idParser.Declaracion_variablesContext ctx) { }
+	@Override public void enterDeclaracion_variable(idParser.Declaracion_variableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaracion_variables(idParser.Declaracion_variablesContext ctx) { }
+	@Override public void exitDeclaracion_variable(idParser.Declaracion_variableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaracion_variable_variantes(idParser.Declaracion_variable_variantesContext ctx) { }
+	@Override public void enterDeclaracion_variable_declaradores(idParser.Declaracion_variable_declaradoresContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaracion_variable_variantes(idParser.Declaracion_variable_variantesContext ctx) { }
+	@Override public void exitDeclaracion_variable_declaradores(idParser.Declaracion_variable_declaradoresContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaracion_variable_asignacion(idParser.Declaracion_variable_asignacionContext ctx) { }
+	@Override public void enterDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaracion_variable_asignacion(idParser.Declaracion_variable_asignacionContext ctx) { }
+	@Override public void exitDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaracion_variable_simple(idParser.Declaracion_variable_simpleContext ctx) { }
+	@Override public void enterDeclarador_simple(idParser.Declarador_simpleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaracion_variable_simple(idParser.Declaracion_variable_simpleContext ctx) { }
+	@Override public void exitDeclarador_simple(idParser.Declarador_simpleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -151,25 +151,25 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpresion_logica(idParser.Expresion_logicaContext ctx) { }
+	@Override public void enterExpresion_booleana(idParser.Expresion_booleanaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpresion_logica(idParser.Expresion_logicaContext ctx) { }
+	@Override public void exitExpresion_booleana(idParser.Expresion_booleanaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermino_logico(idParser.Termino_logicoContext ctx) { }
+	@Override public void enterTermino_comparacion(idParser.Termino_comparacionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermino_logico(idParser.Termino_logicoContext ctx) { }
+	@Override public void exitTermino_comparacion(idParser.Termino_comparacionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -187,6 +187,18 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterOperador_comparacion(idParser.Operador_comparacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperador_comparacion(idParser.Operador_comparacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterOperador_logico(idParser.Operador_logicoContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -194,18 +206,6 @@ public class idBaseListener implements idListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOperador_logico(idParser.Operador_logicoContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConector_logico(idParser.Conector_logicoContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConector_logico(idParser.Conector_logicoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -283,18 +283,6 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -302,6 +290,18 @@ public class idBaseListener implements idListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -319,49 +319,25 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParametro_funcion(idParser.Parametro_funcionContext ctx) { }
+	@Override public void enterDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParametro_funcion(idParser.Parametro_funcionContext ctx) { }
+	@Override public void exitDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaracion_parametro_funcion_valor_por_defecto(idParser.Declaracion_parametro_funcion_valor_por_defectoContext ctx) { }
+	@Override public void enterDeclaracion_funcion_parametro_inicializado(idParser.Declaracion_funcion_parametro_inicializadoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaracion_parametro_funcion_valor_por_defecto(idParser.Declaracion_parametro_funcion_valor_por_defectoContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDefinicion_nombre_funcion(idParser.Definicion_nombre_funcionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDefinicion_nombre_funcion(idParser.Definicion_nombre_funcionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDefinicion_funciones_parametros(idParser.Definicion_funciones_parametrosContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDefinicion_funciones_parametros(idParser.Definicion_funciones_parametrosContext ctx) { }
+	@Override public void exitDeclaracion_funcion_parametro_inicializado(idParser.Declaracion_funcion_parametro_inicializadoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -379,13 +355,25 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx) { }
+	@Override public void enterDefinicion_funcion_nombre(idParser.Definicion_funcion_nombreContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx) { }
+	@Override public void exitDefinicion_funcion_nombre(idParser.Definicion_funcion_nombreContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDefinicion_funcion_parametros(idParser.Definicion_funcion_parametrosContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDefinicion_funcion_parametros(idParser.Definicion_funcion_parametrosContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -403,13 +391,13 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx) { }
+	@Override public void enterDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx) { }
+	@Override public void exitDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -427,13 +415,49 @@ public class idBaseListener implements idListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx) { }
+	@Override public void enterLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParametros_llamada_funcion(idParser.Parametros_llamada_funcionContext ctx) { }
+	@Override public void exitLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLlamada_funcion_parametros(idParser.Llamada_funcion_parametrosContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLlamada_funcion_parametros(idParser.Llamada_funcion_parametrosContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLlamada_funcion_argumentos(idParser.Llamada_funcion_argumentosContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLlamada_funcion_argumentos(idParser.Llamada_funcion_argumentosContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLlamada_funcion_argumento_identificador(idParser.Llamada_funcion_argumento_identificadorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLlamada_funcion_argumento_identificador(idParser.Llamada_funcion_argumento_identificadorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -494,6 +518,42 @@ public class idBaseListener implements idListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFor_autoincremental(idParser.For_autoincrementalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReturn(idParser.ReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturn(idParser.ReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReturn_variables(idParser.Return_variablesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturn_variables(idParser.Return_variablesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

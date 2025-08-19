@@ -1,8 +1,6 @@
 package app;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,35 +42,67 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) {
     String idTokenStr = ctx.getStart().getText();
-    MiId id = tableInstance.findIdInLastActiveContext(idTokenStr, idAux);
+    MiId newId = new MiId(idTokenStr, true, false, tipoDatoAux, false);
 
-    if (id != null) {
-      error = true;
-      System.err.println("Error: Duplicated declaration of Token: "
-          + idTokenStr + ", In line: " + ctx.getStart().getLine());
+    if (idAux != "") {
+      MiId id = tableInstance.findIdInLastActiveContext(idTokenStr, idAux);
+
+      if (id != null) {
+        error = true;
+        System.err.println("Error: Duplicated declaration of Token: "
+            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        return;
+      }
+
+      tableInstance.addId(newId, idAux);
       return;
     }
 
-    MiId newId = new MiId(idTokenStr, true, false, tipoDatoAux, false);
+    if (idAux == "") {
+      MiId id = tableInstance.checkIfGlobalVariableAlreadyDeclarated(idTokenStr);
+      if (id != null) {
+        error = true;
+        System.err.println("Error: Duplicated declaration of Token: "
+            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        return;
+      }
+      tableInstance.addId(newId, idAux);
+      return;
+    }
 
-    tableInstance.addId(newId, idAux);
   }
 
   @Override
   public void enterDeclarador_simple(idParser.Declarador_simpleContext ctx) {
     String idTokenStr = ctx.getStart().getText();
-    MiId id = tableInstance.findIdInLastActiveContext(idTokenStr, idAux);
+    MiId newId = new MiId(idTokenStr, false, false, tipoDatoAux, false);
 
-    if (id != null) {
-      error = true;
-      System.err.println("Error: Duplicated declaration of Token: "
-          + idTokenStr + ", In line: " + ctx.getStart().getLine());
+    if (idAux != "") {
+      MiId id = tableInstance.findIdInLastActiveContext(idTokenStr, idAux);
+
+      if (id != null) {
+        error = true;
+        System.err.println("Error: Duplicated declaration of Token: "
+            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        return;
+      }
+
+      tableInstance.addId(newId, idAux);
       return;
     }
 
-    MiId newId = new MiId(idTokenStr, false, false, tipoDatoAux, false);
+    if (idAux == "") {
+      MiId id = tableInstance.checkIfGlobalVariableAlreadyDeclarated(idTokenStr);
+      if (id != null) {
+        error = true;
+        System.err.println("Error: Duplicated declaration of Token: "
+            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        return;
+      }
+      tableInstance.addId(newId, idAux);
+      return;
+    }
 
-    tableInstance.addId(newId, idAux);
   }
 
   /* ---------------------- OPERACIONES LOGICAS ------------------------------- */
@@ -346,7 +376,7 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue, idAux);
 
     if (id == null) {
-      System.out.println("Error");
+      System.out.println("Error: Variable " + idValue + ", is not declarated, Line " + ctx.getStart().getLine());
       error = true;
       return;
     }
