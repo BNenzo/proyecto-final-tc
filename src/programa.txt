@@ -1,20 +1,18 @@
+
 int suma(int, int);
+
+int x = 32;
+int probando = 3;
+char c = 's';
 
 int main () { 
   {
     int test = 2;
   }
 
-  int test_32 = 1;
-  int probando = 32;
-  int test_333 = 231;
-  suma(probando, test_32);
-
-  test_333 + probando;
+  suma(adsdda, x);
 }
 
 int suma (int x, int y) { 
-
-
   return x;
 }
