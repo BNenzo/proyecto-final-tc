@@ -14,9 +14,7 @@ int main () {
 }
 
 int suma (int x, int y) { 
-  int suma_test = 2;
 
-  if (x < suma_test) { 
-    int ifprobando = 232;
-  }
+
+  return x;
 }

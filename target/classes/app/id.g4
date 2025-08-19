@@ -53,7 +53,7 @@ WHILE: 'while';
 BREAK: 'break';
 CONTINUE: 'continue';
 
-// OPER
+RETURN: 'return';
 
 IDENTIFICADOR: (LETRA | '_') (LETRA | DIGITO | '_')*;
 NUMERO: (DIGITO)+;
@@ -74,7 +74,8 @@ instruccion:
 	| if
 	| while
 	| for
-	| bloque;
+	| bloque
+	| return;
 
 tipo_variable: INT | DOUBLE | CHAR;
 tipo_funciones: INT | DOUBLE | CHAR | VOID;
@@ -224,6 +225,16 @@ for_autoincremental:
 	IDENTIFICADOR INCREMENTADOR (COMA for_autoincremental)*
 	| IDENTIFICADOR DECREMENTADOR (COMA for_autoincremental)*;
 
+/* ---------------------  RETURN --------------------- */
+
+return: RETURN return_variables PUNTO_COMA;
+
+return_variables:
+	NUMERO
+	| CARACTER
+	| return_variable_identificador;
+
+return_variable_identificador: IDENTIFICADOR;
 // s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
 // $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
 // System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "

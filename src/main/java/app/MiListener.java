@@ -364,6 +364,44 @@ public class MiListener extends idBaseListener {
     id.setUsada(true);
   }
 
+  @Override
+  public void enterReturn_variables(idParser.Return_variablesContext ctx) {
+    String idValue = ctx.getStart().getText();
+    String type = identificarTipo(idValue);
+
+    // Si es variable se procesa en otra regla
+    if (type == "variable")
+      return;
+
+    TipoDato returnVariableType = TipoDato.fromString(type);
+
+    if (functionAux.getFunctionId().getTipoDato() != returnVariableType) {
+      System.out
+          .println("Error: Funcion " + functionAux.getFunctionId().getToken() + " expect return a variable of type: "
+              + functionAux.getFunctionId().getTipoDato() + " and is returnig " + returnVariableType);
+      error = true;
+      return;
+    }
+
+  }
+
+  @Override
+  public void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx) {
+    String idValue = ctx.getStart().getText();
+
+    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue, functionAux.getFunctionId().getToken());
+
+    if (id == null) {
+      System.err.println("Error: Undeclarated Token: "
+          + idValue + ", In line: " + ctx.getStart().getLine());
+      error = true;
+      return;
+    }
+
+    id.setUsada(true);
+    return;
+  }
+
   public static String identificarTipo(String input) {
 
     if (input.matches("^'([^\\\\']|\\\\[btnr0'\"\\\\])'$")) {

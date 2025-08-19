@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -429,4 +429,34 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFor_autoincremental(idParser.For_autoincrementalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#return}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn(idParser.ReturnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#return}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn(idParser.ReturnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#return_variables}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_variables(idParser.Return_variablesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#return_variables}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_variables(idParser.Return_variablesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#return_variable_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#return_variable_identificador}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx);
 }
