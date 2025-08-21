@@ -66,6 +66,7 @@ instrucciones: instruccion instrucciones |;
 
 instruccion:
 	declaracion_variable
+	| asignacion_variable
 	| operacion_logica
 	| operacion_aritmetica
 	| declaracion_funcion
@@ -94,9 +95,21 @@ declaracion_variable_declaradores:
 declarador_inicializado:
 	IDENTIFICADOR EQUAL CARACTER
 	| IDENTIFICADOR EQUAL IDENTIFICADOR
-	| IDENTIFICADOR EQUAL NUMERO;
+	| IDENTIFICADOR EQUAL NUMERO
+	| IDENTIFICADOR EQUAL expresion_booleana
+	| IDENTIFICADOR EQUAL expresion_aritmetica;
 
 declarador_simple: IDENTIFICADOR;
+
+/* --------------------- ASIGNACION VARIABLES --------------------- */
+
+asignacion_variable:
+	asignacion_variable_identificador EQUAL (
+		operacion_aritmetica
+		| operacion_logica
+	)+;
+
+asignacion_variable_identificador: IDENTIFICADOR;
 
 /* ---------------------  OPERACIONES LOGICAS ---------------------  */
 
@@ -126,19 +139,16 @@ operador_logico: AND | | OR;
 operacion_aritmetica: expresion_aritmetica PUNTO_COMA;
 
 expresion_aritmetica:
-	terminos_aritmeticos (
-		operador_aritmetico expresion_aritmetica
-	)*;
+	termino_aritmetico ((SUMA | RESTA) termino_aritmetico)*;
 
-terminos_aritmeticos:
-	termino_aritmetico
+termino_aritmetico: factor ( (MULTIPLICAR | DIVISION) factor)*;
+
+factor:
+	NUMERO
+	| identificador_aritmetico
 	| PARENTESIS_APERTURA expresion_aritmetica PARENTESIS_CLAUSURA;
 
-termino_aritmetico: identificador_aritmetico | NUMERO;
-
 identificador_aritmetico: IDENTIFICADOR;
-
-operador_aritmetico: SUMA | RESTA | MULTIPLICAR | DIVISION;
 
 /* ---------------------  DECLARACION DE FUNCIONES ---------------------  */
 

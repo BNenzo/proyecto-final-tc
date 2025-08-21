@@ -36,7 +36,14 @@ public class App {
         System.out.println("");
         ParseTree tree = parser.s();
         System.out.println("");
+
+        MiVisitor visitor = new MiVisitor();
+        String resultado = visitor.visit(tree);
+
         System.out.println(tree.toStringTree(parser));
+        System.out.println("");
+        System.out.println("Resultado TAC: " + resultado);
+
         System.out.println("fin del programa");
     }
 }

@@ -1,18 +1,6 @@
 
-int suma(int, int);
-
-int x = 32;
-int probando = 3;
-char c = 's';
+  
 
 int main () { 
-  {
-    int test = 2;
-  }
-
-  suma(adsdda, x);
-}
-
-int suma (int x, int y) { 
-  return x;
+  int x = y + (5 * 2);
 }
