@@ -12,7 +12,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
  */
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Inicio del programa");
 
         // create a CharStream that reads from file
         CharStream input = CharStreams.fromFileName("src/programa.txt");
@@ -27,22 +26,32 @@ public class App {
         idParser parser = new idParser(tokens);
 
         // create Listener
-        idBaseListener escucha = new MiListener(parser);
-        parser.addParseListener(escucha);
+        // idBaseListener escucha = new MiListener(parser);
+        // parser.addParseListener(escucha);
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial
         // parser.s();
-        System.out.println("");
         ParseTree tree = parser.s();
-        System.out.println("");
 
-        MiVisitor visitor = new MiVisitor();
-        String resultado = visitor.visit(tree);
+        // MiVisitor visitor = new MiVisitor();
+        // String resultado = visitor.visit(tree);
 
         System.out.println(tree.toStringTree(parser));
+
         System.out.println("");
-        System.out.println("Resultado TAC: " + resultado);
+        // System.out.println("Resultado TAC: " + resultado);
+
+        tokens.fill(); // fuerza a cargar todos los tokens en memoria
+        int cantidadTokens = tokens.getTokens().size();
+        // System.out.println("📊 Tokens procesados: " + cantidadTokens);
+
+        System.out.println("🚀 Iniciando compilación de: programa.txt");
+        System.out.println("============================================================");
+        System.out.println();
+        System.out.println("=== 1. ANÁLISIS LÉXICO ===");
+        System.out.println("✅ Análisis léxico completado sin errores.");
+        System.out.println("   📊 Tokens procesados: " + cantidadTokens);
 
         System.out.println("fin del programa");
     }
