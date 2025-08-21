@@ -1,6 +1,10 @@
+int contadorGlobal;
+double valorPi;
+char inicial;
 
-int main () { 
-  int contadorGlobal = 2;
-  double valorPi;
-  char inicial;
+int sumar(int a, int b) {
+    int resultado;
+    resultado = a + b;
+    contadorGlobal = contadorGlobal + 1;
+    return resultado;
 }
