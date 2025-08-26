@@ -105,9 +105,10 @@ declarador_simple: IDENTIFICADOR;
 
 asignacion_variable:
 	asignacion_variable_identificador EQUAL (
-		operacion_aritmetica
-		| operacion_logica
-	)+;
+		(expresion_aritmetica | expresion_booleana)+
+		| llamada_funcion_expresion
+		| CARACTER
+	) PUNTO_COMA;
 
 asignacion_variable_identificador: IDENTIFICADOR;
 
@@ -141,7 +142,8 @@ operacion_aritmetica: expresion_aritmetica PUNTO_COMA;
 expresion_aritmetica:
 	termino_aritmetico ((SUMA | RESTA) termino_aritmetico)*;
 
-termino_aritmetico: factor ( (MULTIPLICAR | DIVISION) factor)*;
+termino_aritmetico:
+	factor ((MULTIPLICAR | DIVISION | MODULO) factor)*;
 
 factor:
 	NUMERO
@@ -191,9 +193,10 @@ definicion_funcion_parametro_nombre: IDENTIFICADOR;
 
 /* ---------------------  LLAMADAS DE FUNCIONES ---------------------  */
 
-llamada_funcion:
-	llamada_nombre_funcion PARENTESIS_APERTURA llamada_funcion_parametros? PARENTESIS_CLAUSURA
-		PUNTO_COMA;
+llamada_funcion: llamada_funcion_expresion PUNTO_COMA;
+
+llamada_funcion_expresion:
+	llamada_nombre_funcion PARENTESIS_APERTURA llamada_funcion_parametros? PARENTESIS_CLAUSURA;
 
 llamada_nombre_funcion: IDENTIFICADOR;
 

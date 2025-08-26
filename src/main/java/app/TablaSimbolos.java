@@ -54,7 +54,6 @@ public class TablaSimbolos {
     System.out.println("VARIABLES GLOBALES");
     for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
       MiId valor = entry.getValue();
-
       System.out.println(valor);
     }
 
@@ -64,6 +63,45 @@ public class TablaSimbolos {
     for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
       System.out.println(entry.getValue());
     }
+  }
+
+  public void displayTableFormat() {
+    for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
+      MiId valor = entry.getValue();
+      System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
+          valor.getToken(), valor.getTipoDato(), "variable", 5, 4, "global", "[private]");
+    }
+    for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
+      MiId functionId = entry.getValue().getFunctionId();
+      System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
+          functionId.getToken(), functionId.getTipoDato(), "function", 5, 4, "global", "[private]");
+      for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
+        MiId parameterId = entry2.getValue();
+        System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
+            parameterId.getToken(), parameterId.getTipoDato(), "parameter", 5, 4, functionId.getToken(), "[private]");
+      }
+      for (Context context : entry.getValue().getFunctionContexts()) {
+        for (Map.Entry<String, MiId> entry3 : context.getVariables().entrySet()) {
+          MiId variableId = entry3.getValue();
+          System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
+              variableId.getToken(),
+              variableId.getTipoDato(),
+              "variable",
+              5,
+              4,
+              entry.getValue().getFunctionId().getToken(),
+              "[private]");
+        }
+
+      }
+    }
+
+    // System.out.println("");
+
+    // System.out.println("Contextos");
+    // for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
+    // System.out.println(entry.getValue());
+    // }
   }
 
   public MiId findIdInLastActiveContext(String idToken, String functionName) {
@@ -77,7 +115,7 @@ public class TablaSimbolos {
     MiId id = null;
     for (int i = contexts.size() - 1; i >= 0; i--) {
       Context context = contexts.get(i);
-      if (context.isActive()) {
+      if (context.isActive() && id == null) {
         id = context.getVariables().get(idToken);
       }
     }
