@@ -49,8 +49,9 @@ public class MiListener extends idBaseListener {
 
       if (id != null) {
         error = true;
-        System.err.println("Error: Duplicated declaration of Token: "
-            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        System.out.println("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
+            + functionAux.getFunctionId().getToken() + "'" + " (línea" + ctx.getStart().getLine() + ", columna "
+            + ctx.getStart().getCharPositionInLine() + ")");
         return;
       }
 
@@ -82,8 +83,9 @@ public class MiListener extends idBaseListener {
 
       if (id != null) {
         error = true;
-        System.err.println("Error: Duplicated declaration of Token: "
-            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        System.out.println("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
+            + functionAux.getFunctionId().getToken() + "'" + " (línea" + ctx.getStart().getLine() + ", columna "
+            + ctx.getStart().getCharPositionInLine() + ")");
         return;
       }
 
@@ -95,8 +97,9 @@ public class MiListener extends idBaseListener {
       MiId id = tableInstance.checkIfGlobalVariableAlreadyDeclarated(idTokenStr);
       if (id != null) {
         error = true;
-        System.err.println("Error: Duplicated declaration of Token: "
-            + idTokenStr + ", In line: " + ctx.getStart().getLine());
+        System.out.println("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
+            + "global" + "'" + " (línea " + ctx.getStart().getLine() + ", columna "
+            + ctx.getStart().getCharPositionInLine() + ")");
         return;
       }
       tableInstance.addId(newId, idAux);
@@ -113,8 +116,8 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(tokenStr, idAux);
 
     if (id == null) {
-      System.err.println("Error: Undeclarated Token: "
-          + tokenStr + ", In line: " + ctx.getStart().getLine());
+      System.err.println("❌ Error: Variable '" + tokenStr + "' no declarada en el ambito "
+          + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
       error = true;
       return;
     }
@@ -130,8 +133,8 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(tokenStr, idAux);
 
     if (id == null) {
-      System.err.println("Error: Undeclarated Token: "
-          + tokenStr + ", In line: " + ctx.getStart().getLine());
+      System.err.println("❌ Error: Variable '" + tokenStr + "' no declarada en el ambito "
+          + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
       error = true;
       return;
     }
@@ -224,8 +227,9 @@ public class MiListener extends idBaseListener {
      */
     if (functionAux == null) {
       tableInstance.AddFunctionToTable(functionName);
-      MiId functionId = new MiId(functionName, true, false, tipoDatoAux, true);
+      MiId functionId = new MiId(functionName, false, false, tipoDatoAux, true);
       tablaFunciones.get(functionName).setFunctionId(functionId);
+      functionAux = tablaFunciones.get(functionName);
     }
 
     // FALTA: que pasa si la funcion existe pero su tipo es distinto al tipo que se
@@ -258,7 +262,7 @@ public class MiListener extends idBaseListener {
      * Si functionAux es null significa que es una funcion que no fue declarada
      * Por ende no hay parametros que reemplazar
      */
-    if (functionAux == null) {
+    if (function.getFunctionId().getInicializada() == false) {
       function.addIdInParameters(id);
       return;
     }
@@ -274,9 +278,8 @@ public class MiListener extends idBaseListener {
      */
     if (function.getFunctionParameters().size() - 1 < parameterCountAux) {
       error = true;
-      System.out.println("Error: Function definition of " + idAux
-          + " has more parameters than its declaration, at line " +
-          ctx.getStart().getLine());
+      System.out.println("❌ Error: La definicion de la funcion " + idAux
+          + " tiene mas parametros que su previa declaracion (linea " + ctx.getStart().getLine() + ")");
       return;
     }
 
@@ -287,10 +290,10 @@ public class MiListener extends idBaseListener {
 
     if (parameterPreviouslyDeclared.getTipoDato() != tipoDatoAux) {
       error = true;
-      System.out.println("Error: Parameter should be of type " +
-          parameterPreviouslyDeclared.getTipoDato()
-          + " but is of type " + tipoDatoAux + ", at line " +
-          ctx.getStart().getLine());
+      System.out.println(
+          "❌ Error: El parametro fue declarado previamente de tipo: " + parameterPreviouslyDeclared.getTipoDato()
+              + ", pero en su definicion esta siendo nombrado de tipo: " + tipoDatoAux + ", En el ambito: "
+              + function.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
       return;
     }
 
@@ -324,7 +327,8 @@ public class MiListener extends idBaseListener {
     Function function = tablaFunciones.get(functionName);
 
     if (function == null) {
-      System.out.println("Error: Function " + functionName + ", is not declarated, line " + ctx.getStart().getLine());
+      System.out.println("❌ Error: La funcion " + functionName + " No ha sido declarada en el ambito global (linea "
+          + ctx.getStart().getLine() + ")");
       error = true;
       return;
     }
@@ -359,9 +363,13 @@ public class MiListener extends idBaseListener {
 
     // Se compara el tipo del valor nativo con el parametro relacionado
     if (parameterType != parametersList.get(parameterCountAux).getTipoDato()) {
-      System.out.println("Error: value " + idValue + " does not match with the type of the parameter num: "
-          + parameterCountAux + " prevoisly declarated" + " (" + parameterType + "->"
-          + parametersList.get(parameterCountAux).getTipoDato() + " )");
+      System.out.println("❌ Error: el valor " + idValue
+          + " no coincide con el tipo del parámetro 'num' en la posición "
+          + parameterCountAux
+          + ", declarado previamente como "
+          + parameterType
+          + " (se esperaba "
+          + parametersList.get(parameterCountAux).getTipoDato() + ")");
       error = true;
       return;
     }
@@ -376,7 +384,8 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue, idAux);
 
     if (id == null) {
-      System.out.println("Error: Variable " + idValue + ", is not declarated, Line " + ctx.getStart().getLine());
+      System.err.println("❌ Error: Variable '" + idValue + "' no declarada en el ambito "
+          + "por definir" + " (linea " + ctx.getStart().getLine() + ")"); // checkear el ambito
       error = true;
       return;
     }
@@ -384,9 +393,14 @@ public class MiListener extends idBaseListener {
     List<MiId> parametersList = new ArrayList<>(functionAux.getFunctionParameters().values());
 
     if (id.getTipoDato() != parametersList.get(parameterCountAux).getTipoDato()) {
-      System.out.println("Error: value " + idValue + " does not match with the type of the parameter num: "
-          + parameterCountAux + " prevoisly declarated" + " (" + id.getTipoDato() + "->"
-          + parametersList.get(parameterCountAux).getTipoDato() + " )");
+      System.out.println("❌ Error: el valor " + idValue
+          + " no coincide con el tipo del parámetro 'num' en la posición "
+          + parameterCountAux
+          + ", declarado previamente como "
+          + id.getTipoDato()
+          + " (se esperaba "
+          + parametersList.get(parameterCountAux).getTipoDato() + ")");
+
       error = true;
       return;
     }
@@ -406,9 +420,12 @@ public class MiListener extends idBaseListener {
     TipoDato returnVariableType = TipoDato.fromString(type);
 
     if (functionAux.getFunctionId().getTipoDato() != returnVariableType) {
-      System.out
-          .println("Error: Funcion " + functionAux.getFunctionId().getToken() + " expect return a variable of type: "
-              + functionAux.getFunctionId().getTipoDato() + " and is returnig " + returnVariableType);
+      System.out.println("Error: la función "
+          + functionAux.getFunctionId().getToken()
+          + " esperaba retornar una variable de tipo "
+          + functionAux.getFunctionId().getTipoDato()
+          + ", pero se está devolviendo un valor de tipo "
+          + returnVariableType);
       error = true;
       return;
     }
@@ -419,11 +436,12 @@ public class MiListener extends idBaseListener {
   public void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx) {
     String idValue = ctx.getStart().getText();
 
-    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue, functionAux.getFunctionId().getToken());
+    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue,
+        functionAux.getFunctionId().getToken());
 
     if (id == null) {
-      System.err.println("Error: Undeclarated Token: "
-          + idValue + ", In line: " + ctx.getStart().getLine());
+      System.err.println("❌ Error: Variable '" + idValue + "' no declarada en el ambito "
+          + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
       error = true;
       return;
     }
@@ -459,7 +477,9 @@ public class MiListener extends idBaseListener {
     if (error)
       return;
 
-    TablaSimbolos.getInstance().displayTable();
+    // TablaSimbolos.getInstance().displayTable();
+    TablaSimbolos.getInstance().displayTableFormat();
+
   }
 
 }

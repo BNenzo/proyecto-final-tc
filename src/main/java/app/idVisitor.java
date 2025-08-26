@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -216,6 +216,12 @@ public interface idVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLlamada_funcion(idParser.Llamada_funcionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link idParser#llamada_funcion_expresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link idParser#llamada_nombre_funcion}.
 	 * @param ctx the parse tree

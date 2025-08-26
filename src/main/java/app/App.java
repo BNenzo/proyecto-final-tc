@@ -1,7 +1,7 @@
 package app;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.CharStreams;
 
 import java.util.Arrays;
@@ -31,13 +31,9 @@ public class App {
         // create a parser that feeds off the tokens buffer
         idParser parser = new idParser(tokens);
 
-        // create Listener
-        // idBaseListener escucha = new MiListener(parser);
-        // parser.addParseListener(escucha);
-
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial
-        // parser.s();
+
         ParseTree tree = parser.s();
 
         // MiVisitor visitor = new MiVisitor();
@@ -45,9 +41,8 @@ public class App {
 
         System.out.println("");
         // System.out.println("Resultado TAC: " + resultado);
+        // create Listener
 
-        tokens.fill(); // fuerza a cargar todos los tokens en memoria
-        int cantidadTokens = tokens.getTokens().size();
         // System.out.println("📊 Tokens procesados: " + cantidadTokens);
 
         System.out.println("🚀 Iniciando compilación de: programa.txt");
@@ -56,7 +51,7 @@ public class App {
         // === 1. ANÁLISIS LÉXICO ===
         System.out.println("=== 1. ANÁLISIS LÉXICO ===");
         System.out.println("✅ Análisis léxico completado sin errores.");
-        System.out.println("   📊 Tokens procesados: " + cantidadTokens);
+        System.out.println("   📊 Tokens procesados: " + tokens.getTokens().size());
         System.out.println();
         // === 2. ANÁLISIS SINTÁCTICO ===
         System.out.println("=== 2. ANÁLISIS SINTÁCTICO ===");
@@ -65,15 +60,25 @@ public class App {
         System.out.println(tree.toStringTree(parser));
         System.out.println();
         // === 3. VISUALIZACIÓN DEL AST ===
-        System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
-        System.out.println("   📊 Ventana del árbol sintáctico abierta");
-        JFrame frame = new JFrame("AST - Árbol Sintáctico");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-        viewer.setScale(1.5);
-        frame.add(viewer);
-        frame.setSize(800, 600);
-        frame.setVisible(true);
+        // System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
+        // System.out.println(" 📊 Ventana del árbol sintáctico abierta");
+        // JFrame frame = new JFrame("AST - Árbol Sintáctico");
+        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
+        // tree);
+        // viewer.setScale(1.5);
+        // frame.add(viewer);
+        // frame.setSize(800, 600);
+        // frame.setVisible(false);
+        System.out.println("=== 4. ANÁLISIS SEMÁNTICO ===");
+        System.out.println("📋 Tabla de símbolos construida:");
+        System.out.printf("%-15s %-8s %-12s %-7s %-8s %-10s %-20s%n",
+                "NOMBRE", "TIPO", "CATEGORÍA", "LÍNEA", "COLUMNA", "ÁMBITO", "DETALLES");
+        System.out.println("--------------------------------------------------------------------------");
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        MiListener escucha = new MiListener(parser);
+        walker.walk(escucha, tree);
 
         System.out.println("fin del programa");
 
