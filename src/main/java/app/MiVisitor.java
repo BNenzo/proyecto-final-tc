@@ -54,22 +54,9 @@ public class MiVisitor extends idBaseVisitor<String> {
   }
 
   @Override
-  public String visitDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
-    // tipo_variable
-
-    // declaradores (podemos recorrerlos, pero ahora nos centramos en
-    // declarador_simple)
-
-    visit(ctx.declaracion_variable_declaradores());
-    return null;
-
-  }
-
-  @Override
   public String visitDeclarador_simple(idParser.Declarador_simpleContext ctx) {
     String nombreVar = ctx.IDENTIFICADOR().getText();
-    // Necesitamos también el tipo → está un nivel arriba
-    // El tipo viene del padre declaracion_variable
+
     ParseTree actual = ctx;
     idParser.Declaracion_variableContext declCtx = null;
 
@@ -120,6 +107,41 @@ public class MiVisitor extends idBaseVisitor<String> {
     }
 
     return null;
+  }
+
+  @Override
+  public String visitAsignacion_variable(idParser.Asignacion_variableContext ctx) {
+    String variable = ctx.asignacion_variable_identificador().getText();
+    if (ctx.NUMERO() != null) {
+      System.out.println(variable + " = " + ctx.NUMERO().getText());
+    } else if (ctx.CARACTER() != null) {
+      System.out.println(variable + " = " + ctx.CARACTER().getText());
+    } else if (ctx.expresion_aritmetica() != null) {
+      String resultado = visitExpresion_aritmetica(ctx.expresion_aritmetica());
+      System.out.println(variable + " = " + resultado);
+    } else if (ctx.expresion_booleana() != null) {
+      String resultado = visitExpresion_booleana(ctx.expresion_booleana());
+      System.out.println(variable + " = " + resultado);
+    } else if (ctx.llamada_funcion_expresion() != null) {
+      String resultado = visit(ctx.llamada_funcion_expresion());
+      String temp = newTemp();
+      System.out.println(temp + " = " + resultado);
+      System.out.println(variable + " = " + temp);
+    }
+
+    return null;
+  }
+
+  @Override
+  public String visitLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx) {
+    String functionName = ctx.llamada_nombre_funcion().getText();
+    String arguments = "";
+    if (ctx.llamada_funcion_parametros() != null) {
+      arguments = ", " + ctx.llamada_funcion_parametros().getText();
+    }
+
+    System.out.println("CALL " + functionName + arguments);
+    return "CALL " + functionName + arguments;
   }
 
 }
