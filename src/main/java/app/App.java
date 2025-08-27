@@ -36,9 +36,6 @@ public class App {
 
         ParseTree tree = parser.s();
 
-        // MiVisitor visitor = new MiVisitor();
-        // String resultado = visitor.visit(tree);
-
         System.out.println("");
         // System.out.println("Resultado TAC: " + resultado);
         // create Listener
@@ -79,6 +76,10 @@ public class App {
         ParseTreeWalker walker = new ParseTreeWalker();
         MiListener escucha = new MiListener(parser);
         walker.walk(escucha, tree);
+        System.out.println("=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===");
+        System.out.println("📝 Código de tres direcciones generado:");
+        MiVisitor visitor = new MiVisitor();
+        String resultado = visitor.visit(tree);
 
         System.out.println("fin del programa");
 
