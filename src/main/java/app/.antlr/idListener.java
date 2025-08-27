@@ -1,4 +1,4 @@
-// Generated from /Users/enzoletona/Desktop/TC/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
+// Generated from /Users/enzoletona/Desktop/TC/renzo/proyecto-final-tc/src/main/java/app/id.g4 by ANTLR 4.13.1
 
 package app;
 
@@ -349,6 +349,16 @@ public interface idListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLlamada_funcion(idParser.Llamada_funcionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link idParser#llamada_funcion_expresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link idParser#llamada_funcion_expresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link idParser#llamada_nombre_funcion}.
 	 * @param ctx the parse tree

@@ -1,5 +1,7 @@
 package app;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 public class MiVisitor extends idBaseVisitor<String> {
   private int tempCount = 0;
 
@@ -52,66 +54,72 @@ public class MiVisitor extends idBaseVisitor<String> {
   }
 
   @Override
-  public String visitAsignacion_variable(idParser.Asignacion_variableContext ctx) {
-    String variable = ctx.asignacion_variable_identificador().getText();
-    String lastTemp = null;
-
-    for (idParser.Operacion_aritmeticaContext opCtx : ctx.operacion_aritmetica()) {
-      lastTemp = visit(opCtx);
-    }
-
-    for (idParser.Operacion_logicaContext logCtx : ctx.operacion_logica()) {
-      lastTemp = visit(logCtx);
-    }
-
-    System.out.println(variable + " = " + lastTemp);
-    return lastTemp;
-  }
-
-  @Override
   public String visitDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
+    // tipo_variable
+
+    // declaradores (podemos recorrerlos, pero ahora nos centramos en
+    // declarador_simple)
+
     visit(ctx.declaracion_variable_declaradores());
     return null;
-  }
 
-  public String visitDeclaracion_variable_declaradores(idParser.Declaracion_variable_declaradoresContext ctx) {
-
-    if (ctx.declarador_simple() != null) {
-      visit(ctx.declarador_simple());
-    }
-
-    if (ctx.declarador_inicializado() != null) {
-      visit(ctx.declarador_inicializado());
-    }
-
-    return null;
   }
 
   @Override
   public String visitDeclarador_simple(idParser.Declarador_simpleContext ctx) {
-    String varName = ctx.IDENTIFICADOR().getText();
-    System.out.println("Declarado: " + varName);
-    return varName;
+    String nombreVar = ctx.IDENTIFICADOR().getText();
+    // Necesitamos también el tipo → está un nivel arriba
+    // El tipo viene del padre declaracion_variable
+    ParseTree actual = ctx;
+    idParser.Declaracion_variableContext declCtx = null;
+
+    while (actual != null) {
+      if (actual instanceof idParser.Declaracion_variableContext) {
+        declCtx = (idParser.Declaracion_variableContext) actual;
+        break;
+      }
+      actual = actual.getParent();
+    }
+
+    String tipo = (declCtx != null) ? declCtx.tipo_variable().getText() : "unknown";
+
+    System.out.println("DECLARE " + nombreVar + " " + tipo);
+    return null;
   }
 
   @Override
   public String visitDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) {
-    String varName = ctx.getStart().getText();
-    String valueTemp = null;
+    String nombreVar = ctx.IDENTIFICADOR(0).getText();
 
-    if (ctx.NUMERO() != null) {
-      valueTemp = ctx.NUMERO().getText();
-    } else if (ctx.IDENTIFICADOR(1) != null) {
-      valueTemp = ctx.IDENTIFICADOR(1).getText();
-    } else if (ctx.expresion_aritmetica() != null) {
-      valueTemp = visit(ctx.expresion_aritmetica());
-    } else if (ctx.expresion_booleana() != null) {
-      valueTemp = visit(ctx.expresion_booleana());
-    } else if (ctx.CARACTER() != null) {
-      valueTemp = ctx.CARACTER().getText();
+    ParseTree actual = ctx;
+    idParser.Declaracion_variableContext declCtx = null;
+
+    while (actual != null) {
+      if (actual instanceof idParser.Declaracion_variableContext) {
+        declCtx = (idParser.Declaracion_variableContext) actual;
+        break;
+      }
+      actual = actual.getParent();
     }
 
-    System.out.println(varName + " = " + valueTemp);
-    return varName;
+    String tipo = (declCtx != null) ? declCtx.tipo_variable().getText() : "unknown";
+
+    System.out.println("DECLARE " + nombreVar + " " + tipo);
+    if (ctx.NUMERO() != null) {
+      System.out.println(nombreVar + " = " + ctx.NUMERO().getText());
+    } else if (ctx.IDENTIFICADOR().size() > 1) {
+      System.out.println(nombreVar + " = " + ctx.IDENTIFICADOR(1).getText());
+    } else if (ctx.CARACTER() != null) {
+      System.out.println(nombreVar + " = " + ctx.CARACTER().getText());
+    } else if (ctx.expresion_aritmetica() != null) {
+      String resultado = visitExpresion_aritmetica(ctx.expresion_aritmetica());
+      System.out.println(nombreVar + " = " + resultado);
+    } else if (ctx.expresion_booleana() != null) {
+      String resultado = visitExpresion_booleana(ctx.expresion_booleana());
+      System.out.println(nombreVar + " = " + resultado);
+    }
+
+    return null;
   }
+
 }
