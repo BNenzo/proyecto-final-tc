@@ -105,9 +105,11 @@ declarador_simple: IDENTIFICADOR;
 
 asignacion_variable:
 	asignacion_variable_identificador EQUAL (
-		(expresion_aritmetica | expresion_booleana)+
-		| llamada_funcion_expresion
+		NUMERO
 		| CARACTER
+		| expresion_aritmetica
+		| expresion_booleana
+		| llamada_funcion_expresion
 	) PUNTO_COMA;
 
 asignacion_variable_identificador: IDENTIFICADOR;
