@@ -4,7 +4,12 @@ int suma () {
 
 int main () { 
   int y;
-  int x = 2 , p = 3 + 2, z;
+  int a = 2 , v = 3 + 2, c, d;
   int cha;
-  cha = suma();
+  
+
+  if (a < b && c != d && (a > b)) {
+    int c2 = 32;
+    cha = suma();
+   }
 }
