@@ -9,6 +9,12 @@ public class MiVisitor extends idBaseVisitor<String> {
     return "t" + (tempCount++);
   }
 
+  private int labelCount = 0;
+
+  private String newLabel() {
+    return "L" + (labelCount++);
+  }
+
   @Override
   public String visitOperacion_aritmetica(idParser.Operacion_aritmeticaContext ctx) {
     return visit(ctx.expresion_aritmetica());
@@ -144,4 +150,86 @@ public class MiVisitor extends idBaseVisitor<String> {
     return "CALL " + functionName + arguments;
   }
 
+  @Override
+  public String visitExpresion_booleana(idParser.Expresion_booleanaContext ctx) {
+    // Caso: termino_comparacion operador_comparacion termino_comparacion
+    if (ctx.termino_comparacion().size() == 2) {
+      String left = visit(ctx.termino_comparacion(0));
+      String right = visit(ctx.termino_comparacion(1));
+      String op = ctx.operador_comparacion().getText();
+
+      String temp = newTemp();
+      System.out.println(temp + " = " + left + " " + op + " " + right);
+      return temp;
+    }
+
+    // Caso: ( expresion_booleana )
+    if (ctx.PARENTESIS_APERTURA() != null) {
+      return visit(ctx.expresion_booleana(0));
+    }
+
+    // Caso: expresion_booleana operador_logico expresion_booleana
+    if (ctx.expresion_booleana().size() == 2) {
+      String left = visit(ctx.expresion_booleana(0));
+      String right = visit(ctx.expresion_booleana(1));
+      String op = ctx.operador_logico().getText();
+
+      String temp = newTemp();
+      System.out.println(temp + " = " + left + " " + op + " " + right);
+      return temp;
+    }
+
+    return null;
+  }
+
+  @Override
+  public String visitTermino_comparacion(idParser.Termino_comparacionContext ctx) {
+    if (ctx.NUMERO() != null) {
+      return ctx.NUMERO().getText();
+    } else if (ctx.CADENA() != null) {
+      return ctx.CADENA().getText();
+    } else {
+      return ctx.getText(); // IDENTIFICADOR
+    }
+  }
+
+  @Override
+  public String visitIf(idParser.IfContext ctx) {
+    String cond = visit(ctx.expresion_booleana());
+    String lfalse = newLabel();
+    String lend = newLabel();
+
+    if (ctx.ELSE() == null) {
+      System.out.println("ifFalse " + cond + " goto " + lfalse);
+
+      if (!ctx.bloque().isEmpty()) {
+        visit(ctx.bloque(0));
+      } else if (ctx.instruccion() != null) {
+        visit(ctx.instruccion());
+      }
+
+      System.out.println(lfalse + ":");
+    } else {
+      System.out.println("ifFalse " + cond + " goto " + lfalse);
+
+      if (!ctx.bloque().isEmpty()) {
+        visit(ctx.bloque(0));
+      } else if (ctx.instruccion() != null) {
+        visit(ctx.instruccion());
+      }
+
+      System.out.println("goto " + lend);
+      System.out.println(lfalse + ":");
+
+      if (ctx.bloque().size() > 1) {
+        visit(ctx.bloque(1));
+      } else if (ctx.instruccion() != null) {
+        visit(ctx.instruccion());
+      }
+
+      System.out.println(lend + ":");
+    }
+
+    return null;
+  }
 }
