@@ -232,4 +232,23 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     return null;
   }
+
+  @Override
+  public String visitWhile(idParser.WhileContext ctx) {
+    String lstart = newLabel();
+    String lend = newLabel();
+
+    System.out.println(lstart + ":");
+
+    String cond = visit(ctx.expresion_booleana());
+    System.out.println("ifFalse " + cond + " goto " + lend);
+
+    visit(ctx.bloque());
+
+    System.out.println("goto " + lstart);
+
+    System.out.println(lend + ":");
+
+    return null;
+  }
 }
