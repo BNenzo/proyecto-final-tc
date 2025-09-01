@@ -1,8 +1,24 @@
 package app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class MiVisitor extends idBaseVisitor<String> {
+
+  private List<String> instructions = new ArrayList<>();
+
+  public List<String> getInstructions() {
+    return instructions;
+  }
+
+  public void printInstructions() {
+    for (String instruction : instructions) {
+      System.out.println(instruction);
+    }
+  }
+
   private int tempCount = 0;
 
   private String newTemp() {
@@ -28,7 +44,7 @@ public class MiVisitor extends idBaseVisitor<String> {
       String right = visit(ctx.termino_aritmetico(i));
       String temp = newTemp();
       String op = ctx.getChild(2 * i - 1).getText();
-      System.out.println(temp + " = " + left + " " + op + " " + right);
+      instructions.add(temp + " = " + left + " " + op + " " + right);
       left = temp;
     }
     return left;
@@ -42,7 +58,7 @@ public class MiVisitor extends idBaseVisitor<String> {
       String right = visit(ctx.factor(i));
       String temp = newTemp();
       String op = ctx.getChild(2 * i - 1).getText();
-      System.out.println(temp + " = " + left + " " + op + " " + right);
+      instructions.add(temp + " = " + left + " " + op + " " + right);
       left = temp;
     }
     return left;
@@ -76,7 +92,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     String tipo = (declCtx != null) ? declCtx.tipo_variable().getText() : "unknown";
 
-    System.out.println("DECLARE " + nombreVar + " " + tipo);
+    instructions.add("DECLARE " + nombreVar + " " + tipo);
     return null;
   }
 
@@ -97,19 +113,19 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     String tipo = (declCtx != null) ? declCtx.tipo_variable().getText() : "unknown";
 
-    System.out.println("DECLARE " + nombreVar + " " + tipo);
+    instructions.add("DECLARE " + nombreVar + " " + tipo);
     if (ctx.NUMERO() != null) {
-      System.out.println(nombreVar + " = " + ctx.NUMERO().getText());
+      instructions.add(nombreVar + " = " + ctx.NUMERO().getText());
     } else if (ctx.IDENTIFICADOR().size() > 1) {
-      System.out.println(nombreVar + " = " + ctx.IDENTIFICADOR(1).getText());
+      instructions.add(nombreVar + " = " + ctx.IDENTIFICADOR(1).getText());
     } else if (ctx.CARACTER() != null) {
-      System.out.println(nombreVar + " = " + ctx.CARACTER().getText());
+      instructions.add(nombreVar + " = " + ctx.CARACTER().getText());
     } else if (ctx.expresion_aritmetica() != null) {
       String resultado = visitExpresion_aritmetica(ctx.expresion_aritmetica());
-      System.out.println(nombreVar + " = " + resultado);
+      instructions.add(nombreVar + " = " + resultado);
     } else if (ctx.expresion_booleana() != null) {
       String resultado = visitExpresion_booleana(ctx.expresion_booleana());
-      System.out.println(nombreVar + " = " + resultado);
+      instructions.add(nombreVar + " = " + resultado);
     }
 
     return null;
@@ -119,20 +135,20 @@ public class MiVisitor extends idBaseVisitor<String> {
   public String visitAsignacion_variable(idParser.Asignacion_variableContext ctx) {
     String variable = ctx.asignacion_variable_identificador().getText();
     if (ctx.NUMERO() != null) {
-      System.out.println(variable + " = " + ctx.NUMERO().getText());
+      instructions.add(variable + " = " + ctx.NUMERO().getText());
     } else if (ctx.CARACTER() != null) {
-      System.out.println(variable + " = " + ctx.CARACTER().getText());
+      instructions.add(variable + " = " + ctx.CARACTER().getText());
     } else if (ctx.expresion_aritmetica() != null) {
       String resultado = visitExpresion_aritmetica(ctx.expresion_aritmetica());
-      System.out.println(variable + " = " + resultado);
+      instructions.add(variable + " = " + resultado);
     } else if (ctx.expresion_booleana() != null) {
       String resultado = visitExpresion_booleana(ctx.expresion_booleana());
-      System.out.println(variable + " = " + resultado);
+      instructions.add(variable + " = " + resultado);
     } else if (ctx.llamada_funcion_expresion() != null) {
       String resultado = visit(ctx.llamada_funcion_expresion());
       String temp = newTemp();
-      System.out.println(temp + " = " + resultado);
-      System.out.println(variable + " = " + temp);
+      instructions.add(temp + " = " + resultado);
+      instructions.add(variable + " = " + temp);
     }
 
     return null;
@@ -146,7 +162,7 @@ public class MiVisitor extends idBaseVisitor<String> {
       arguments = ", " + ctx.llamada_funcion_parametros().getText();
     }
 
-    System.out.println("CALL " + functionName + arguments);
+    instructions.add("CALL " + functionName + arguments);
     return "CALL " + functionName + arguments;
   }
 
@@ -159,7 +175,7 @@ public class MiVisitor extends idBaseVisitor<String> {
       String op = ctx.operador_comparacion().getText();
 
       String temp = newTemp();
-      System.out.println(temp + " = " + left + " " + op + " " + right);
+      instructions.add(temp + " = " + left + " " + op + " " + right);
       return temp;
     }
 
@@ -175,7 +191,7 @@ public class MiVisitor extends idBaseVisitor<String> {
       String op = ctx.operador_logico().getText();
 
       String temp = newTemp();
-      System.out.println(temp + " = " + left + " " + op + " " + right);
+      instructions.add(temp + " = " + left + " " + op + " " + right);
       return temp;
     }
 
@@ -200,7 +216,7 @@ public class MiVisitor extends idBaseVisitor<String> {
     String lend = newLabel();
 
     if (ctx.ELSE() == null) {
-      System.out.println("ifFalse " + cond + " goto " + lfalse);
+      instructions.add("ifFalse " + cond + " goto " + lfalse);
 
       if (!ctx.bloque().isEmpty()) {
         visit(ctx.bloque(0));
@@ -208,9 +224,9 @@ public class MiVisitor extends idBaseVisitor<String> {
         visit(ctx.instruccion());
       }
 
-      System.out.println(lfalse + ":");
+      instructions.add(lfalse + ":");
     } else {
-      System.out.println("ifFalse " + cond + " goto " + lfalse);
+      instructions.add("ifFalse " + cond + " goto " + lfalse);
 
       if (!ctx.bloque().isEmpty()) {
         visit(ctx.bloque(0));
@@ -218,8 +234,8 @@ public class MiVisitor extends idBaseVisitor<String> {
         visit(ctx.instruccion());
       }
 
-      System.out.println("goto " + lend);
-      System.out.println(lfalse + ":");
+      instructions.add("goto " + lend);
+      instructions.add(lfalse + ":");
 
       if (ctx.bloque().size() > 1) {
         visit(ctx.bloque(1));
@@ -227,7 +243,7 @@ public class MiVisitor extends idBaseVisitor<String> {
         visit(ctx.instruccion());
       }
 
-      System.out.println(lend + ":");
+      instructions.add(lend + ":");
     }
 
     return null;
@@ -238,16 +254,16 @@ public class MiVisitor extends idBaseVisitor<String> {
     String lstart = newLabel();
     String lend = newLabel();
 
-    System.out.println(lstart + ":");
+    instructions.add(lstart + ":");
 
     String cond = visit(ctx.expresion_booleana());
-    System.out.println("ifFalse " + cond + " goto " + lend);
+    instructions.add("ifFalse " + cond + " goto " + lend);
 
     visit(ctx.bloque());
 
-    System.out.println("goto " + lstart);
+    instructions.add("goto " + lstart);
 
-    System.out.println(lend + ":");
+    instructions.add(lend + ":");
 
     return null;
   }
@@ -263,11 +279,11 @@ public class MiVisitor extends idBaseVisitor<String> {
     String lend = newLabel();
 
     // 2. Etiqueta de inicio
-    System.out.println(lstart + ":");
+    instructions.add(lstart + ":");
 
     // 3. Condición
     String cond = visit(ctx.expresion_booleana());
-    System.out.println("ifFalse " + cond + " goto " + lend);
+    instructions.add("ifFalse " + cond + " goto " + lend);
 
     // 4. Cuerpo del for
     visit(ctx.bloque());
@@ -278,10 +294,10 @@ public class MiVisitor extends idBaseVisitor<String> {
     }
 
     // 6. Volver al inicio
-    System.out.println("goto " + lstart);
+    instructions.add("goto " + lstart);
 
     // 7. Etiqueta de salida
-    System.out.println(lend + ":");
+    instructions.add(lend + ":");
 
     return null;
   }
@@ -291,9 +307,9 @@ public class MiVisitor extends idBaseVisitor<String> {
     String var = ctx.IDENTIFICADOR().getText();
 
     if (ctx.INCREMENTADOR() != null) {
-      System.out.println(var + " = " + var + " + 1");
+      instructions.add(var + " = " + var + " + 1");
     } else if (ctx.DECREMENTADOR() != null) {
-      System.out.println(var + " = " + var + " - 1");
+      instructions.add(var + " = " + var + " - 1");
     }
 
     if (ctx.for_autoincremental() != null) {
@@ -311,19 +327,19 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     for (idParser.Declarador_inicializadoContext decl : ctx.declarador_inicializado()) {
       String nombreVar = decl.IDENTIFICADOR(0).getText();
-      System.out.println("DECLARE " + nombreVar + " " + tipo);
+      instructions.add("DECLARE " + nombreVar + " " + tipo);
       if (decl.NUMERO() != null) {
-        System.out.println(nombreVar + " = " + decl.NUMERO().getText());
+        instructions.add(nombreVar + " = " + decl.NUMERO().getText());
       } else if (decl.IDENTIFICADOR().size() > 1) {
-        System.out.println(nombreVar + " = " + decl.IDENTIFICADOR(1).getText());
+        instructions.add(nombreVar + " = " + decl.IDENTIFICADOR(1).getText());
       } else if (decl.CARACTER() != null) {
-        System.out.println(nombreVar + " = " + decl.CARACTER().getText());
+        instructions.add(nombreVar + " = " + decl.CARACTER().getText());
       } else if (decl.expresion_aritmetica() != null) {
         String resultado = visitExpresion_aritmetica(decl.expresion_aritmetica());
-        System.out.println(nombreVar + " = " + resultado);
+        instructions.add(nombreVar + " = " + resultado);
       } else if (decl.expresion_booleana() != null) {
         String resultado = visitExpresion_booleana(decl.expresion_booleana());
-        System.out.println(nombreVar + " = " + resultado);
+        instructions.add(nombreVar + " = " + resultado);
       }
     }
 
@@ -332,21 +348,25 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
+    StringBuilder sb = new StringBuilder();
+
     String tipo = ctx.tipo_funciones().getText();
     String nombre = ctx.declaracion_funcion_identificador().getText();
 
-    System.out.print("FUNC DECLARE " + nombre + " : " + tipo);
+    sb.append("FUNC DECLARE ").append(nombre).append(" : ").append(tipo);
 
-    // Procesar parámetros si existen
     if (ctx.declaracion_funciones_parametros() != null) {
       String params = visit(ctx.declaracion_funciones_parametros());
-      System.out.print(" (" + params + ")");
+      sb.append(" (").append(params).append(")");
     } else {
-      System.out.print(" ()");
+      sb.append(" ()");
     }
 
-    System.out.println(";");
-    return null;
+    sb.append(";");
+
+    instructions.add(sb.toString());
+
+    return sb.toString();
   }
 
   @Override
@@ -393,11 +413,11 @@ public class MiVisitor extends idBaseVisitor<String> {
       params = sb.toString();
     }
 
-    System.out.println("DEF_FUNC " + nombre + "(" + params + ") : " + tipo);
+    instructions.add("DEF_FUNC " + nombre + "(" + params + ") : " + tipo);
 
     visit(ctx.bloque());
 
-    System.out.println("END_FUNC");
+    instructions.add("END_FUNC");
     return null;
   }
 
@@ -430,10 +450,10 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     if (valorRetorno != null && (valorRetorno.startsWith("t") || valorRetorno.contains("CALL"))) {
       String temp = newTemp();
-      System.out.println(temp + " = " + valorRetorno);
-      System.out.println("RETURN " + temp);
+      instructions.add(temp + " = " + valorRetorno);
+      instructions.add("RETURN " + temp);
     } else {
-      System.out.println("RETURN " + valorRetorno);
+      instructions.add("RETURN " + valorRetorno);
     }
 
     return null;
