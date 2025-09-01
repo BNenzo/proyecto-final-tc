@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.CharStreams;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -79,8 +80,16 @@ public class App {
         System.out.println("=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===");
         System.out.println("📝 Código de tres direcciones generado:");
         MiVisitor visitor = new MiVisitor();
-        String resultado = visitor.visit(tree);
-
+        visitor.visit(tree);
+        List<String> tac = visitor.getInstructions();
+        visitor.printInstructions();
+        System.out.println("=== 6. OPTIMIZACIÓN DE CÓDIGO ===");
+        System.out.println("✅ Codigo optimizado generado:");
+        Optimizer optimizer = new Optimizer(tac);
+        List<String> optimized = optimizer.optimize();
+        for (String instr : optimized) {
+            System.out.println(instr);
+        }
         System.out.println("fin del programa");
 
     }
