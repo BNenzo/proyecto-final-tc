@@ -251,4 +251,82 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     return null;
   }
+
+  @Override
+  public String visitFor(idParser.ForContext ctx) {
+    // 1. Inicialización
+    if (ctx.for_declaracion() != null) {
+      visit(ctx.for_declaracion());
+    }
+
+    String lstart = newLabel();
+    String lend = newLabel();
+
+    // 2. Etiqueta de inicio
+    System.out.println(lstart + ":");
+
+    // 3. Condición
+    String cond = visit(ctx.expresion_booleana());
+    System.out.println("ifFalse " + cond + " goto " + lend);
+
+    // 4. Cuerpo del for
+    visit(ctx.bloque());
+
+    // 5. Autoincremental
+    if (ctx.for_autoincremental() != null) {
+      visit(ctx.for_autoincremental());
+    }
+
+    // 6. Volver al inicio
+    System.out.println("goto " + lstart);
+
+    // 7. Etiqueta de salida
+    System.out.println(lend + ":");
+
+    return null;
+  }
+
+  @Override
+  public String visitFor_autoincremental(idParser.For_autoincrementalContext ctx) {
+    String var = ctx.IDENTIFICADOR().getText();
+
+    if (ctx.INCREMENTADOR() != null) {
+      System.out.println(var + " = " + var + " + 1");
+    } else if (ctx.DECREMENTADOR() != null) {
+      System.out.println(var + " = " + var + " - 1");
+    }
+
+    if (ctx.for_autoincremental() != null) {
+      for (idParser.For_autoincrementalContext subInc : ctx.for_autoincremental()) {
+        visit(subInc);
+      }
+    }
+
+    return null;
+  }
+
+  @Override
+  public String visitFor_declaracion(idParser.For_declaracionContext ctx) {
+    String tipo = ctx.tipo_variable().getText();
+
+    for (idParser.Declarador_inicializadoContext decl : ctx.declarador_inicializado()) {
+      String nombreVar = decl.IDENTIFICADOR(0).getText();
+      System.out.println("DECLARE " + nombreVar + " " + tipo);
+      if (decl.NUMERO() != null) {
+        System.out.println(nombreVar + " = " + decl.NUMERO().getText());
+      } else if (decl.IDENTIFICADOR().size() > 1) {
+        System.out.println(nombreVar + " = " + decl.IDENTIFICADOR(1).getText());
+      } else if (decl.CARACTER() != null) {
+        System.out.println(nombreVar + " = " + decl.CARACTER().getText());
+      } else if (decl.expresion_aritmetica() != null) {
+        String resultado = visitExpresion_aritmetica(decl.expresion_aritmetica());
+        System.out.println(nombreVar + " = " + resultado);
+      } else if (decl.expresion_booleana() != null) {
+        String resultado = visitExpresion_booleana(decl.expresion_booleana());
+        System.out.println(nombreVar + " = " + resultado);
+      }
+    }
+
+    return null;
+  }
 }
