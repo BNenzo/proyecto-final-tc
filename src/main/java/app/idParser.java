@@ -1867,18 +1867,15 @@ public class idParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Declaracion_funciones_parametrosContext extends ParserRuleContext {
-		public Declaracion_funcion_parametroContext declaracion_funcion_parametro() {
-			return getRuleContext(Declaracion_funcion_parametroContext.class,0);
+		public List<Declaracion_funcion_parametroContext> declaracion_funcion_parametro() {
+			return getRuleContexts(Declaracion_funcion_parametroContext.class);
+		}
+		public Declaracion_funcion_parametroContext declaracion_funcion_parametro(int i) {
+			return getRuleContext(Declaracion_funcion_parametroContext.class,i);
 		}
 		public List<TerminalNode> COMA() { return getTokens(idParser.COMA); }
 		public TerminalNode COMA(int i) {
 			return getToken(idParser.COMA, i);
-		}
-		public List<Declaracion_funciones_parametrosContext> declaracion_funciones_parametros() {
-			return getRuleContexts(Declaracion_funciones_parametrosContext.class);
-		}
-		public Declaracion_funciones_parametrosContext declaracion_funciones_parametros(int i) {
-			return getRuleContext(Declaracion_funciones_parametrosContext.class,i);
 		}
 		public Declaracion_funciones_parametrosContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1902,29 +1899,27 @@ public class idParser extends Parser {
 	public final Declaracion_funciones_parametrosContext declaracion_funciones_parametros() throws RecognitionException {
 		Declaracion_funciones_parametrosContext _localctx = new Declaracion_funciones_parametrosContext(_ctx, getState());
 		enterRule(_localctx, 50, RULE_declaracion_funciones_parametros);
+		int _la;
 		try {
-			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(249);
 			declaracion_funcion_parametro();
 			setState(254);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					{
-					{
-					setState(250);
-					match(COMA);
-					setState(251);
-					declaracion_funciones_parametros();
-					}
-					} 
+			_la = _input.LA(1);
+			while (_la==COMA) {
+				{
+				{
+				setState(250);
+				match(COMA);
+				setState(251);
+				declaracion_funcion_parametro();
+				}
 				}
 				setState(256);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
+				_la = _input.LA(1);
 			}
 			}
 		}
@@ -3492,7 +3487,7 @@ public class idParser extends Parser {
 		"\t\u0000\u0000\u00f5\u00f6\u0005\n\u0000\u0000\u00f6/\u0001\u0000\u0000"+
 		"\u0000\u00f7\u00f8\u0005\'\u0000\u0000\u00f81\u0001\u0000\u0000\u0000"+
 		"\u00f9\u00fe\u00034\u001a\u0000\u00fa\u00fb\u0005\u0014\u0000\u0000\u00fb"+
-		"\u00fd\u00032\u0019\u0000\u00fc\u00fa\u0001\u0000\u0000\u0000\u00fd\u0100"+
+		"\u00fd\u00034\u001a\u0000\u00fc\u00fa\u0001\u0000\u0000\u0000\u00fd\u0100"+
 		"\u0001\u0000\u0000\u0000\u00fe\u00fc\u0001\u0000\u0000\u0000\u00fe\u00ff"+
 		"\u0001\u0000\u0000\u0000\u00ff3\u0001\u0000\u0000\u0000\u0100\u00fe\u0001"+
 		"\u0000\u0000\u0000\u0101\u0106\u0003\u0006\u0003\u0000\u0102\u0104\u0005"+

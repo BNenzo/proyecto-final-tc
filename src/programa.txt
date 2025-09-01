@@ -1,6 +1,4 @@
-int suma () { 
-  
-}
+int suma (int, int); 
 
 int main () { 
   int y;

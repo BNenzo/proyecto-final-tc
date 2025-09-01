@@ -329,4 +329,50 @@ public class MiVisitor extends idBaseVisitor<String> {
 
     return null;
   }
+
+  @Override
+  public String visitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
+    String tipo = ctx.tipo_funciones().getText();
+    String nombre = ctx.declaracion_funcion_identificador().getText();
+
+    System.out.print("FUNC DECLARE " + nombre + " : " + tipo);
+
+    // Procesar parámetros si existen
+    if (ctx.declaracion_funciones_parametros() != null) {
+      String params = visit(ctx.declaracion_funciones_parametros());
+      System.out.print(" (" + params + ")");
+    } else {
+      System.out.print(" ()");
+    }
+
+    System.out.println(";");
+    return null;
+  }
+
+  @Override
+  public String visitDeclaracion_funciones_parametros(idParser.Declaracion_funciones_parametrosContext ctx) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < ctx.declaracion_funcion_parametro().size(); i++) {
+      sb.append(visit(ctx.declaracion_funcion_parametro(i)));
+      if (i < ctx.declaracion_funcion_parametro().size() - 1) {
+        sb.append(", ");
+      }
+    }
+    return sb.toString();
+  }
+
+  @Override
+  public String visitDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) {
+    String tipo = ctx.tipo_variable().getText();
+    String nombre = "";
+    if (ctx.IDENTIFICADOR() != null) {
+      nombre = ctx.IDENTIFICADOR().getText();
+    }
+    String inicializacion = "";
+    if (ctx.declaracion_funcion_parametro_inicializado() != null) {
+      inicializacion = " = " + ctx.declaracion_funcion_parametro_inicializado().getText();
+    }
+    return tipo + " " + nombre + inicializacion;
+  }
+
 }
