@@ -9,3 +9,7 @@ int main () {
     x = x + i;
   }
 }
+
+int suma (int x = 2, int y) { 
+  int c =3;
+}
