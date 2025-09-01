@@ -414,4 +414,29 @@ public class MiVisitor extends idBaseVisitor<String> {
     return tipo + " " + nombre + inicializacion;
   }
 
+  @Override
+  public String visitReturn(idParser.ReturnContext ctx) {
+    String valorRetorno = null;
+
+    if (ctx.return_variables() != null) {
+      if (ctx.return_variables().NUMERO() != null) {
+        valorRetorno = ctx.return_variables().NUMERO().getText();
+      } else if (ctx.return_variables().CARACTER() != null) {
+        valorRetorno = ctx.return_variables().CARACTER().getText();
+      } else if (ctx.return_variables().return_variable_identificador() != null) {
+        valorRetorno = ctx.return_variables().return_variable_identificador().getText();
+      }
+    }
+
+    if (valorRetorno != null && (valorRetorno.startsWith("t") || valorRetorno.contains("CALL"))) {
+      String temp = newTemp();
+      System.out.println(temp + " = " + valorRetorno);
+      System.out.println("RETURN " + temp);
+    } else {
+      System.out.println("RETURN " + valorRetorno);
+    }
+
+    return null;
+  }
+
 }

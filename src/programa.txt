@@ -4,7 +4,8 @@ int main () {
   int y;
   int a = 2 , v = 3 + 2, c, b, d;
   int cha;
-  
+  int x;
+  x = suma(a,v);
   for (int i = 0; i < 10; i++, j--) {
     x = x + i;
   }
@@ -12,4 +13,5 @@ int main () {
 
 int suma (int x = 2, int y) { 
   int c =3;
+  return c;
 }
