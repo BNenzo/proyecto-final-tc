@@ -4,11 +4,11 @@ int suma () {
 
 int main () { 
   int y;
-  int a = 2 , v = 3 + 2, c, d;
+  int a = 2 , v = 3 + 2, c, b, d;
   int cha;
   
 
-  if (a < b && c != d && (a > b)) {
+  while (a < b && c != d && (a > b)) {
     int c2 = 32;
     cha = suma();
    }
