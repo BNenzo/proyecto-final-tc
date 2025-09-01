@@ -164,7 +164,7 @@ declaracion_funcion_identificador: IDENTIFICADOR;
 
 declaracion_funciones_parametros:
 	declaracion_funcion_parametro (
-		COMA declaracion_funciones_parametros
+		COMA declaracion_funcion_parametro
 	)*;
 
 declaracion_funcion_parametro:
