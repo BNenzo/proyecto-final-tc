@@ -18,6 +18,7 @@ public class Optimizer {
     boolean changed;
     do {
       List<String> before = new ArrayList<>(instructions);
+      eliminateCommonSubexpressions();
       propagateConstants();
       foldConstants();
       changed = !before.equals(instructions);
@@ -103,5 +104,31 @@ public class Optimizer {
       return String.valueOf(Integer.parseInt(nums[0].trim()) / divisor);
     }
     throw new RuntimeException("Expresión no soportada: " + expr);
+  }
+
+  private void eliminateCommonSubexpressions() {
+    List<String> newInstructions = new ArrayList<>();
+    Map<String, String> exprMap = new HashMap<>();
+
+    for (String instr : instructions) {
+      String trimmed = instr.trim();
+      if (trimmed.matches("t\\d+\\s*=\\s*.+\\s*[+\\-*/]\\s*.+")) {
+        String[] parts = trimmed.split("=", 2);
+        String left = parts[0].trim();
+        String right = parts[1].trim();
+
+        if (exprMap.containsKey(right)) {
+          String existingTemp = exprMap.get(right);
+          newInstructions.add(left + " = " + existingTemp);
+        } else {
+          exprMap.put(right, left);
+          newInstructions.add(instr);
+        }
+      } else {
+        newInstructions.add(instr);
+      }
+    }
+
+    instructions = newInstructions;
   }
 }
