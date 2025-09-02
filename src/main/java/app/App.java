@@ -70,9 +70,10 @@ public class App {
         // frame.setVisible(false);
         System.out.println("=== 4. ANÁLISIS SEMÁNTICO ===");
         System.out.println("📋 Tabla de símbolos construida:");
-        System.out.printf("%-15s %-8s %-12s %-7s %-8s %-10s %-20s%n",
-                "NOMBRE", "TIPO", "CATEGORÍA", "LÍNEA", "COLUMNA", "ÁMBITO", "DETALLES");
-        System.out.println("--------------------------------------------------------------------------");
+        System.out.printf("%-15s %-8s %-12s %-7s %-8s %-10s %-10s %-10s%n",
+                "NOMBRE", "TIPO", "CATEGORÍA", "LÍNEA", "COLUMNA", "ÁMBITO", "USADA", "INICIALIZADA");
+        System.out
+                .println("-------------------------------------------------------------------------------------------");
 
         ParseTreeWalker walker = new ParseTreeWalker();
         MiListener escucha = new MiListener(parser);

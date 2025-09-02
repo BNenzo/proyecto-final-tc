@@ -13,7 +13,7 @@ public class Function {
   public Function() {
     parameters = new LinkedHashMap<>();
     contexts = new ArrayList<>();
-    functionId = new MiId(null, null, null, null, null);
+    functionId = new MiId(null, null, null, null);
   }
 
   public MiId getFunctionId() {
