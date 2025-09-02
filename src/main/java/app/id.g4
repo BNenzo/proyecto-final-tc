@@ -56,6 +56,7 @@ CONTINUE: 'continue';
 RETURN: 'return';
 
 IDENTIFICADOR: (LETRA | '_') (LETRA | DIGITO | '_')*;
+NUMERO_DOUBLE: DIGITO+ '.' DIGITO+;
 NUMERO: (DIGITO)+;
 
 OTRO: .;
@@ -95,6 +96,7 @@ declaracion_variable_declaradores:
 declarador_inicializado:
 	IDENTIFICADOR EQUAL CARACTER
 	| IDENTIFICADOR EQUAL IDENTIFICADOR
+	| IDENTIFICADOR EQUAL NUMERO_DOUBLE
 	| IDENTIFICADOR EQUAL NUMERO
 	| IDENTIFICADOR EQUAL expresion_booleana
 	| IDENTIFICADOR EQUAL expresion_aritmetica;

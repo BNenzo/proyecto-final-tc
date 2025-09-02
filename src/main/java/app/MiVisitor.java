@@ -118,6 +118,8 @@ public class MiVisitor extends idBaseVisitor<String> {
       instructions.add(nombreVar + " = " + ctx.NUMERO().getText());
     } else if (ctx.IDENTIFICADOR().size() > 1) {
       instructions.add(nombreVar + " = " + ctx.IDENTIFICADOR(1).getText());
+    } else if (ctx.NUMERO_DOUBLE() != null) {
+      instructions.add(nombreVar + " = " + ctx.NUMERO_DOUBLE().getText());
     } else if (ctx.CARACTER() != null) {
       instructions.add(nombreVar + " = " + ctx.CARACTER().getText());
     } else if (ctx.expresion_aritmetica() != null) {

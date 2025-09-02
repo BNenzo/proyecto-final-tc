@@ -3,6 +3,11 @@ package app;
 import java.util.List;
 
 public class Utils {
+  public static final String RESET = "\u001B[0m";
+  public static final String RED = "\u001B[31m";
+  public static final String GREEN = "\u001B[32m";
+  public static final String YELLOW = "\u001B[33m";
+
   public static Context getLastActiveContext(List<Context> contexts) {
     for (int i = contexts.size() - 1; i >= 0; i--) {
       Context ctx = contexts.get(i);
@@ -12,4 +17,17 @@ public class Utils {
     }
     return null;
   }
+
+  public static void printError(String text) {
+    final String RED = "\u001B[31m";
+    final String RESET = "\u001B[0m";
+    System.out.println(RED + "❌ " + text + RESET);
+  }
+
+  public static void printAlreadyDeclarationError(String idTokenStr, String scope, int line, int column) {
+    printError("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
+        + scope + "'" + " (línea " + line + ", columna "
+        + column + ")");
+  }
+
 }

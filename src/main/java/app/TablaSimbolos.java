@@ -68,29 +68,34 @@ public class TablaSimbolos {
   public void displayTableFormat() {
     for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
       MiId valor = entry.getValue();
-      System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
-          valor.getToken(), valor.getTipoDato(), "variable", 5, 4, "global", "[private]");
+      System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
+          valor.getToken(), valor.getTipoDato(), "variable", 5, 4, "global",
+          valor.getUsada(), valor.getInicializada());
     }
     for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
       MiId functionId = entry.getValue().getFunctionId();
-      System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
-          functionId.getToken(), functionId.getTipoDato(), "function", 5, 4, "global", "[private]");
+      System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
+          functionId.getToken(), functionId.getTipoDato(), "function", 5, 4, "global", functionId.getUsada(),
+          functionId.getInicializada());
       for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
         MiId parameterId = entry2.getValue();
-        System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
-            parameterId.getToken(), parameterId.getTipoDato(), "parameter", 5, 4, functionId.getToken(), "[private]");
+        System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
+            parameterId.getToken(), parameterId.getTipoDato(), "parameter", 5, 4, functionId.getToken(),
+            parameterId.getUsada(),
+            parameterId.getInicializada());
       }
       for (Context context : entry.getValue().getFunctionContexts()) {
         for (Map.Entry<String, MiId> entry3 : context.getVariables().entrySet()) {
           MiId variableId = entry3.getValue();
-          System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-20s%n",
+          System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
               variableId.getToken(),
               variableId.getTipoDato(),
               "variable",
               5,
               4,
               entry.getValue().getFunctionId().getToken(),
-              "[private]");
+              variableId.getUsada(),
+              variableId.getInicializada());
         }
 
       }
@@ -131,7 +136,7 @@ public class TablaSimbolos {
     return id;
   }
 
-  public MiId checkIfGlobalVariableAlreadyDeclarated(String idToken) {
+  public MiId checkIfGlobalVariableIsAlreadyDeclarated(String idToken) {
     MiId id = globalVariables.get(idToken);
     return id;
   }

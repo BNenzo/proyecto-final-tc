@@ -15,6 +15,10 @@ public class MiListener extends idBaseListener {
   private int parameterCountAux = 0;
   private Function functionAux = null;
 
+  private String getCurrentScope() {
+    return (functionAux != null) ? functionAux.getFunctionId().getToken() : "global";
+  }
+
   MiListener(idParser parser) {
   }
 
@@ -28,84 +32,53 @@ public class MiListener extends idBaseListener {
     tableInstance.closeLastActiveContext(idAux);
   }
 
-  // @Override
+  /* ---------------------- DECLARACIONES ------------------------------- */
+  @Override
   public void enterDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
-    this.tipoDatoAux = TipoDato.fromString(ctx.getStart().getText());
+    // Obtener el tipo de dato de la variable
+    this.tipoDatoAux = TipoDato.fromString(ctx.tipo_variable().getText());
   }
 
-  // @Override
+  @Override
   public void exitDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
     this.tipoDatoAux = TipoDato.UNDEFINED;
   }
 
-  /* ---------------------- DECLARACIONES ------------------------------- */
   @Override
   public void enterDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) {
     String idTokenStr = ctx.getStart().getText();
-    MiId newId = new MiId(idTokenStr, true, false, tipoDatoAux, false);
-
-    if (idAux != "") {
-      MiId id = tableInstance.findIdInLastActiveContext(idTokenStr, idAux);
-
-      if (id != null) {
-        error = true;
-        System.out.println("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
-            + functionAux.getFunctionId().getToken() + "'" + " (línea" + ctx.getStart().getLine() + ", columna "
-            + ctx.getStart().getCharPositionInLine() + ")");
-        return;
-      }
-
-      tableInstance.addId(newId, idAux);
-      return;
-    }
-
-    if (idAux == "") {
-      MiId id = tableInstance.checkIfGlobalVariableAlreadyDeclarated(idTokenStr);
-      if (id != null) {
-        error = true;
-        System.err.println("Error: Duplicated declaration of Token: "
-            + idTokenStr + ", In line: " + ctx.getStart().getLine());
-        return;
-      }
-      tableInstance.addId(newId, idAux);
-      return;
-    }
-
+    validateVariableDeclarations(idTokenStr, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine(), true);
   }
 
   @Override
   public void enterDeclarador_simple(idParser.Declarador_simpleContext ctx) {
     String idTokenStr = ctx.getStart().getText();
-    MiId newId = new MiId(idTokenStr, false, false, tipoDatoAux, false);
+    validateVariableDeclarations(idTokenStr, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine(), false);
+  }
 
-    if (idAux != "") {
-      MiId id = tableInstance.findIdInLastActiveContext(idTokenStr, idAux);
+  /*
+   * Variables cargadas de otras reglas
+   * 
+   * enterDeclaracion_variable -> tipoDatoAux (tipo de la variable/s)
+   * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
+   * es null significa que es el ambito global)
+   */
+  private void validateVariableDeclarations(String idTokenStr, int line, int column, Boolean inicializado) {
+    MiId newId = new MiId(idTokenStr, inicializado, false, tipoDatoAux);
 
-      if (id != null) {
-        error = true;
-        System.out.println("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
-            + functionAux.getFunctionId().getToken() + "'" + " (línea" + ctx.getStart().getLine() + ", columna "
-            + ctx.getStart().getCharPositionInLine() + ")");
-        return;
-      }
+    String scope = getCurrentScope();
 
-      tableInstance.addId(newId, idAux);
+    MiId id = (functionAux != null)
+        ? tableInstance.findIdInLastActiveContext(idTokenStr, idAux)
+        : tableInstance.checkIfGlobalVariableIsAlreadyDeclarated(idTokenStr);
+
+    if (id != null) {
+      error = true;
+      Utils.printAlreadyDeclarationError(idTokenStr, scope, line, column);
       return;
     }
 
-    if (idAux == "") {
-      MiId id = tableInstance.checkIfGlobalVariableAlreadyDeclarated(idTokenStr);
-      if (id != null) {
-        error = true;
-        System.out.println("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
-            + "global" + "'" + " (línea " + ctx.getStart().getLine() + ", columna "
-            + ctx.getStart().getCharPositionInLine() + ")");
-        return;
-      }
-      tableInstance.addId(newId, idAux);
-      return;
-    }
-
+    tableInstance.addId(newId, idAux);
   }
 
   /* ---------------------- OPERACIONES LOGICAS ------------------------------- */
@@ -116,7 +89,7 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(tokenStr, idAux);
 
     if (id == null) {
-      System.err.println("❌ Error: Variable '" + tokenStr + "' no declarada en el ambito "
+      Utils.printError("Error: Variable '" + tokenStr + "' no declarada en el ambito "
           + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
       error = true;
       return;
@@ -133,7 +106,7 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(tokenStr, idAux);
 
     if (id == null) {
-      System.err.println("❌ Error: Variable '" + tokenStr + "' no declarada en el ambito "
+      Utils.printError("Error: Variable '" + tokenStr + "' no declarada en el ambito "
           + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
       error = true;
       return;
@@ -168,7 +141,7 @@ public class MiListener extends idBaseListener {
     tableInstance.AddFunctionToTable(functionName);
 
     // Se genera un MiId con el nombre de la funcion para guardar informacion
-    MiId functionId = new MiId(idAux, true, false, tipoDatoAux, true);
+    MiId functionId = new MiId(idAux, true, false, tipoDatoAux);
     tableInstance.getTablaFunciones().get(functionName).setFunctionId(functionId);
   }
 
@@ -189,7 +162,7 @@ public class MiListener extends idBaseListener {
      * parameterCountAux -> cantidad de parametros que van
      */
     String parameterName = "param_" + parameterCountAux;
-    MiId parameterId = new MiId(parameterName, true, false, TipoDato.fromString(parameterType), false);
+    MiId parameterId = new MiId(parameterName, true, false, TipoDato.fromString(parameterType));
     tablaFunciones.get(idAux).addIdInParameters(parameterId);
     parameterCountAux++;
   }
@@ -227,9 +200,10 @@ public class MiListener extends idBaseListener {
      */
     if (functionAux == null) {
       tableInstance.AddFunctionToTable(functionName);
-      MiId functionId = new MiId(functionName, false, false, tipoDatoAux, true);
-      tablaFunciones.get(functionName).setFunctionId(functionId);
-      functionAux = tablaFunciones.get(functionName);
+      MiId functionId = new MiId(functionName, false, false, tipoDatoAux);
+      Function function = tablaFunciones.get(functionName);
+      function.setFunctionId(functionId);
+      functionAux = function;
     }
 
     // FALTA: que pasa si la funcion existe pero su tipo es distinto al tipo que se
@@ -255,7 +229,7 @@ public class MiListener extends idBaseListener {
     // 100% la funcion esta cargada en la tabla
     Function function = tablaFunciones.get(idAux);
     String parameterName = ctx.getStart().getText();
-    MiId id = new MiId(parameterName, true, false, this.tipoDatoAux, false);
+    MiId id = new MiId(parameterName, true, false, this.tipoDatoAux);
     String oldParamKey = "param_" + parameterCountAux;
 
     /*
