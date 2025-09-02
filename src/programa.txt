@@ -1,8 +1,6 @@
 int num_global = 34;
 
-int suma (){
-
-}
+int suma (int c, int b);
 
 int main () { 
   int num1 = 3, num2 , num3;
@@ -16,6 +14,5 @@ int main () {
   int num22 = 36;
   int probando;
 
-  probando = suma();
 }
 

@@ -184,8 +184,7 @@ public class MiListener extends idBaseListener {
 
   public void exitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
     this.tipoDatoAux = TipoDato.UNDEFINED;
-    this.parameterCountAux = 0;
-    this.idAux = "";
+    this.functionAux = null;
   }
 
   @Override
@@ -196,34 +195,34 @@ public class MiListener extends idBaseListener {
      * Se genera un nuevo map en la tabla de funciones
      */
     String functionName = ctx.getStart().getText();
-    idAux = functionName;
     tableInstance.AddFunctionToTable(functionName);
 
     // Se genera un MiId con el nombre de la funcion para guardar informacion
-    MiId functionId = new MiId(idAux, true, false, tipoDatoAux);
-    tableInstance.getTablaFunciones().get(functionName).setFunctionId(functionId);
+    MiId functionId = new MiId(functionName, false, false, tipoDatoAux);
+
+    // La funcion ya fue insertada antes asi que ahora la va a encontrar
+    Function function = tableInstance.getTablaFunciones().get(functionName);
+    function.setFunctionId(functionId);
+
+    // Se guarda la function actualmente creada en el auxiliar para lo que sigue
+    functionAux = function;
   }
 
   /*
    * Variables usadas de otras reglas
    * 
-   * enterDeclaracion_funcion_identificador -> idAux (nombre de la funcion)
+   * enterDeclaracion_funcion_identificador -> functionAux (La funcion declarada)
    */
   @Override
   public void enterDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) {
-    Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
     String parameterType = ctx.getStart().getText();
-
     /*
      * Se generan nombres aleatorios ya que la definicion del nombre en la
      * declaracion de una funcion no es relevante
-     * 
-     * parameterCountAux -> cantidad de parametros que van
      */
-    String parameterName = "param_" + parameterCountAux;
+    String parameterName = "param_" + functionAux.getFunctionParameters().size();
     MiId parameterId = new MiId(parameterName, true, false, TipoDato.fromString(parameterType));
-    tablaFunciones.get(idAux).addIdInParameters(parameterId);
-    parameterCountAux++;
+    functionAux.addIdInParameters(parameterId);
   }
 
   // ---------------------- DEFINICION FUNCION ----------------------
