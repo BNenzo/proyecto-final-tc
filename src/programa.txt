@@ -1,11 +1,21 @@
 int num_global = 34;
+
+int suma (){
+
+}
+
 int main () { 
   int num1 = 3, num2 , num3;
-  double dbl1 = 2.14;
+  double dbl1;
   char ch1 = 'c';
   {
     int x = 32;
   }
+
+  dbl1 = suma();
+  int num22 = 36;
+  int probando;
+
+  probando = suma();
 }
 
-int x1 = 32;

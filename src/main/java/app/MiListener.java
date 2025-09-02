@@ -14,9 +14,29 @@ public class MiListener extends idBaseListener {
   private TipoDato tipoDatoAux;
   private int parameterCountAux = 0;
   private Function functionAux = null;
+  private Function functionCallAux = null;
 
   private String getCurrentScope() {
     return (functionAux != null) ? functionAux.getFunctionId().getToken() : "global";
+  }
+
+  /*
+   * Variables cargadas de otras reglas
+   * 
+   * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
+   * es null significa que es el ambito global)
+   */
+  private MiId validateVariableUsage(String idTokenStr, int line, int column) {
+    String scope = functionAux.getFunctionId().getToken();
+    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idTokenStr, scope);
+
+    if (id == null) {
+      Utils.printError("Error: Variable '" + idTokenStr + "' no declarada en el ámbito '"
+          + scope + "' (línea " + line + ", columna " + column + ")");
+      error = true;
+    }
+
+    return id;
   }
 
   MiListener(idParser parser) {
@@ -81,19 +101,52 @@ public class MiListener extends idBaseListener {
     tableInstance.addId(newId, idAux);
   }
 
+  /* ---------------------- ASIGNACIONES ------------------------------- */
+  /*
+   * Variables cargadas de otras reglas
+   * 
+   * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
+   * es null significa que es el ambito global)
+   */
+  @Override
+  public void enterAsignacion_variable(idParser.Asignacion_variableContext ctx) {
+    String idTokenStr = ctx.asignacion_variable_identificador().getText();
+
+    if (functionAux == null) {
+      Utils.printError(
+          "Error: No se pueden realizar asignaciones en el ambito global " + "' (línea " + ctx.getStart().getLine()
+              + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
+      error = true;
+      return;
+    }
+
+    MiId id = validateVariableUsage(idTokenStr, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+
+    if (id == null)
+      return;
+
+    id.setInicializada(true);
+  }
+
   /* ---------------------- OPERACIONES LOGICAS ------------------------------- */
 
   @Override
   public void enterIdentificador_logico(idParser.Identificador_logicoContext ctx) {
-    String tokenStr = ctx.getStart().getText();
-    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(tokenStr, idAux);
+    String idTokenStr = ctx.getStart().getText();
 
-    if (id == null) {
-      Utils.printError("Error: Variable '" + tokenStr + "' no declarada en el ambito "
-          + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
+    if (functionAux == null) {
+      Utils.printError(
+          "Error: No se pueden realizar operaciones logicas en el ambito global " + "' (línea "
+              + ctx.getStart().getLine()
+              + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
       error = true;
       return;
     }
+
+    MiId id = validateVariableUsage(idTokenStr, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+
+    if (id == null)
+      return;
 
     id.setUsada(true);
   }
@@ -102,15 +155,21 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx) {
-    String tokenStr = ctx.getStart().getText();
-    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(tokenStr, idAux);
-
-    if (id == null) {
-      Utils.printError("Error: Variable '" + tokenStr + "' no declarada en el ambito "
-          + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
+    String idTokenStr = ctx.getStart().getText();
+    System.out.println(idAux);
+    if (functionAux == null) {
+      Utils.printError(
+          "Error: No se pueden realizar operaciones aritmeticas en el ambito global " + "' (línea "
+              + ctx.getStart().getLine()
+              + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
       error = true;
       return;
     }
+
+    MiId id = validateVariableUsage(idTokenStr, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+
+    if (id == null)
+      return;
 
     id.setUsada(true);
   }
@@ -290,7 +349,7 @@ public class MiListener extends idBaseListener {
   // ---------------------- LLAMADA FUNCION ----------------------
   @Override
   public void exitLlamada_funcion(idParser.Llamada_funcionContext ctx) {
-    functionAux = null;
+    functionCallAux = null;
     parameterCountAux = 0;
   }
 
@@ -307,11 +366,11 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    functionAux = function;
+    functionCallAux = function;
   }
 
   /*
-   * enterLlamada_nombre_funcion -> functionAux (los contextos de la funcion
+   * enterLlamada_nombre_funcion -> functionCallAux (los contextos de la funcion
    * llamada)
    */
   @Override
@@ -333,7 +392,7 @@ public class MiListener extends idBaseListener {
     TipoDato parameterType = TipoDato.fromString(type);
 
     // Se obtienen los valores del primer contexto de la funcion
-    List<MiId> parametersList = new ArrayList<>(functionAux.getFunctionParameters().values());
+    List<MiId> parametersList = new ArrayList<>(functionCallAux.getFunctionParameters().values());
 
     // Se compara el tipo del valor nativo con el parametro relacionado
     if (parameterType != parametersList.get(parameterCountAux).getTipoDato()) {
@@ -364,7 +423,7 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    List<MiId> parametersList = new ArrayList<>(functionAux.getFunctionParameters().values());
+    List<MiId> parametersList = new ArrayList<>(functionCallAux.getFunctionParameters().values());
 
     if (id.getTipoDato() != parametersList.get(parameterCountAux).getTipoDato()) {
       System.out.println("❌ Error: el valor " + idValue
