@@ -227,11 +227,16 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
+
     Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
+
+    // Se obtiene la informacion basica de la funcion que esta siendo definida
     String functionDefinitionType = ctx.getStart().getText();
     TipoDato functionDefinitionTypeParsed = TipoDato.fromString(functionDefinitionType);
     String functionDefinitionName = ctx.definicion_funcion_nombre().getText();
 
+    // Se obtienen todos los parametros que estan siendo usados en la definicion de
+    // esta funcion
     List<MiId> parametersList = new ArrayList<>();
     idParser.Definicion_funcion_parametrosContext parametrosCtx = ctx.definicion_funcion_parametros();
     if (parametrosCtx != null) {
@@ -242,23 +247,38 @@ public class MiListener extends idBaseListener {
       }
     }
 
-    // ESTE VOLARLO
-    idAux = functionDefinitionName;
+    /*
+     * Se obtiene la firma de la funcion
+     * La firma se compone del nombre de la funcion y de los tipos de los parametros
+     * 
+     */
     String functionSign = Utils.getFunctionSign(functionDefinitionName, parametersList);
     currentScope = functionSign;
     Function functionAlreadyDeclarated = tablaFunciones
         .get(functionSign);
 
-    // Proceso para determinar si la funcion definida y declarada tienen la misma
-    // firma.
+    /*
+     * Proceso para determinar si la funcion definida y declarada tienen la misma
+     * firma
+     */
     Boolean isTheSameFunction = true;
+    // Si la funcion ya fue declarada anteriormente en (declaracion funcion)
     if (functionAlreadyDeclarated != null) {
       int i = 0;
       functionAux = functionAlreadyDeclarated;
+
+      /*
+       * Se comprueba si la cantidad de parametros de la funcion declarada es distinto
+       * a la cantidad de parametros de la nueva funcion
+       */
       if (functionAlreadyDeclarated.getFunctionParameters().size() != parametersList.size()) {
         isTheSameFunction = false;
       }
 
+      /*
+       * Se comprueba si el tipado de los parametros en cada posicion coinciden
+       * 
+       */
       if (isTheSameFunction == true) {
         for (MiId paramFromMap : functionAlreadyDeclarated.getFunctionParameters().values()) {
           MiId paramFromList = parametersList.get(i);
@@ -272,6 +292,11 @@ public class MiListener extends idBaseListener {
       }
     }
 
+    /*
+     * Si tienen la misma cantidad de parametros y el mismo orden de tipado
+     * se asume que son la misma funcion, y se comprueba el tipo que retornan ambas
+     * si son diferentes hay un error
+     */
     if (functionAlreadyDeclarated != null && isTheSameFunction == true
         && functionAlreadyDeclarated.getFunctionId().getTipoDato() != TipoDato.fromString(functionDefinitionType)) {
       Utils.printError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
@@ -280,6 +305,10 @@ public class MiListener extends idBaseListener {
       return;
     }
 
+    /*
+     * Si son la misma funcion se reemplaza la lista de parametros con la nueva
+     * Ya que si fue declarada los parametros son param_0, param_1, etc
+     */
     if (functionAlreadyDeclarated != null && isTheSameFunction == true) {
       LinkedHashMap<String, MiId> newParameters = new LinkedHashMap<String, MiId>();
       if (parametersList.size() != 0) {
@@ -290,6 +319,13 @@ public class MiListener extends idBaseListener {
       functionAlreadyDeclarated.setParameters(newParameters);
     }
 
+    /*
+     * Si functionAlreadyDeclarated es null significa que no hubo declaracion previa
+     * Pero si es distinto de null y isTheSameFunction es false,
+     * signfica que no es la misma que fue declarada antes
+     * 
+     * En ambos casos se inserta la nueva funcion
+     */
     if (functionAlreadyDeclarated == null || (functionAlreadyDeclarated != null && isTheSameFunction == false)) {
       tableInstance.AddFunctionToTable(functionSign);
       MiId functionId = new MiId(functionSign, true, false, functionDefinitionTypeParsed);
@@ -309,6 +345,7 @@ public class MiListener extends idBaseListener {
     this.tipoDatoAux = TipoDato.UNDEFINED;
     this.functionAux = null;
     this.idAux = "";
+    this.currentScope = "";
     this.parameterCountAux = 0;
   }
 

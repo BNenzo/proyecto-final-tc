@@ -102,13 +102,6 @@ public class TablaSimbolos {
 
       }
     }
-
-    // System.out.println("");
-
-    // System.out.println("Contextos");
-    // for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
-    // System.out.println(entry.getValue());
-    // }
   }
 
   public MiId findIdInLastActiveContext(String idToken, String functionName) {
