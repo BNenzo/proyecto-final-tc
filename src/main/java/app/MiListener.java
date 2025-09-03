@@ -10,21 +10,15 @@ public class MiListener extends idBaseListener {
   TablaSimbolos tableInstance = TablaSimbolos.getInstance();
 
   // Utilidades
-  String idAux = "";
   private TipoDato tipoDatoAux;
-  private Function functionAux = null;
   private Boolean shouldAddContext = true;
   private String currentScope = "";
-
-  private String getCurrentScope() {
-    return (functionAux != null) ? functionAux.getFunctionId().getToken() : "global";
-  }
 
   /*
    * Variables cargadas de otras reglas
    * 
-   * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
-   * es null significa que es el ambito global)
+   * enterDefinicion_funcion_nombre -> currentScope (funcion en la que estamos, si
+   * es "" significa que es el ambito global)
    */
   private MiId validateVariableUsage(String idTokenStr, int line, int column) {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idTokenStr, currentScope);
@@ -82,14 +76,14 @@ public class MiListener extends idBaseListener {
    * Variables cargadas de otras reglas
    * 
    * enterDeclaracion_variable -> tipoDatoAux (tipo de la variable/s)
-   * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
-   * es null significa que es el ambito global)
+   * enterDefinicion_funcion_nombre -> currentScope (funcion en la que estamos, si
+   * es "" significa que es el ambito global)
    */
   private void validateVariableDeclarations(String idTokenStr, int line, int column, Boolean inicializado) {
     MiId newId = new MiId(idTokenStr, inicializado, false, tipoDatoAux);
-    String scope = getCurrentScope();
-    MiId id = (functionAux != null)
-        ? tableInstance.findIdInLastActiveContext(idTokenStr, currentScope)
+    String scope = (currentScope != "") ? currentScope : "global";
+    MiId id = (currentScope != "")
+        ? tableInstance.findIdInLastActiveContext(idTokenStr, scope)
         : tableInstance.checkIfGlobalVariableIsAlreadyDeclarated(idTokenStr);
 
     if (id != null) {
@@ -105,16 +99,16 @@ public class MiListener extends idBaseListener {
   /*
    * Variables cargadas de otras reglas
    * 
-   * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
-   * es null significa que es el ambito global)
+   * enterDefinicion_funcion_nombre -> currentScope (funcion en la que estamos, si
+   * es "" significa que es el ambito global)
    */
   @Override
   public void enterAsignacion_variable(idParser.Asignacion_variableContext ctx) {
     String idTokenStr = ctx.asignacion_variable_identificador().getText();
 
-    if (functionAux == null) {
+    if (currentScope == "") {
       Utils.printError(
-          "Error: No se pueden realizar asignaciones en el ambito global " + "' (línea " + ctx.getStart().getLine()
+          "Error: No se pueden realizar asignaciones en el ambito global " + " (línea " + ctx.getStart().getLine()
               + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
       error = true;
       return;
@@ -136,7 +130,7 @@ public class MiListener extends idBaseListener {
 
     if (currentScope == "") {
       Utils.printError(
-          "Error: No se pueden realizar operaciones logicas en el ambito global " + "' (línea "
+          "Error: No se pueden realizar operaciones logicas en el ambito global " + " (línea "
               + ctx.getStart().getLine()
               + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
       error = true;
@@ -158,7 +152,7 @@ public class MiListener extends idBaseListener {
     String idTokenStr = ctx.getStart().getText();
     if (currentScope == "") {
       Utils.printError(
-          "Error: No se pueden realizar operaciones aritmeticas en el ambito global " + "' (línea "
+          "Error: No se pueden realizar operaciones aritmeticas en el ambito global " + " (línea "
               + ctx.getStart().getLine()
               + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
       error = true;
@@ -178,10 +172,11 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
 
-    // Se obtiene la informacion necesaria para
+    // --- 1. Info básica de la función ---
     String functionName = ctx.declaracion_funcion_identificador().getText();
     TipoDato functionType = TipoDato.fromString(ctx.getStart().getText());
 
+    // --- 2. Parámetros de la definición ---
     // Se obtienen todos los parametros que estan siendo usados en la declaracion
     List<MiId> parametersList = new ArrayList<>();
     idParser.Declaracion_funciones_parametrosContext parametrosCtx = ctx.declaracion_funciones_parametros();
@@ -192,7 +187,8 @@ public class MiListener extends idBaseListener {
         parametersList.add(new MiId("param_" + parametersList.size(), true, false, parameterType));
       }
     }
-    // Obtenemos la firma de la funcion
+
+    // --- 3. Firma de la función ---
     String functionSign = Utils.getFunctionSign(functionName, parametersList);
     tableInstance.AddFunctionToTable(functionSign);
 
@@ -200,7 +196,7 @@ public class MiListener extends idBaseListener {
     MiId functionId = new MiId(functionSign, false, false, functionType);
     function.setFunctionId(functionId);
 
-    // Se cargan los parametros
+    // --- 4. Se agregan los parametros ---
     for (MiId parameter : parametersList) {
       function.getFunctionParameters().put(parameter.getToken(), parameter);
     }
@@ -210,126 +206,63 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
-
     Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
 
-    // Se obtiene la informacion basica de la funcion que esta siendo definida
-    String functionDefinitionType = ctx.getStart().getText();
-    TipoDato functionDefinitionTypeParsed = TipoDato.fromString(functionDefinitionType);
-    String functionDefinitionName = ctx.definicion_funcion_nombre().getText();
+    // --- 1. Info básica de la función ---
+    String returnTypeStr = ctx.getStart().getText();
+    TipoDato returnType = TipoDato.fromString(returnTypeStr);
+    String functionName = ctx.definicion_funcion_nombre().getText();
 
-    // Se obtienen todos los parametros que estan siendo usados en la definicion de
-    // esta funcion
-    List<MiId> parametersList = new ArrayList<>();
-    idParser.Definicion_funcion_parametrosContext parametrosCtx = ctx.definicion_funcion_parametros();
-    if (parametrosCtx != null) {
-      for (idParser.Definicion_funcion_parametroContext parametroCtx : parametrosCtx.definicion_funcion_parametro()) {
-        TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
-        String parameterName = parametroCtx.definicion_funcion_parametro_nombre().getText();
-        parametersList.add(new MiId(parameterName, true, false, parameterType));
-      }
-    }
+    // --- 2. Parámetros de la definición ---
+    List<MiId> parametersList = Utils.extractParameters(ctx.definicion_funcion_parametros());
 
-    /*
-     * Se obtiene la firma de la funcion
-     * La firma se compone del nombre de la funcion y de los tipos de los parametros
-     * 
-     */
-    String functionSign = Utils.getFunctionSign(functionDefinitionName, parametersList);
+    // --- 3. Firma de la función ---
+    String functionSign = Utils.getFunctionSign(functionName, parametersList);
     currentScope = functionSign;
-    Function functionAlreadyDeclarated = tablaFunciones
-        .get(functionSign);
 
-    /*
-     * Proceso para determinar si la funcion definida y declarada tienen la misma
-     * firma
-     */
-    Boolean isTheSameFunction = true;
-    // Si la funcion ya fue declarada anteriormente en (declaracion funcion)
-    if (functionAlreadyDeclarated != null) {
-      int i = 0;
-      functionAux = functionAlreadyDeclarated;
+    Function existingFunction = tablaFunciones.get(functionSign);
 
-      /*
-       * Se comprueba si la cantidad de parametros de la funcion declarada es distinto
-       * a la cantidad de parametros de la nueva funcion
-       */
-      if (functionAlreadyDeclarated.getFunctionParameters().size() != parametersList.size()) {
-        isTheSameFunction = false;
-      }
+    // --- 4. Validar si coincide con una función ya declarada ---
+    boolean sameFunction = Utils.isSameFunction(existingFunction, parametersList);
 
-      /*
-       * Se comprueba si el tipado de los parametros en cada posicion coinciden
-       * 
-       */
-      if (isTheSameFunction == true) {
-        for (MiId paramFromMap : functionAlreadyDeclarated.getFunctionParameters().values()) {
-          MiId paramFromList = parametersList.get(i);
+    // --- 5. Si es la misma función, validar tipo de retorno ---
+    if (existingFunction != null && sameFunction &&
+        existingFunction.getFunctionId().getTipoDato() != returnType) {
 
-          if (paramFromMap.getTipoDato() != paramFromList.getTipoDato()) {
-            isTheSameFunction = false;
-            break;
-          }
-          i++;
-        }
-      }
-    }
-
-    /*
-     * Si tienen la misma cantidad de parametros y el mismo orden de tipado
-     * se asume que son la misma funcion, y se comprueba el tipo que retornan ambas
-     * si son diferentes hay un error
-     */
-    if (functionAlreadyDeclarated != null && isTheSameFunction == true
-        && functionAlreadyDeclarated.getFunctionId().getTipoDato() != TipoDato.fromString(functionDefinitionType)) {
-      Utils.printError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
-          + ", Se espera que la definicion retorne: " + functionAlreadyDeclarated.getFunctionId().getTipoDato());
+      Utils.printError("Error: Ambigua nueva declaración para la función: " + functionName +
+          ", se espera retorno: " + existingFunction.getFunctionId().getTipoDato());
       error = true;
       return;
     }
 
-    /*
-     * Si son la misma funcion se reemplaza la lista de parametros con la nueva
-     * Ya que si fue declarada los parametros son param_0, param_1, etc
-     */
-    if (functionAlreadyDeclarated != null && isTheSameFunction == true) {
-      LinkedHashMap<String, MiId> newParameters = new LinkedHashMap<String, MiId>();
-      if (parametersList.size() != 0) {
-        for (MiId parameter : parametersList) {
-          newParameters.put(parameter.getToken(), parameter);
-        }
+    // --- 6. Si coincide con la declarada, actualizar parámetros e inicialización
+    if (existingFunction != null && sameFunction) {
+      LinkedHashMap<String, MiId> newParams = new LinkedHashMap<>();
+      for (MiId p : parametersList) {
+        newParams.put(p.getToken(), p);
       }
-      functionAlreadyDeclarated.setParameters(newParameters);
-      functionAlreadyDeclarated.getFunctionId().setInicializada(true);
+      existingFunction.setParameters(newParams);
+      existingFunction.getFunctionId().setInicializada(true);
     }
 
-    /*
-     * Si functionAlreadyDeclarated es null significa que no hubo declaracion previa
-     * Pero si es distinto de null y isTheSameFunction es false,
-     * signfica que no es la misma que fue declarada antes
-     * 
-     * En ambos casos se inserta la nueva funcion
-     */
-    if (functionAlreadyDeclarated == null || (functionAlreadyDeclarated != null && isTheSameFunction == false)) {
+    // --- 7. Si no existe o es una sobrecarga distinta, insertar nueva ---
+    if (existingFunction == null || !sameFunction) {
       tableInstance.AddFunctionToTable(functionSign);
-      MiId functionId = new MiId(functionSign, true, functionDefinitionName.equals("main"),
-          functionDefinitionTypeParsed);
-      functionAlreadyDeclarated = tablaFunciones.get(functionSign);
-      functionAlreadyDeclarated.setFunctionId(functionId);
-      if (parametersList.size() != 0) {
-        for (MiId parameter : parametersList) {
-          functionAlreadyDeclarated.addIdInParameters(parameter);
-        }
-      }
-      functionAux = functionAlreadyDeclarated;
-    }
+      MiId functionId = new MiId(
+          functionSign,
+          true,
+          functionName.equals("main"),
+          returnType);
+      existingFunction = tablaFunciones.get(functionSign);
+      existingFunction.setFunctionId(functionId);
 
+      for (MiId p : parametersList) {
+        existingFunction.addIdInParameters(p);
+      }
+    }
   }
 
   public void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
-    this.tipoDatoAux = TipoDato.UNDEFINED;
-    this.functionAux = null;
-    this.idAux = "";
     this.currentScope = "";
   }
 
@@ -395,6 +328,8 @@ public class MiListener extends idBaseListener {
     function.getFunctionId().setUsada(true);
   }
 
+  // ---------------------- RETURN ----------------------
+
   @Override
   public void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx) {
     String idValue = ctx.getStart().getText();
@@ -403,7 +338,7 @@ public class MiListener extends idBaseListener {
 
     if (id == null) {
       System.err.println("❌ Error: Variable '" + idValue + "' no declarada en el ambito "
-          + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
+          + currentScope + " (linea " + ctx.getStart().getLine() + ")");
       error = true;
       return;
     }

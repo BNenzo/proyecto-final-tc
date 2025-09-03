@@ -2,6 +2,7 @@ int num_global = 34;
 
 int suma(int, int, double, char);
 
+num_global = 32;
 int main (){ 
   int num1 = 1;
   num1 = suma(1, 2, 3.23, '4');

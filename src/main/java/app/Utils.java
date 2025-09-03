@@ -1,5 +1,6 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
@@ -72,4 +73,36 @@ public class Utils {
     sb.append(")");
     return sb.toString();
   }
+
+  public static List<MiId> extractParameters(idParser.Definicion_funcion_parametrosContext parametrosCtx) {
+    List<MiId> parametersList = new ArrayList<>();
+    if (parametrosCtx != null) {
+      for (idParser.Definicion_funcion_parametroContext pCtx : parametrosCtx.definicion_funcion_parametro()) {
+        TipoDato type = TipoDato.fromString(pCtx.tipo_variable().getText());
+        String name = pCtx.definicion_funcion_parametro_nombre().getText();
+        parametersList.add(new MiId(name, true, false, type));
+      }
+    }
+    return parametersList;
+  }
+
+  public static boolean isSameFunction(Function existing, List<MiId> newParams) {
+    if (existing == null)
+      return false;
+
+    // distinta cantidad de parámetros
+    if (existing.getFunctionParameters().size() != newParams.size())
+      return false;
+
+    int i = 0;
+    for (MiId paramFromMap : existing.getFunctionParameters().values()) {
+      MiId paramFromList = newParams.get(i);
+      if (paramFromMap.getTipoDato() != paramFromList.getTipoDato()) {
+        return false;
+      }
+      i++;
+    }
+    return true;
+  }
+
 }
