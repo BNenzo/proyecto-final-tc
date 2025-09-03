@@ -205,12 +205,12 @@ llamada_funcion_expresion:
 llamada_nombre_funcion: IDENTIFICADOR;
 
 llamada_funcion_parametros:
-	llamada_funcion_argumentos COMA llamada_funcion_parametros
-	| llamada_funcion_argumentos;
+	llamada_funcion_argumentos (COMA llamada_funcion_argumentos)*;
 
 llamada_funcion_argumentos: (
 		llamada_funcion_argumento_identificador
 		| NUMERO
+		| NUMERO_DOUBLE
 		| CARACTER
 	);
 
