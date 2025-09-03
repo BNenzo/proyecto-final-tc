@@ -30,4 +30,34 @@ public class Utils {
         + column + ")");
   }
 
+  public static String getFunctionSign(String functionName, List<MiId> parametersList) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(functionName).append("(");
+
+    if (parametersList != null && !parametersList.isEmpty()) {
+      for (int i = 0; i < parametersList.size(); i++) {
+        MiId param = parametersList.get(i);
+        sb.append(param.getTipoDato().toString().toLowerCase());
+
+        if (i < parametersList.size() - 1) {
+          sb.append(",");
+        }
+      }
+    }
+
+    sb.append(")");
+    return sb.toString();
+  }
+
+  public static String getFunctionNameFromSign(String functionSign) {
+    if (functionSign == null || functionSign.isEmpty()) {
+      return "";
+    }
+    int parenIndex = functionSign.indexOf('(');
+    if (parenIndex == -1) {
+      // No tiene paréntesis, devolvemos todo
+      return functionSign;
+    }
+    return functionSign.substring(0, parenIndex);
+  }
 }
