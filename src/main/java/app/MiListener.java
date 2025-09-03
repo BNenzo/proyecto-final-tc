@@ -299,6 +299,7 @@ public class MiListener extends idBaseListener {
         }
       }
       functionAlreadyDeclarated.setParameters(newParameters);
+      functionAlreadyDeclarated.getFunctionId().setInicializada(true);
     }
 
     /*
@@ -310,7 +311,8 @@ public class MiListener extends idBaseListener {
      */
     if (functionAlreadyDeclarated == null || (functionAlreadyDeclarated != null && isTheSameFunction == false)) {
       tableInstance.AddFunctionToTable(functionSign);
-      MiId functionId = new MiId(functionSign, true, false, functionDefinitionTypeParsed);
+      MiId functionId = new MiId(functionSign, true, functionDefinitionName.equals("main"),
+          functionDefinitionTypeParsed);
       functionAlreadyDeclarated = tablaFunciones.get(functionSign);
       functionAlreadyDeclarated.setFunctionId(functionId);
       if (parametersList.size() != 0) {
@@ -339,123 +341,71 @@ public class MiListener extends idBaseListener {
   }
 
   @Override
-  public void enterLlamada_nombre_funcion(idParser.Llamada_nombre_funcionContext ctx) {
+  public void enterLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx) {
     Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
-    String functionName = ctx.getStart().getText();
-    Function function = tablaFunciones.get(functionName);
+    String functionName = ctx.llamada_nombre_funcion().getText();
+
+    List<String> argumentsTypes = new ArrayList<>();
+    idParser.Llamada_funcion_parametrosContext argumentosCtx = ctx.llamada_funcion_parametros();
+    if (argumentosCtx != null) {
+      for (idParser.Llamada_funcion_argumentosContext argumentoCtx : argumentosCtx.llamada_funcion_argumentos()) {
+
+        if (argumentoCtx.llamada_funcion_argumento_identificador() != null) {
+          String argumentId = argumentoCtx.llamada_funcion_argumento_identificador().getText();
+          MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(argumentId, currentScope);
+
+          if (id == null) {
+            Utils.printError("Error: Variable '" + argumentId + "' no declarada en el ambito "
+                + currentScope
+                + " (linea "
+                + argumentoCtx.llamada_funcion_argumento_identificador().getStart().getLine()
+                + ", Columna: "
+                + argumentoCtx.llamada_funcion_argumento_identificador().getStart().getCharPositionInLine()
+                + ")");
+            error = true;
+            return;
+          }
+          argumentsTypes.add(id.getTipoDato().toString().toLowerCase());
+        }
+
+        if (argumentoCtx.NUMERO() != null) {
+          argumentsTypes.add("int");
+        }
+
+        if (argumentoCtx.NUMERO_DOUBLE() != null) {
+          argumentsTypes.add("double");
+        }
+
+        if (argumentoCtx.CARACTER() != null) {
+          argumentsTypes.add("char");
+        }
+      }
+    }
+
+    String functionSign = Utils.buildFunctionSignatureFromStringList(functionName, argumentsTypes);
+    Function function = tablaFunciones.get(functionSign);
 
     if (function == null) {
-      System.out.println("❌ Error: La funcion " + functionName + " No ha sido declarada en el ambito global (linea "
-          + ctx.getStart().getLine() + ")");
+      Utils.printError(
+          "Error: La funcion "
+              + functionName
+              + " No ha sido declarada en el ambito global (linea "
+              + ctx.llamada_nombre_funcion().getStart().getLine()
+              + ", Columna "
+              + ctx.llamada_nombre_funcion().getStart().getCharPositionInLine()
+              + ")");
       error = true;
       return;
     }
 
-    functionCallAux = function;
-  }
-
-  /*
-   * enterLlamada_nombre_funcion -> functionCallAux (los contextos de la funcion
-   * llamada)
-   */
-  @Override
-  public void enterLlamada_funcion_argumentos(idParser.Llamada_funcion_argumentosContext ctx) {
-
-    if (error) {
-      return;
-    }
-
-    // idValue puede ser, un valor nativo (int, char) o una variable
-    String idValue = ctx.getStart().getText();
-    String type = identificarTipo(idValue);
-
-    // Si es variable se procesa en otra regla
-    if (type == "variable")
-      return;
-
-    // el tipo del valor nativo
-    TipoDato parameterType = TipoDato.fromString(type);
-
-    // Se obtienen los valores del primer contexto de la funcion
-    List<MiId> parametersList = new ArrayList<>(functionCallAux.getFunctionParameters().values());
-
-    // Se compara el tipo del valor nativo con el parametro relacionado
-    if (parameterType != parametersList.get(parameterCountAux).getTipoDato()) {
-      System.out.println("❌ Error: el valor " + idValue
-          + " no coincide con el tipo del parámetro 'num' en la posición "
-          + parameterCountAux
-          + ", declarado previamente como "
-          + parameterType
-          + " (se esperaba "
-          + parametersList.get(parameterCountAux).getTipoDato() + ")");
-      error = true;
-      return;
-    }
-
-    parameterCountAux++;
-  }
-
-  @Override
-  public void enterLlamada_funcion_argumento_identificador(
-      idParser.Llamada_funcion_argumento_identificadorContext ctx) {
-    String idValue = ctx.getStart().getText();
-    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue, idAux);
-
-    if (id == null) {
-      System.err.println("❌ Error: Variable '" + idValue + "' no declarada en el ambito "
-          + "por definir" + " (linea " + ctx.getStart().getLine() + ")"); // checkear el ambito
-      error = true;
-      return;
-    }
-
-    List<MiId> parametersList = new ArrayList<>(functionCallAux.getFunctionParameters().values());
-
-    if (id.getTipoDato() != parametersList.get(parameterCountAux).getTipoDato()) {
-      System.out.println("❌ Error: el valor " + idValue
-          + " no coincide con el tipo del parámetro 'num' en la posición "
-          + parameterCountAux
-          + ", declarado previamente como "
-          + id.getTipoDato()
-          + " (se esperaba "
-          + parametersList.get(parameterCountAux).getTipoDato() + ")");
-
-      error = true;
-      return;
-    }
-
-    id.setUsada(true);
-  }
-
-  @Override
-  public void enterReturn_variables(idParser.Return_variablesContext ctx) {
-    String idValue = ctx.getStart().getText();
-    String type = identificarTipo(idValue);
-
-    // Si es variable se procesa en otra regla
-    if (type == "variable")
-      return;
-
-    TipoDato returnVariableType = TipoDato.fromString(type);
-
-    if (functionAux.getFunctionId().getTipoDato() != returnVariableType) {
-      System.out.println("Error: la función "
-          + functionAux.getFunctionId().getToken()
-          + " esperaba retornar una variable de tipo "
-          + functionAux.getFunctionId().getTipoDato()
-          + ", pero se está devolviendo un valor de tipo "
-          + returnVariableType);
-      error = true;
-      return;
-    }
-
+    function.getFunctionId().setUsada(true);
   }
 
   @Override
   public void enterReturn_variable_identificador(idParser.Return_variable_identificadorContext ctx) {
     String idValue = ctx.getStart().getText();
 
-    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue,
-        functionAux.getFunctionId().getToken());
+    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idValue, currentScope);
 
     if (id == null) {
       System.err.println("❌ Error: Variable '" + idValue + "' no declarada en el ambito "
@@ -466,27 +416,6 @@ public class MiListener extends idBaseListener {
 
     id.setUsada(true);
     return;
-  }
-
-  public static String identificarTipo(String input) {
-
-    if (input.matches("^'([^\\\\']|\\\\[btnr0'\"\\\\])'$")) {
-      return "char";
-    }
-
-    if (input.matches("^-?\\d+$")) {
-      return "int";
-    }
-
-    if (input.matches("^-?\\d*\\.\\d+$")) {
-      return "double";
-    }
-
-    if (input.matches("^[a-zA-Z_$][a-zA-Z\\d_$]*$")) {
-      return "variable";
-    }
-
-    return input;
   }
 
   @Override

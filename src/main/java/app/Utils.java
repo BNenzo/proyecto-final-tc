@@ -60,4 +60,16 @@ public class Utils {
     }
     return functionSign.substring(0, parenIndex);
   }
+
+  public static String buildFunctionSignatureFromStringList(String functionName, List<String> parameters) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(functionName).append("(");
+
+    if (parameters != null && !parameters.isEmpty()) {
+      sb.append(String.join(",", parameters));
+    }
+
+    sb.append(")");
+    return sb.toString();
+  }
 }
