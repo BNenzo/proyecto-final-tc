@@ -5,6 +5,10 @@ int suma(int, int, double, char);
 int main (){ 
   int num1 = 1;
   num1 = suma(1, 2, 3.23, '4');
+
+  for (int z = 0 ; z < 5 ; z ++) {
+    int sd =2;
+  }
 }
 
 int suma (int x, int s, double sd, char ch) {

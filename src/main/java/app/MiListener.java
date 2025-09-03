@@ -12,9 +12,8 @@ public class MiListener extends idBaseListener {
   // Utilidades
   String idAux = "";
   private TipoDato tipoDatoAux;
-  private int parameterCountAux = 0;
   private Function functionAux = null;
-  private Function functionCallAux = null;
+  private Boolean shouldAddContext = true;
   private String currentScope = "";
 
   private String getCurrentScope() {
@@ -28,12 +27,11 @@ public class MiListener extends idBaseListener {
    * es null significa que es el ambito global)
    */
   private MiId validateVariableUsage(String idTokenStr, int line, int column) {
-    String scope = functionAux.getFunctionId().getToken();
-    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idTokenStr, scope);
+    MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idTokenStr, currentScope);
 
     if (id == null) {
       Utils.printError("Error: Variable '" + idTokenStr + "' no declarada en el ámbito '"
-          + scope + "' (línea " + line + ", columna " + column + ")");
+          + currentScope + "' (línea " + line + ", columna " + column + ")");
       error = true;
     }
 
@@ -45,7 +43,10 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterBloque(idParser.BloqueContext ctx) {
-    tableInstance.addContext(currentScope);
+    if (shouldAddContext == true) {
+      tableInstance.addContext(currentScope);
+    }
+    shouldAddContext = true;
   }
 
   @Override
@@ -133,7 +134,7 @@ public class MiListener extends idBaseListener {
   public void enterIdentificador_logico(idParser.Identificador_logicoContext ctx) {
     String idTokenStr = ctx.getStart().getText();
 
-    if (functionAux == null) {
+    if (currentScope == "") {
       Utils.printError(
           "Error: No se pueden realizar operaciones logicas en el ambito global " + "' (línea "
               + ctx.getStart().getLine()
@@ -155,7 +156,7 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx) {
     String idTokenStr = ctx.getStart().getText();
-    if (functionAux == null) {
+    if (currentScope == "") {
       Utils.printError(
           "Error: No se pueden realizar operaciones aritmeticas en el ambito global " + "' (línea "
               + ctx.getStart().getLine()
@@ -330,16 +331,9 @@ public class MiListener extends idBaseListener {
     this.functionAux = null;
     this.idAux = "";
     this.currentScope = "";
-    this.parameterCountAux = 0;
   }
 
   // ---------------------- LLAMADA FUNCION ----------------------
-  @Override
-  public void exitLlamada_funcion(idParser.Llamada_funcionContext ctx) {
-    functionCallAux = null;
-    parameterCountAux = 0;
-  }
-
   @Override
   public void enterLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx) {
     Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
@@ -416,6 +410,31 @@ public class MiListener extends idBaseListener {
 
     id.setUsada(true);
     return;
+  }
+
+  // ---------------------- FOR ----------------------
+  @Override
+  public void enterFor(idParser.ForContext ctx) {
+    tableInstance.addContext(currentScope);
+    shouldAddContext = false;
+  }
+
+  @Override
+  public void enterFor_declaracion(idParser.For_declaracionContext ctx) {
+    tipoDatoAux = TipoDato.fromString(ctx.getStart().getText());
+  }
+
+  @Override
+  public void enterFor_autoincremental(idParser.For_autoincrementalContext ctx) {
+
+    String tokenIdStr = ctx.getStart().getText();
+    MiId id = validateVariableUsage(tokenIdStr, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+
+    if (id == null) {
+      return;
+    }
+
+    id.setUsada(true);
   }
 
   @Override

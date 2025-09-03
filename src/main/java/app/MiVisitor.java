@@ -332,6 +332,8 @@ public class MiVisitor extends idBaseVisitor<String> {
       instructions.add("DECLARE " + nombreVar + " " + tipo);
       if (decl.NUMERO() != null) {
         instructions.add(nombreVar + " = " + decl.NUMERO().getText());
+      } else if (decl.NUMERO_DOUBLE() != null) {
+        instructions.add(nombreVar + " = " + decl.NUMERO_DOUBLE().getText());
       } else if (decl.IDENTIFICADOR().size() > 1) {
         instructions.add(nombreVar + " = " + decl.IDENTIFICADOR(1).getText());
       } else if (decl.CARACTER() != null) {
