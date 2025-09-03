@@ -15,6 +15,7 @@ public class MiListener extends idBaseListener {
   private int parameterCountAux = 0;
   private Function functionAux = null;
   private Function functionCallAux = null;
+  private String currentScope = "";
 
   private String getCurrentScope() {
     return (functionAux != null) ? functionAux.getFunctionId().getToken() : "global";
@@ -44,12 +45,12 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterBloque(idParser.BloqueContext ctx) {
-    tableInstance.addContext(idAux);
+    tableInstance.addContext(currentScope);
   }
 
   @Override
   public void exitBloque(idParser.BloqueContext ctx) {
-    tableInstance.closeLastActiveContext(idAux);
+    tableInstance.closeLastActiveContext(currentScope);
   }
 
   /* ---------------------- DECLARACIONES ------------------------------- */
@@ -85,11 +86,9 @@ public class MiListener extends idBaseListener {
    */
   private void validateVariableDeclarations(String idTokenStr, int line, int column, Boolean inicializado) {
     MiId newId = new MiId(idTokenStr, inicializado, false, tipoDatoAux);
-
     String scope = getCurrentScope();
-
     MiId id = (functionAux != null)
-        ? tableInstance.findIdInLastActiveContext(idTokenStr, idAux)
+        ? tableInstance.findIdInLastActiveContext(idTokenStr, currentScope)
         : tableInstance.checkIfGlobalVariableIsAlreadyDeclarated(idTokenStr);
 
     if (id != null) {
@@ -98,7 +97,7 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    tableInstance.addId(newId, idAux);
+    tableInstance.addId(newId, currentScope);
   }
 
   /* ---------------------- ASIGNACIONES ------------------------------- */
@@ -156,7 +155,6 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx) {
     String idTokenStr = ctx.getStart().getText();
-    System.out.println(idAux);
     if (functionAux == null) {
       Utils.printError(
           "Error: No se pueden realizar operaciones aritmeticas en el ambito global " + "' (línea "
@@ -178,171 +176,159 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
-    String functionTypeStr = ctx.getStart().getText();
-    this.tipoDatoAux = TipoDato.fromString(functionTypeStr);
-  }
 
-  public void exitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
-    this.tipoDatoAux = TipoDato.UNDEFINED;
-    this.functionAux = null;
-  }
+    // Se obtiene la informacion necesaria para
+    String functionName = ctx.declaracion_funcion_identificador().getText();
+    TipoDato functionType = TipoDato.fromString(ctx.getStart().getText());
 
-  @Override
-  public void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) {
-    /*
-     * Se obtiene el nombre de la funcion
-     * Se guarda en la variable auxiliar idAux para su posterior uso
-     * Se genera un nuevo map en la tabla de funciones
-     */
-    String functionName = ctx.getStart().getText();
-    tableInstance.AddFunctionToTable(functionName);
+    // Se obtienen todos los parametros que estan siendo usados en la declaracion
+    List<MiId> parametersList = new ArrayList<>();
+    idParser.Declaracion_funciones_parametrosContext parametrosCtx = ctx.declaracion_funciones_parametros();
+    if (parametrosCtx != null) {
+      for (idParser.Declaracion_funcion_parametroContext parametroCtx : parametrosCtx.declaracion_funcion_parametro()) {
+        TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
+        // El nombre no nos importa, solo el tipo, asi que autogeneramos nombres
+        parametersList.add(new MiId("param_" + parametersList.size(), true, false, parameterType));
+      }
+    }
+    // Obtenemos la firma de la funcion
+    String functionSign = Utils.getFunctionSign(functionName, parametersList);
+    tableInstance.AddFunctionToTable(functionSign);
 
-    // Se genera un MiId con el nombre de la funcion para guardar informacion
-    MiId functionId = new MiId(functionName, false, false, tipoDatoAux);
-
-    // La funcion ya fue insertada antes asi que ahora la va a encontrar
-    Function function = tableInstance.getTablaFunciones().get(functionName);
+    Function function = tableInstance.getTablaFunciones().get(functionSign);
+    MiId functionId = new MiId(functionSign, false, false, functionType);
     function.setFunctionId(functionId);
 
-    // Se guarda la function actualmente creada en el auxiliar para lo que sigue
-    functionAux = function;
-  }
-
-  /*
-   * Variables usadas de otras reglas
-   * 
-   * enterDeclaracion_funcion_identificador -> functionAux (La funcion declarada)
-   */
-  @Override
-  public void enterDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) {
-    String parameterType = ctx.getStart().getText();
-    /*
-     * Se generan nombres aleatorios ya que la definicion del nombre en la
-     * declaracion de una funcion no es relevante
-     */
-    String parameterName = "param_" + functionAux.getFunctionParameters().size();
-    MiId parameterId = new MiId(parameterName, true, false, TipoDato.fromString(parameterType));
-    functionAux.addIdInParameters(parameterId);
+    // Se cargan los parametros
+    for (MiId parameter : parametersList) {
+      function.getFunctionParameters().put(parameter.getToken(), parameter);
+    }
   }
 
   // ---------------------- DEFINICION FUNCION ----------------------
 
   @Override
   public void enterDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
-    String functionType = ctx.getStart().getText();
-    this.tipoDatoAux = TipoDato.fromString(functionType);
+
+    Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
+
+    // Se obtiene la informacion basica de la funcion que esta siendo definida
+    String functionDefinitionType = ctx.getStart().getText();
+    TipoDato functionDefinitionTypeParsed = TipoDato.fromString(functionDefinitionType);
+    String functionDefinitionName = ctx.definicion_funcion_nombre().getText();
+
+    // Se obtienen todos los parametros que estan siendo usados en la definicion de
+    // esta funcion
+    List<MiId> parametersList = new ArrayList<>();
+    idParser.Definicion_funcion_parametrosContext parametrosCtx = ctx.definicion_funcion_parametros();
+    if (parametrosCtx != null) {
+      for (idParser.Definicion_funcion_parametroContext parametroCtx : parametrosCtx.definicion_funcion_parametro()) {
+        TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
+        String parameterName = parametroCtx.definicion_funcion_parametro_nombre().getText();
+        parametersList.add(new MiId(parameterName, true, false, parameterType));
+      }
+    }
+
+    /*
+     * Se obtiene la firma de la funcion
+     * La firma se compone del nombre de la funcion y de los tipos de los parametros
+     * 
+     */
+    String functionSign = Utils.getFunctionSign(functionDefinitionName, parametersList);
+    currentScope = functionSign;
+    Function functionAlreadyDeclarated = tablaFunciones
+        .get(functionSign);
+
+    /*
+     * Proceso para determinar si la funcion definida y declarada tienen la misma
+     * firma
+     */
+    Boolean isTheSameFunction = true;
+    // Si la funcion ya fue declarada anteriormente en (declaracion funcion)
+    if (functionAlreadyDeclarated != null) {
+      int i = 0;
+      functionAux = functionAlreadyDeclarated;
+
+      /*
+       * Se comprueba si la cantidad de parametros de la funcion declarada es distinto
+       * a la cantidad de parametros de la nueva funcion
+       */
+      if (functionAlreadyDeclarated.getFunctionParameters().size() != parametersList.size()) {
+        isTheSameFunction = false;
+      }
+
+      /*
+       * Se comprueba si el tipado de los parametros en cada posicion coinciden
+       * 
+       */
+      if (isTheSameFunction == true) {
+        for (MiId paramFromMap : functionAlreadyDeclarated.getFunctionParameters().values()) {
+          MiId paramFromList = parametersList.get(i);
+
+          if (paramFromMap.getTipoDato() != paramFromList.getTipoDato()) {
+            isTheSameFunction = false;
+            break;
+          }
+          i++;
+        }
+      }
+    }
+
+    /*
+     * Si tienen la misma cantidad de parametros y el mismo orden de tipado
+     * se asume que son la misma funcion, y se comprueba el tipo que retornan ambas
+     * si son diferentes hay un error
+     */
+    if (functionAlreadyDeclarated != null && isTheSameFunction == true
+        && functionAlreadyDeclarated.getFunctionId().getTipoDato() != TipoDato.fromString(functionDefinitionType)) {
+      Utils.printError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
+          + ", Se espera que la definicion retorne: " + functionAlreadyDeclarated.getFunctionId().getTipoDato());
+      error = true;
+      return;
+    }
+
+    /*
+     * Si son la misma funcion se reemplaza la lista de parametros con la nueva
+     * Ya que si fue declarada los parametros son param_0, param_1, etc
+     */
+    if (functionAlreadyDeclarated != null && isTheSameFunction == true) {
+      LinkedHashMap<String, MiId> newParameters = new LinkedHashMap<String, MiId>();
+      if (parametersList.size() != 0) {
+        for (MiId parameter : parametersList) {
+          newParameters.put(parameter.getToken(), parameter);
+        }
+      }
+      functionAlreadyDeclarated.setParameters(newParameters);
+    }
+
+    /*
+     * Si functionAlreadyDeclarated es null significa que no hubo declaracion previa
+     * Pero si es distinto de null y isTheSameFunction es false,
+     * signfica que no es la misma que fue declarada antes
+     * 
+     * En ambos casos se inserta la nueva funcion
+     */
+    if (functionAlreadyDeclarated == null || (functionAlreadyDeclarated != null && isTheSameFunction == false)) {
+      tableInstance.AddFunctionToTable(functionSign);
+      MiId functionId = new MiId(functionSign, true, false, functionDefinitionTypeParsed);
+      functionAlreadyDeclarated = tablaFunciones.get(functionSign);
+      functionAlreadyDeclarated.setFunctionId(functionId);
+      if (parametersList.size() != 0) {
+        for (MiId parameter : parametersList) {
+          functionAlreadyDeclarated.addIdInParameters(parameter);
+        }
+      }
+      functionAux = functionAlreadyDeclarated;
+    }
+
   }
 
   public void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
     this.tipoDatoAux = TipoDato.UNDEFINED;
     this.functionAux = null;
     this.idAux = "";
+    this.currentScope = "";
     this.parameterCountAux = 0;
-  }
-
-  /*
-   * Variables cargadas de otras reglas
-   * 
-   * enterDefinicion_funcion -> tipoDatoAux (tipo de la funcion)
-   */
-  @Override
-  public void enterDefinicion_funcion_nombre(idParser.Definicion_funcion_nombreContext ctx) {
-    Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
-
-    String functionName = ctx.getStart().getText();
-    this.functionAux = tablaFunciones.get(functionName);
-    this.idAux = functionName;
-
-    /*
-     * En caso de no existir, se inserta a la tabla de funciones
-     */
-    if (functionAux == null) {
-      tableInstance.AddFunctionToTable(functionName);
-      MiId functionId = new MiId(functionName, false, false, tipoDatoAux);
-      Function function = tablaFunciones.get(functionName);
-      function.setFunctionId(functionId);
-      functionAux = function;
-    }
-
-    // FALTA: que pasa si la funcion existe pero su tipo es distinto al tipo que se
-    // esta definiendo
-  }
-
-  @Override
-  public void enterDefinicion_funcion_parametro(idParser.Definicion_funcion_parametroContext ctx) {
-    String parameterType = ctx.getStart().getText();
-    this.tipoDatoAux = TipoDato.fromString(parameterType);
-  }
-
-  /*
-   * Variables cargadas de otras reglas
-   * 
-   * enterDefinicion_funcion_nombre -> functionAux (contextos de la funcion)
-   * enterDefinicion_funcion_nombre -> idAux (nombre de la funcion)
-   * enterDefinicion_funcion_parametro -> tipoDatoAux (tipo del parametro)
-   */
-  @Override
-  public void enterDefinicion_funcion_parametro_nombre(idParser.Definicion_funcion_parametro_nombreContext ctx) {
-    Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
-    // 100% la funcion esta cargada en la tabla
-    Function function = tablaFunciones.get(idAux);
-    String parameterName = ctx.getStart().getText();
-    MiId id = new MiId(parameterName, true, false, this.tipoDatoAux);
-    String oldParamKey = "param_" + parameterCountAux;
-
-    /*
-     * Si functionAux es null significa que es una funcion que no fue declarada
-     * Por ende no hay parametros que reemplazar
-     */
-    if (function.getFunctionId().getInicializada() == false) {
-      function.addIdInParameters(id);
-      return;
-    }
-
-    /*
-     * Caso en donde la funcion no fue declarada con parametros
-     */
-    if (function.getFunctionParameters().size() == 0)
-      return;
-
-    /*
-     * Caso en donde la definicion tiene mas parametros que su declaracion
-     */
-    if (function.getFunctionParameters().size() - 1 < parameterCountAux) {
-      error = true;
-      System.out.println("❌ Error: La definicion de la funcion " + idAux
-          + " tiene mas parametros que su previa declaracion (linea " + ctx.getStart().getLine() + ")");
-      return;
-    }
-
-    /*
-     * Caso donde el parametro declarado y definido difieren en su tipado
-     */
-    MiId parameterPreviouslyDeclared = function.getFunctionParameters().get("param_" + parameterCountAux);
-
-    if (parameterPreviouslyDeclared.getTipoDato() != tipoDatoAux) {
-      error = true;
-      System.out.println(
-          "❌ Error: El parametro fue declarado previamente de tipo: " + parameterPreviouslyDeclared.getTipoDato()
-              + ", pero en su definicion esta siendo nombrado de tipo: " + tipoDatoAux + ", En el ambito: "
-              + function.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
-      return;
-    }
-
-    /*
-     * Proceso en donde se reemplaza el parametro anteriormente declarado con el
-     * nuevo
-     */
-    LinkedHashMap<String, MiId> newParameters = new LinkedHashMap<String, MiId>();
-
-    function.getFunctionParameters().forEach((key, value) -> {
-      newParameters.put(
-          key.equals(oldParamKey) ? parameterName : key,
-          key.equals(oldParamKey) ? id : value);
-    });
-
-    function.setParameters(newParameters);
-    parameterCountAux++;
   }
 
   // ---------------------- LLAMADA FUNCION ----------------------

@@ -75,12 +75,14 @@ public class TablaSimbolos {
     for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
       MiId functionId = entry.getValue().getFunctionId();
       System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
-          functionId.getToken(), functionId.getTipoDato(), "function", 5, 4, "global", functionId.getUsada(),
+          Utils.getFunctionNameFromSign(functionId.getToken()), functionId.getTipoDato(), "function", 5, 4, "global",
+          functionId.getUsada(),
           functionId.getInicializada());
       for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
         MiId parameterId = entry2.getValue();
         System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
-            parameterId.getToken(), parameterId.getTipoDato(), "parameter", 5, 4, functionId.getToken(),
+            parameterId.getToken(), parameterId.getTipoDato(), "parameter", 5, 4,
+            Utils.getFunctionNameFromSign(functionId.getToken()),
             parameterId.getUsada(),
             parameterId.getInicializada());
       }
@@ -93,20 +95,13 @@ public class TablaSimbolos {
               "variable",
               5,
               4,
-              entry.getValue().getFunctionId().getToken(),
+              Utils.getFunctionNameFromSign(entry.getValue().getFunctionId().getToken()),
               variableId.getUsada(),
               variableId.getInicializada());
         }
 
       }
     }
-
-    // System.out.println("");
-
-    // System.out.println("Contextos");
-    // for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
-    // System.out.println(entry.getValue());
-    // }
   }
 
   public MiId findIdInLastActiveContext(String idToken, String functionName) {
