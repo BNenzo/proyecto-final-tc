@@ -176,51 +176,33 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
-    String functionTypeStr = ctx.getStart().getText();
-    this.tipoDatoAux = TipoDato.fromString(functionTypeStr);
-  }
 
-  public void exitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
-    this.tipoDatoAux = TipoDato.UNDEFINED;
-    this.functionAux = null;
-  }
+    // Se obtiene la informacion necesaria para
+    String functionName = ctx.declaracion_funcion_identificador().getText();
+    TipoDato functionType = TipoDato.fromString(ctx.getStart().getText());
 
-  @Override
-  public void enterDeclaracion_funcion_identificador(idParser.Declaracion_funcion_identificadorContext ctx) {
-    /*
-     * Se obtiene el nombre de la funcion
-     * Se guarda en la variable auxiliar idAux para su posterior uso
-     * Se genera un nuevo map en la tabla de funciones
-     */
-    String functionName = ctx.getStart().getText();
-    tableInstance.AddFunctionToTable(functionName);
+    // Se obtienen todos los parametros que estan siendo usados en la declaracion
+    List<MiId> parametersList = new ArrayList<>();
+    idParser.Declaracion_funciones_parametrosContext parametrosCtx = ctx.declaracion_funciones_parametros();
+    if (parametrosCtx != null) {
+      for (idParser.Declaracion_funcion_parametroContext parametroCtx : parametrosCtx.declaracion_funcion_parametro()) {
+        TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
+        // El nombre no nos importa, solo el tipo, asi que autogeneramos nombres
+        parametersList.add(new MiId("param_" + parametersList.size(), true, false, parameterType));
+      }
+    }
+    // Obtenemos la firma de la funcion
+    String functionSign = Utils.getFunctionSign(functionName, parametersList);
+    tableInstance.AddFunctionToTable(functionSign);
 
-    // Se genera un MiId con el nombre de la funcion para guardar informacion
-    MiId functionId = new MiId(functionName, false, false, tipoDatoAux);
-
-    // La funcion ya fue insertada antes asi que ahora la va a encontrar
-    Function function = tableInstance.getTablaFunciones().get(functionName);
+    Function function = tableInstance.getTablaFunciones().get(functionSign);
+    MiId functionId = new MiId(functionSign, false, false, functionType);
     function.setFunctionId(functionId);
 
-    // Se guarda la function actualmente creada en el auxiliar para lo que sigue
-    functionAux = function;
-  }
-
-  /*
-   * Variables usadas de otras reglas
-   * 
-   * enterDeclaracion_funcion_identificador -> functionAux (La funcion declarada)
-   */
-  @Override
-  public void enterDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) {
-    String parameterType = ctx.getStart().getText();
-    /*
-     * Se generan nombres aleatorios ya que la definicion del nombre en la
-     * declaracion de una funcion no es relevante
-     */
-    String parameterName = "param_" + functionAux.getFunctionParameters().size();
-    MiId parameterId = new MiId(parameterName, true, false, TipoDato.fromString(parameterType));
-    functionAux.addIdInParameters(parameterId);
+    // Se cargan los parametros
+    for (MiId parameter : parametersList) {
+      function.getFunctionParameters().put(parameter.getToken(), parameter);
+    }
   }
 
   // ---------------------- DEFINICION FUNCION ----------------------

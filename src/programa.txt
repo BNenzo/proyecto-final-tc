@@ -1,16 +1,11 @@
 int num_global = 34;
 
-int suma(int);
+int suma(int, int, double, char);
 
-int main () { 
-  int x = 32;
-
-  {
-    int z = 32;
-  }
-  int z = 22;
+int main (){ 
+  int num1 = 1;
 }
 
-int suma (int x){ 
-  
+int suma (int x, int s, double sd, char ch) {
+  int x = 2;
 }
