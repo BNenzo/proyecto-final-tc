@@ -1,5 +1,7 @@
 package app;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +16,8 @@ public class MiVisitor extends idBaseVisitor<String> {
   }
 
   public void printInstructions() {
-    for (String instruction : instructions) {
-      System.out.println(instruction);
-    }
+    Utils.printInstructions(instructions);
+    Utils.saveInstructionsToFile(instructions, "src/outputs/codigo_intermedio.txt");
   }
 
   private int tempCount = 0;

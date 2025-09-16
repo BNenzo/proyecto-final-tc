@@ -9,6 +9,10 @@ int main (){
   for (int z = 0 ; z < 5 ; z ++) {
     int sd =2;
   }
+
+  if (num1 > 5) { 
+    suma(3,5,2.2,'r');
+  }
 }
 
 int suma (int x, int s, double sd, char ch) {

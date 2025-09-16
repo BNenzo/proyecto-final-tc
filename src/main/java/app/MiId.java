@@ -29,12 +29,25 @@ public class MiId {
   private Boolean Inicializada;
   private TipoDato tipoDato;
   private Boolean Usada;
+  private int line;
+  private int column;
 
   public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato) {
     this.Token = token;
     this.Inicializada = inicializada;
     this.Usada = usada;
     this.tipoDato = tipoDato;
+    this.line = 0;
+    this.column = 0;
+  }
+
+  public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato, int line, int column) {
+    this.Token = token;
+    this.Inicializada = inicializada;
+    this.Usada = usada;
+    this.tipoDato = tipoDato;
+    this.line = line;
+    this.column = column;
   }
 
   public String getToken() {
@@ -67,6 +80,22 @@ public class MiId {
 
   public void setUsada(Boolean usada) {
     Usada = usada;
+  }
+
+  public int getLine() {
+    return line;
+  }
+
+  public void setLine(int line) {
+    this.line = line;
+  }
+
+  public int getColumn() {
+    return column;
+  }
+
+  public void setColumn(int column) {
+    this.column = column;
   }
 
   @Override

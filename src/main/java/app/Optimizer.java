@@ -27,9 +27,8 @@ public class Optimizer {
   }
 
   public void printInstructions() {
-    for (String instruction : instructions) {
-      System.out.println(instruction);
-    }
+    Utils.printInstructions(instructions);
+    Utils.saveInstructionsToFile(instructions, "src/outputs/codigo_intermedio_optimizado.txt");
   }
 
   private void propagateConstants() {

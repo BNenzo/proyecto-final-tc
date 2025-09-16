@@ -1,5 +1,6 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,25 @@ public class TablaSimbolos {
 
   private Map<String, Function> tablaFunciones;
   private Map<String, MiId> globalVariables;
+  private List<String> warnings = new ArrayList<>();
+
+  public List<String> getWarnings() {
+    return warnings;
+  }
+
+  public void setWarnings(List<String> warnings) {
+    this.warnings = warnings;
+  }
+
+  private List<String> errors = new ArrayList<>();
+
+  public List<String> getErrors() {
+    return errors;
+  }
+
+  public void setErrors(List<String> errors) {
+    this.errors = errors;
+  }
 
   public Map<String, Function> getTablaFunciones() {
     return tablaFunciones;
@@ -69,19 +89,28 @@ public class TablaSimbolos {
     for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
       MiId valor = entry.getValue();
       System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
-          valor.getToken(), valor.getTipoDato(), "variable", 5, 4, "global",
+          valor.getToken(), valor.getTipoDato(), "variable", valor.getLine(), valor.getColumn(), "global",
           valor.getUsada(), valor.getInicializada());
     }
     for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
       MiId functionId = entry.getValue().getFunctionId();
       System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
-          Utils.getFunctionNameFromSign(functionId.getToken()), functionId.getTipoDato(), "function", 5, 4, "global",
+          Utils.getFunctionNameFromSign(functionId.getToken()),
+          functionId.getTipoDato(),
+          "function",
+          functionId.getLine(),
+          functionId.getColumn(),
+          "global",
           functionId.getUsada(),
           functionId.getInicializada());
       for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
         MiId parameterId = entry2.getValue();
         System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
-            parameterId.getToken(), parameterId.getTipoDato(), "parameter", 5, 4,
+            parameterId.getToken(),
+            parameterId.getTipoDato(),
+            "parameter",
+            parameterId.getLine(),
+            parameterId.getColumn(),
             Utils.getFunctionNameFromSign(functionId.getToken()),
             parameterId.getUsada(),
             parameterId.getInicializada());
@@ -93,11 +122,36 @@ public class TablaSimbolos {
               variableId.getToken(),
               variableId.getTipoDato(),
               "variable",
-              5,
-              4,
+              variableId.getLine(),
+              variableId.getColumn(),
               Utils.getFunctionNameFromSign(entry.getValue().getFunctionId().getToken()),
               variableId.getUsada(),
               variableId.getInicializada());
+        }
+
+      }
+    }
+  }
+
+  public void validateWarnings() {
+
+    for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
+      MiId valor = entry.getValue();
+      Utils.getIdWarnings(valor, warnings);
+    }
+    for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
+      MiId functionId = entry.getValue().getFunctionId();
+      Utils.getIdWarnings(functionId, warnings);
+
+      for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
+        MiId parameterId = entry2.getValue();
+        Utils.getIdWarnings(parameterId, warnings);
+
+      }
+      for (Context context : entry.getValue().getFunctionContexts()) {
+        for (Map.Entry<String, MiId> entry3 : context.getVariables().entrySet()) {
+          MiId variableId = entry3.getValue();
+          Utils.getIdWarnings(variableId, warnings);
         }
 
       }
@@ -134,6 +188,10 @@ public class TablaSimbolos {
   public MiId checkIfGlobalVariableIsAlreadyDeclarated(String idToken) {
     MiId id = globalVariables.get(idToken);
     return id;
+  }
+
+  public void addError(String error) {
+    errors.add(error);
   }
 
   public static TablaSimbolos getInstance() {

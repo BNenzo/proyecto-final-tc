@@ -1,5 +1,7 @@
 package app;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class Utils {
@@ -24,8 +26,14 @@ public class Utils {
     System.out.println(RED + "❌ " + text + RESET);
   }
 
-  public static void printAlreadyDeclarationError(String idTokenStr, String scope, int line, int column) {
-    printError("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
+  public static void printWarning(String text) {
+    final String YELLOW = "\u001B[33m";
+    final String RESET = "\u001B[0m";
+    System.out.println(YELLOW + "⚠️ " + text + RESET);
+  }
+
+  public static String printAlreadyDeclarationError(String idTokenStr, String scope, int line, int column) {
+    return ("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
         + scope + "'" + " (línea " + line + ", columna "
         + column + ")");
   }
@@ -71,5 +79,48 @@ public class Utils {
 
     sb.append(")");
     return sb.toString();
+  }
+
+  public static void getIdWarnings(MiId id, List<String> warnings) {
+    if (id.getUsada() == false) {
+      warnings.add(
+          " Warning: la variable '" +
+              id.getToken() +
+              "', no es usada en ningun contexto " +
+              "(linea " +
+              id.getLine() +
+              ", columna " +
+              id.getColumn() +
+              ")");
+    }
+    if (id.getInicializada() == false) {
+      warnings.add(
+          " Warning: la variable '" +
+              id.getToken() +
+              "' no es fue inicializada en ningun contexto " +
+              "(linea:" +
+              id.getLine() +
+              ", columna: " +
+              id.getColumn() +
+              ")");
+    }
+
+  }
+
+  public static void saveInstructionsToFile(List<String> instructions, String filePath) {
+    try (FileWriter writer = new FileWriter(filePath)) {
+      for (String instruction : instructions) {
+        writer.write(instruction + System.lineSeparator());
+      }
+      System.out.println("✅ Instrucciones guardadas en: " + filePath);
+    } catch (IOException e) {
+      System.err.println("❌ Error al guardar el archivo: " + e.getMessage());
+    }
+  }
+
+  public static void printInstructions(List<String> instructions) {
+    for (String instruction : instructions) {
+      System.out.println(instruction);
+    }
   }
 }
