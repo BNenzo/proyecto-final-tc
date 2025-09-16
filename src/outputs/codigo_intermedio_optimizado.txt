@@ -1,0 +1,28 @@
+DECLARE num_global int
+num_global = 34
+FUNC DECLARE suma : int (int , int , double , char );
+DEF_FUNC main() : int
+DECLARE num1 int
+num1 = 1
+CALL suma, 1,2,3.23,'4'
+t0 = CALL suma, 1,2,3.23,'4'
+num1 = t0
+DECLARE z int
+z = 0
+L0:
+t1 = 0 < 5
+ifFalse t1 goto L1
+DECLARE sd int
+sd = 2
+z = 1
+goto L0
+L1:
+t2 = 1 > 5
+ifFalse t2 goto L2
+CALL suma, 3,5,2.2,'r'
+L2:
+END_FUNC
+DEF_FUNC suma(int x, int s, double sd, char ch) : int
+DECLARE x int
+x = 2
+END_FUNC

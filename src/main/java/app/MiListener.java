@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MiListener extends idBaseListener {
-  private boolean error = false;
   TablaSimbolos tableInstance = TablaSimbolos.getInstance();
 
   // Utilidades
@@ -30,9 +29,8 @@ public class MiListener extends idBaseListener {
     MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(idTokenStr, currentScope);
 
     if (id == null) {
-      Utils.printError("Error: Variable '" + idTokenStr + "' no declarada en el ámbito '"
+      tableInstance.addError("Error: Variable '" + idTokenStr + "' no declarada en el ámbito '"
           + currentScope + "' (línea " + line + ", columna " + column + ")");
-      error = true;
     }
 
     return id;
@@ -86,15 +84,14 @@ public class MiListener extends idBaseListener {
    * es null significa que es el ambito global)
    */
   private void validateVariableDeclarations(String idTokenStr, int line, int column, Boolean inicializado) {
-    MiId newId = new MiId(idTokenStr, inicializado, false, tipoDatoAux);
+    MiId newId = new MiId(idTokenStr, inicializado, false, tipoDatoAux, line, column);
     String scope = getCurrentScope();
     MiId id = (functionAux != null)
         ? tableInstance.findIdInLastActiveContext(idTokenStr, currentScope)
         : tableInstance.checkIfGlobalVariableIsAlreadyDeclarated(idTokenStr);
 
     if (id != null) {
-      error = true;
-      Utils.printAlreadyDeclarationError(idTokenStr, scope, line, column);
+      tableInstance.addError(Utils.printAlreadyDeclarationError(idTokenStr, scope, line, column));
       return;
     }
 
@@ -113,10 +110,9 @@ public class MiListener extends idBaseListener {
     String idTokenStr = ctx.asignacion_variable_identificador().getText();
 
     if (functionAux == null) {
-      Utils.printError(
+      tableInstance.addError(
           "Error: No se pueden realizar asignaciones en el ambito global " + "' (línea " + ctx.getStart().getLine()
               + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
-      error = true;
       return;
     }
 
@@ -135,11 +131,10 @@ public class MiListener extends idBaseListener {
     String idTokenStr = ctx.getStart().getText();
 
     if (currentScope == "") {
-      Utils.printError(
+      tableInstance.addError(
           "Error: No se pueden realizar operaciones logicas en el ambito global " + "' (línea "
               + ctx.getStart().getLine()
               + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
-      error = true;
       return;
     }
 
@@ -157,11 +152,10 @@ public class MiListener extends idBaseListener {
   public void enterIdentificador_aritmetico(idParser.Identificador_aritmeticoContext ctx) {
     String idTokenStr = ctx.getStart().getText();
     if (currentScope == "") {
-      Utils.printError(
+      tableInstance.addError(
           "Error: No se pueden realizar operaciones aritmeticas en el ambito global " + "' (línea "
               + ctx.getStart().getLine()
               + ", columna " + ctx.getStart().getCharPositionInLine() + ")");
-      error = true;
       return;
     }
 
@@ -179,7 +173,11 @@ public class MiListener extends idBaseListener {
   public void enterDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
 
     // Se obtiene la informacion necesaria para
-    String functionName = ctx.declaracion_funcion_identificador().getText();
+    idParser.Declaracion_funcion_identificadorContext functionDeclarationIdCtx = ctx
+        .declaracion_funcion_identificador();
+    String functionName = functionDeclarationIdCtx.getText();
+    int functionNameLine = functionDeclarationIdCtx.getStart().getLine();
+    int functionNameColumn = functionDeclarationIdCtx.getStart().getCharPositionInLine();
     TipoDato functionType = TipoDato.fromString(ctx.getStart().getText());
 
     // Se obtienen todos los parametros que estan siendo usados en la declaracion
@@ -197,7 +195,7 @@ public class MiListener extends idBaseListener {
     tableInstance.AddFunctionToTable(functionSign);
 
     Function function = tableInstance.getTablaFunciones().get(functionSign);
-    MiId functionId = new MiId(functionSign, false, false, functionType);
+    MiId functionId = new MiId(functionSign, false, false, functionType, functionNameLine, functionNameColumn);
     function.setFunctionId(functionId);
 
     // Se cargan los parametros
@@ -216,7 +214,10 @@ public class MiListener extends idBaseListener {
     // Se obtiene la informacion basica de la funcion que esta siendo definida
     String functionDefinitionType = ctx.getStart().getText();
     TipoDato functionDefinitionTypeParsed = TipoDato.fromString(functionDefinitionType);
-    String functionDefinitionName = ctx.definicion_funcion_nombre().getText();
+    idParser.Definicion_funcion_nombreContext functionDefCtx = ctx.definicion_funcion_nombre();
+    String functionDefinitionName = functionDefCtx.getText();
+    int functionDefinitionLine = functionDefCtx.getStart().getLine();
+    int functionDefinitionColumn = functionDefCtx.getStart().getCharPositionInLine();
 
     // Se obtienen todos los parametros que estan siendo usados en la definicion de
     // esta funcion
@@ -225,8 +226,12 @@ public class MiListener extends idBaseListener {
     if (parametrosCtx != null) {
       for (idParser.Definicion_funcion_parametroContext parametroCtx : parametrosCtx.definicion_funcion_parametro()) {
         TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
-        String parameterName = parametroCtx.definicion_funcion_parametro_nombre().getText();
-        parametersList.add(new MiId(parameterName, true, false, parameterType));
+        idParser.Definicion_funcion_parametro_nombreContext paramNameCtx = parametroCtx
+            .definicion_funcion_parametro_nombre();
+        int parameterNameLine = paramNameCtx.getStart().getLine();
+        int parameterNameColumn = paramNameCtx.getStart().getCharPositionInLine();
+        String parameterName = paramNameCtx.getText();
+        parametersList.add(new MiId(parameterName, true, false, parameterType, parameterNameLine, parameterNameColumn));
       }
     }
 
@@ -282,9 +287,8 @@ public class MiListener extends idBaseListener {
      */
     if (functionAlreadyDeclarated != null && isTheSameFunction == true
         && functionAlreadyDeclarated.getFunctionId().getTipoDato() != TipoDato.fromString(functionDefinitionType)) {
-      Utils.printError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
+      tableInstance.addError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
           + ", Se espera que la definicion retorne: " + functionAlreadyDeclarated.getFunctionId().getTipoDato());
-      error = true;
       return;
     }
 
@@ -313,7 +317,7 @@ public class MiListener extends idBaseListener {
     if (functionAlreadyDeclarated == null || (functionAlreadyDeclarated != null && isTheSameFunction == false)) {
       tableInstance.AddFunctionToTable(functionSign);
       MiId functionId = new MiId(functionSign, true, functionDefinitionName.equals("main"),
-          functionDefinitionTypeParsed);
+          functionDefinitionTypeParsed, functionDefinitionLine, functionDefinitionColumn);
       functionAlreadyDeclarated = tablaFunciones.get(functionSign);
       functionAlreadyDeclarated.setFunctionId(functionId);
       if (parametersList.size() != 0) {
@@ -349,14 +353,13 @@ public class MiListener extends idBaseListener {
           MiId id = tableInstance.checkIfIdIsAlreadyDeclarated(argumentId, currentScope);
 
           if (id == null) {
-            Utils.printError("Error: Variable '" + argumentId + "' no declarada en el ambito "
+            tableInstance.addError("Error: Variable '" + argumentId + "' no declarada en el ambito "
                 + currentScope
                 + " (linea "
                 + argumentoCtx.llamada_funcion_argumento_identificador().getStart().getLine()
-                + ", Columna: "
+                + ", columna: "
                 + argumentoCtx.llamada_funcion_argumento_identificador().getStart().getCharPositionInLine()
                 + ")");
-            error = true;
             return;
           }
           argumentsTypes.add(id.getTipoDato().toString().toLowerCase());
@@ -380,15 +383,14 @@ public class MiListener extends idBaseListener {
     Function function = tablaFunciones.get(functionSign);
 
     if (function == null) {
-      Utils.printError(
+      tableInstance.addError(
           "Error: La funcion "
-              + functionName
+              + functionSign
               + " No ha sido declarada en el ambito global (linea "
               + ctx.llamada_nombre_funcion().getStart().getLine()
-              + ", Columna "
+              + ", columna "
               + ctx.llamada_nombre_funcion().getStart().getCharPositionInLine()
               + ")");
-      error = true;
       return;
     }
 
@@ -404,7 +406,6 @@ public class MiListener extends idBaseListener {
     if (id == null) {
       System.err.println("❌ Error: Variable '" + idValue + "' no declarada en el ambito "
           + functionAux.getFunctionId().getToken() + " (linea " + ctx.getStart().getLine() + ")");
-      error = true;
       return;
     }
 
@@ -439,13 +440,16 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void exitS(idParser.SContext ctx) {
-
-    if (error)
-      return;
-
     // TablaSimbolos.getInstance().displayTable();
     TablaSimbolos.getInstance().displayTableFormat();
 
+    TablaSimbolos.getInstance().validateWarnings();
+    for (String error : TablaSimbolos.getInstance().getErrors()) {
+      Utils.printError(error);
+    }
+    for (String warning : TablaSimbolos.getInstance().getWarnings()) {
+      Utils.printWarning(warning);
+    }
   }
 
 }

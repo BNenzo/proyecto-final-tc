@@ -21,7 +21,7 @@ public class App {
     public static void main(String[] args) throws Exception {
 
         // create a CharStream that reads from file
-        CharStream input = CharStreams.fromFileName("src/programa.txt");
+        CharStream input = CharStreams.fromFileName("src/inputs/programa.cpp");
 
         // create a lexer that feeds off of input CharStream
         idLexer lexer = new idLexer(input);
@@ -34,14 +34,7 @@ public class App {
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial
-
         ParseTree tree = parser.s();
-
-        System.out.println("");
-        // System.out.println("Resultado TAC: " + resultado);
-        // create Listener
-
-        // System.out.println("📊 Tokens procesados: " + cantidadTokens);
 
         System.out.println("🚀 Iniciando compilación de: programa.txt");
         System.out.println("============================================================");
@@ -58,16 +51,16 @@ public class App {
         System.out.println(tree.toStringTree(parser));
         System.out.println();
         // === 3. VISUALIZACIÓN DEL AST ===
-        // System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
-        // System.out.println(" 📊 Ventana del árbol sintáctico abierta");
-        // JFrame frame = new JFrame("AST - Árbol Sintáctico");
-        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
-        // tree);
-        // viewer.setScale(1.5);
-        // frame.add(viewer);
-        // frame.setSize(800, 600);
-        // frame.setVisible(false);
+        System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
+        System.out.println(" 📊 Ventana del árbol sintáctico abierta");
+        JFrame frame = new JFrame("AST - Árbol Sintáctico");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
+                tree);
+        viewer.setScale(1.5);
+        frame.add(viewer);
+        frame.setSize(800, 600);
+        frame.setVisible(true);
         System.out.println("=== 4. ANÁLISIS SEMÁNTICO ===");
         System.out.println("📋 Tabla de símbolos construida:");
         System.out.printf("%-15s %-8s %-12s %-7s %-8s %-10s %-10s %-10s%n",
@@ -78,6 +71,10 @@ public class App {
         ParseTreeWalker walker = new ParseTreeWalker();
         MiListener escucha = new MiListener(parser);
         walker.walk(escucha, tree);
+        if (TablaSimbolos.getInstance().getErrors().size() > 0) {
+            return;
+        }
+
         System.out.println("=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===");
         System.out.println("📝 Código de tres direcciones generado:");
         MiVisitor visitor = new MiVisitor();
@@ -87,11 +84,7 @@ public class App {
         System.out.println("=== 6. OPTIMIZACIÓN DE CÓDIGO ===");
         System.out.println("✅ Codigo optimizado generado:");
         Optimizer optimizer = new Optimizer(tac);
-        List<String> optimized = optimizer.optimize();
-        for (String instr : optimized) {
-            System.out.println(instr);
-        }
-        System.out.println("fin del programa");
-
+        optimizer.optimize();
+        optimizer.printInstructions();
     }
 }

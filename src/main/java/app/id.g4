@@ -33,9 +33,8 @@ COMILLA: '"';
 COMA: ',';
 CADENA: '"' (~["\r\n])* '"';
 CARACTER: '\'' ( ESC_SEQ | ~['\\\r\n]) '\'';
-OPERADORES_NUMERICOS: '+' | '-' | '*' | '/' | '%';
-// SIMBOLOS LOGICOS
 
+// SIMBOLOS LOGICOS
 MAYOR: '>';
 MENOR: '<';
 MAYOR_IGUAL: '>=';
@@ -52,7 +51,6 @@ FOR: 'for';
 WHILE: 'while';
 BREAK: 'break';
 CONTINUE: 'continue';
-
 RETURN: 'return';
 
 IDENTIFICADOR: (LETRA | '_') (LETRA | DIGITO | '_')*;
@@ -252,35 +250,3 @@ return_variables:
 	| return_variable_identificador;
 
 return_variable_identificador: IDENTIFICADOR;
-// s: ID { System.out.println("ID -> " + $ID.getText()); } s | INT { System.out.println("INT -> " +
-// $INT.getText()); } s | CHAR { System.out.println("CHAR -> " + $CHAR.getText()); } s | DOUBLE {
-// System.out.println("DOUBLE -> " + $DOUBLE.getText()); } s | VOID { System.out.println("VOID -> "
-// + $VOID.getText()); } s
-
-// // Símbolos | LLAVE_APERTURA { System.out.println("LLAVE_APERTURA -> " +
-// $LLAVE_APERTURA.getText()); } s | LLAVE_CLAUSURA { System.out.println("LLAVE_CLAUSURA -> " +
-// $LLAVE_CLAUSURA.getText()); } s | PARENTESIS_APERTURA { System.out.println("PARENTESIS_APERTURA
-// -> " + $PARENTESIS_APERTURA.getText()); } s | PARENTESIS_CLAUSURA {
-// System.out.println("PARENTESIS_CLAUSURA -> " + $PARENTESIS_CLAUSURA.getText()); } s | PUNTO_COMA
-// { System.out.println("PUNTO_COMA -> " + $PUNTO_COMA.getText()); } s | SUMA {
-// System.out.println("SUMA -> " + $SUMA.getText()); } s | RESTA { System.out.println("RESTA -> " +
-// $RESTA.getText()); } s | MULTIPLICAR { System.out.println("MULTIPLICAR -> " +
-// $MULTIPLICAR.getText()); } s | MODULO { System.out.println("MODULO -> " + $MODULO.getText()); } s
-// | EQUAL { System.out.println("EQUAL -> " + $EQUAL.getText()); } s | INCREMENTADOR {
-// System.out.println("INCREMENTADOR -> " + $INCREMENTADOR.getText()); } s | DECREMENTADOR {
-// System.out.println("DECREMENTADOR -> " + $DECREMENTADOR.getText()); } s
-
-// // Operadores lógicos | MAYOR { System.out.println("MAYOR -> " + $MAYOR.getText()); } s | MENOR {
-// System.out.println("MENOR -> " + $MENOR.getText()); } s | MAYOR_IGUAL {
-// System.out.println("MAYOR_IGUAL -> " + $MAYOR_IGUAL.getText()); } s | MENOR_IGUAL {
-// System.out.println("MENOR_IGUAL -> " + $MENOR_IGUAL.getText()); } s | AND {
-// System.out.println("AND -> " + $AND.getText()); } s | OR { System.out.println("OR -> " +
-// $OR.getText()); } s
-
-// // Estructuras de control | IF { System.out.println("IF -> " + $IF.getText()); } s | ELSE {
-// System.out.println("ELSE -> " + $ELSE.getText()); } s | FOR { System.out.println("FOR -> " +
-// $FOR.getText()); } s | WHILE { System.out.println("WHILE -> " + $WHILE.getText()); } s | BREAK {
-// System.out.println("BREAK -> " + $BREAK.getText()); } s | CONTINUE { System.out.println("CONTINUE
-// -> " + $CONTINUE.getText()); } s
-
-// // Otros | OTRO { System.out.println("OTRO -> " + $OTRO.getText()); } s |;|;
