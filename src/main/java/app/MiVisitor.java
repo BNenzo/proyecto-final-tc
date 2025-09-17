@@ -69,6 +69,8 @@ public class MiVisitor extends idBaseVisitor<String> {
   public String visitFactor(idParser.FactorContext ctx) {
     if (ctx.NUMERO() != null) {
       return ctx.NUMERO().getText();
+    } else if (ctx.NUMERO_DOUBLE() != null) {
+      return ctx.NUMERO_DOUBLE().getText();
     } else if (ctx.identificador_aritmetico() != null) {
       return ctx.identificador_aritmetico().getText();
     } else {
@@ -139,6 +141,8 @@ public class MiVisitor extends idBaseVisitor<String> {
     String variable = ctx.asignacion_variable_identificador().getText();
     if (ctx.NUMERO() != null) {
       instructions.add(variable + " = " + ctx.NUMERO().getText());
+    } else if (ctx.NUMERO_DOUBLE() != null) {
+      instructions.add(variable + " = " + ctx.NUMERO_DOUBLE().getText());
     } else if (ctx.CARACTER() != null) {
       instructions.add(variable + " = " + ctx.CARACTER().getText());
     } else if (ctx.expresion_aritmetica() != null) {
@@ -205,8 +209,10 @@ public class MiVisitor extends idBaseVisitor<String> {
   public String visitTermino_comparacion(idParser.Termino_comparacionContext ctx) {
     if (ctx.NUMERO() != null) {
       return ctx.NUMERO().getText();
-    } else if (ctx.CADENA() != null) {
-      return ctx.CADENA().getText();
+    } else if (ctx.NUMERO_DOUBLE() != null) {
+      return ctx.NUMERO_DOUBLE().getText();
+    } else if (ctx.CARACTER() != null) {
+      return ctx.CARACTER().getText();
     } else {
       return ctx.getText(); // IDENTIFICADOR
     }
@@ -446,6 +452,8 @@ public class MiVisitor extends idBaseVisitor<String> {
     if (ctx.return_variables() != null) {
       if (ctx.return_variables().NUMERO() != null) {
         valorRetorno = ctx.return_variables().NUMERO().getText();
+      } else if (ctx.return_variables().NUMERO_DOUBLE() != null) {
+        valorRetorno = ctx.return_variables().NUMERO_DOUBLE().getText();
       } else if (ctx.return_variables().CARACTER() != null) {
         valorRetorno = ctx.return_variables().CARACTER().getText();
       } else if (ctx.return_variables().return_variable_identificador() != null) {
