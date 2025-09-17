@@ -31,8 +31,6 @@ INCREMENTADOR: '++';
 DECREMENTADOR: '--';
 COMILLA: '"';
 COMA: ',';
-CADENA: '"' (~["\r\n])* '"';
-CARACTER: '\'' ( ESC_SEQ | ~['\\\r\n]) '\'';
 
 // SIMBOLOS LOGICOS
 MAYOR: '>';
@@ -53,7 +51,8 @@ BREAK: 'break';
 CONTINUE: 'continue';
 RETURN: 'return';
 
-IDENTIFICADOR: (LETRA | '_') (LETRA | DIGITO | '_')*;
+CARACTER: '\'' ( ESC_SEQ | ~['\\\r\n]) '\'';
+IDENTIFICADOR: (LETRA | ('_' LETRA)) (LETRA | DIGITO | '_')*;
 NUMERO_DOUBLE: DIGITO+ '.' DIGITO+;
 NUMERO: (DIGITO)+;
 
@@ -106,6 +105,7 @@ declarador_simple: IDENTIFICADOR;
 asignacion_variable:
 	asignacion_variable_identificador EQUAL (
 		NUMERO
+		| NUMERO_DOUBLE
 		| CARACTER
 		| expresion_aritmetica
 		| expresion_booleana
@@ -123,7 +123,11 @@ expresion_booleana:
 	| PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA
 	| expresion_booleana operador_logico expresion_booleana;
 
-termino_comparacion: CADENA | identificador_logico | NUMERO;
+termino_comparacion:
+	CARACTER
+	| identificador_logico
+	| NUMERO
+	| NUMERO_DOUBLE;
 
 identificador_logico: IDENTIFICADOR;
 
@@ -135,7 +139,7 @@ operador_comparacion:
 	| MAYOR_IGUAL
 	| MENOR_IGUAL;
 
-operador_logico: AND | | OR;
+operador_logico: AND | OR;
 
 /* --------------------- OPERACIONES ARITMETICAS ---------------------	*/
 
@@ -149,6 +153,7 @@ termino_aritmetico:
 
 factor:
 	NUMERO
+	| NUMERO_DOUBLE
 	| identificador_aritmetico
 	| PARENTESIS_APERTURA expresion_aritmetica PARENTESIS_CLAUSURA;
 
@@ -172,8 +177,9 @@ declaracion_funcion_parametro:
 		IDENTIFICADOR declaracion_funcion_parametro_inicializado?
 	)?;
 
-declaracion_funcion_parametro_inicializado:
-	(EQUAL (CADENA | NUMERO));
+declaracion_funcion_parametro_inicializado: (
+		EQUAL (CARACTER | NUMERO | NUMERO_DOUBLE)
+	);
 
 /* ---------------------  DEFINICION DE FUNCIONES ---------------------  */
 
@@ -222,11 +228,11 @@ if:
 	| IF PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque ELSE bloque
 	| IF PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque ELSE instruccion;
 
-/* ---------------------  WHILE ---------------------  */
+/* --------------------- WHILE --------------------- */
 while:
 	WHILE PARENTESIS_APERTURA expresion_booleana PARENTESIS_CLAUSURA bloque;
 
-/* ---------------------  FOR ---------------------  */
+/* --------------------- FOR --------------------- */
 for:
 	FOR PARENTESIS_APERTURA for_declaracion? PUNTO_COMA expresion_booleana PUNTO_COMA
 		for_autoincremental PARENTESIS_CLAUSURA bloque;
@@ -246,6 +252,7 @@ return: RETURN return_variables PUNTO_COMA;
 
 return_variables:
 	NUMERO
+	| NUMERO_DOUBLE
 	| CARACTER
 	| return_variable_identificador;
 
