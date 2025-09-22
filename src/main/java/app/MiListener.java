@@ -424,21 +424,7 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterFor_declaracion(idParser.For_declaracionContext ctx) {
-
-    if (ctx.declaracion_variable_declaradores() != null) {
-      typeAux = TipoDato.fromString(ctx.getStart().getText());
-      return;
-    }
-
-    if (ctx.for_declaracion_uso_variables() != null) {
-      idParser.For_declaracion_uso_variablesContext usoCtx = ctx.for_declaracion_uso_variables();
-
-      List<TerminalNode> ids = usoCtx.IDENTIFICADOR();
-
-      for (TerminalNode id : ids) {
-        validateVariableUsage(id.getText(), ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
-      }
-    }
+    typeAux = TipoDato.fromString(ctx.getStart().getText());
   }
 
   @Override
