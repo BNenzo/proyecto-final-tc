@@ -42,15 +42,9 @@ public class TablaSimbolos {
     functionTable.put(functionName, new Function());
   }
 
-  public void closeLastActiveContext(String functionName) {
-    List<Context> contexts = functionTable.get(functionName).getFunctionContexts();
-    for (int i = contexts.size() - 1; i >= 0; i--) {
-      Context ctx = contexts.get(i);
-      if (ctx.isActive()) {
-        ctx.close();
-        break;
-      }
-    }
+  public void closeFunctionLastActiveContext(String functionName) {
+    Function function = functionTable.get(functionName);
+    function.closeLastActiveContext();
   }
 
   public void addId(MiId id, String functionName) {
@@ -60,12 +54,11 @@ public class TablaSimbolos {
       return;
     }
 
-    Context lastActiveContext = Utils.getLastActiveContext(functionTable.get(functionName).getFunctionContexts());
-    lastActiveContext.getVariables().put(id.getToken(), id);
+    functionTable.get(functionName).getLastActiveContext().addVariable(id);
   }
 
-  public void addContext(String functionName) {
-    functionTable.get(functionName).getFunctionContexts().add(new Context());
+  public void addFunctionContext(String functionName) {
+    functionTable.get(functionName).addContext();
   }
 
   public void displayTable() {
@@ -102,7 +95,7 @@ public class TablaSimbolos {
           "global",
           functionId.getUsed(),
           functionId.getInitialized());
-      for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
+      for (Map.Entry<String, MiId> entry2 : entry.getValue().getParameters().entrySet()) {
         MiId parameterId = entry2.getValue();
         System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
             parameterId.getToken(),
@@ -141,7 +134,7 @@ public class TablaSimbolos {
       MiId functionId = entry.getValue().getFunctionId();
       Utils.getIdWarnings(functionId, warnings);
 
-      for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
+      for (Map.Entry<String, MiId> entry2 : entry.getValue().getParameters().entrySet()) {
         MiId parameterId = entry2.getValue();
         Utils.getIdWarnings(parameterId, warnings);
 
@@ -157,23 +150,15 @@ public class TablaSimbolos {
   }
 
   public MiId findIdInLastActiveContext(String idToken, String functionName) {
-    Context lastActiveContext = Utils.getLastActiveContext(functionTable.get(functionName).getFunctionContexts());
-    return lastActiveContext.getVariables().get(idToken);
+    return functionTable.get(functionName).getLastActiveContext().getVariableByTokenString(idToken);
   }
 
   public MiId checkIfIdIsAlreadyDeclarated(String idToken, String functionName) {
     Function function = functionTable.get(functionName);
-    List<Context> contexts = function.getFunctionContexts();
-    MiId id = null;
-    for (int i = contexts.size() - 1; i >= 0; i--) {
-      Context context = contexts.get(i);
-      if (context.isActive() && id == null) {
-        id = context.getVariables().get(idToken);
-      }
-    }
+    MiId id = function.getVaribleByTokenString(idToken);
 
     if (id == null) {
-      id = function.getFunctionParameters().get(idToken);
+      id = function.getParameterByTokenString(idToken);
     }
 
     if (id == null) {

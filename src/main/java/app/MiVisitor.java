@@ -133,6 +133,11 @@ public class MiVisitor extends idBaseVisitor<String> {
     } else if (ctx.expresion_booleana() != null) {
       String resultado = visitExpresion_booleana(ctx.expresion_booleana());
       instructions.add(nombreVar + " = " + resultado);
+    } else if (ctx.llamada_funcion_expresion() != null) {
+      String call = visit(ctx.llamada_funcion_expresion());
+      String temp = newTemp();
+      instructions.add(temp + " = " + call);
+      instructions.add(nombreVar + " = " + temp);
     }
 
     return null;
@@ -164,6 +169,13 @@ public class MiVisitor extends idBaseVisitor<String> {
   }
 
   @Override
+  public String visitLlamada_funcion(idParser.Llamada_funcionContext ctx) {
+    String resultado = visit(ctx.llamada_funcion_expresion());
+    instructions.add(resultado);
+    return resultado;
+  }
+
+  @Override
   public String visitLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx) {
     String functionName = ctx.llamada_nombre_funcion().getText();
     String arguments = "";
@@ -171,8 +183,8 @@ public class MiVisitor extends idBaseVisitor<String> {
       arguments = ", " + ctx.llamada_funcion_parametros().getText();
     }
 
-    instructions.add("CALL " + functionName + arguments);
-    return "CALL " + functionName + arguments;
+    String call = "CALL " + functionName + arguments;
+    return call;
   }
 
   @Override

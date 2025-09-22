@@ -43,14 +43,14 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterBloque(idParser.BloqueContext ctx) {
     if (shouldAddContext == true) {
-      tableInstance.addContext(currentScope);
+      tableInstance.addFunctionContext(currentScope);
     }
     shouldAddContext = true;
   }
 
   @Override
   public void exitBloque(idParser.BloqueContext ctx) {
-    tableInstance.closeLastActiveContext(currentScope);
+    tableInstance.closeFunctionLastActiveContext(currentScope);
   }
 
   /* ---------------------- DECLARACIONES ------------------------------- */
@@ -202,7 +202,7 @@ public class MiListener extends idBaseListener {
 
     // Se cargan los parametros
     for (MiId parameter : parametersList) {
-      function.getFunctionParameters().put(parameter.getToken(), parameter);
+      function.getParameters().put(parameter.getToken(), parameter);
     }
   }
 
@@ -261,7 +261,7 @@ public class MiListener extends idBaseListener {
        * Se comprueba si la cantidad de parametros de la funcion declarada es distinto
        * a la cantidad de parametros de la nueva funcion
        */
-      if (functionAlreadyDeclarated.getFunctionParameters().size() != parametersList.size()) {
+      if (functionAlreadyDeclarated.getParameters().size() != parametersList.size()) {
         isTheSameFunction = false;
       }
 
@@ -270,7 +270,7 @@ public class MiListener extends idBaseListener {
        * 
        */
       if (isTheSameFunction == true) {
-        for (MiId paramFromMap : functionAlreadyDeclarated.getFunctionParameters().values()) {
+        for (MiId paramFromMap : functionAlreadyDeclarated.getParameters().values()) {
           MiId paramFromList = parametersList.get(i);
 
           if (paramFromMap.getType() != paramFromList.getType()) {
@@ -324,7 +324,7 @@ public class MiListener extends idBaseListener {
       functionAlreadyDeclarated.setFunctionId(functionId);
       if (parametersList.size() != 0) {
         for (MiId parameter : parametersList) {
-          functionAlreadyDeclarated.addIdInParameters(parameter);
+          functionAlreadyDeclarated.addParameter(parameter);
         }
       }
       functionAux = functionAlreadyDeclarated;
@@ -418,7 +418,7 @@ public class MiListener extends idBaseListener {
   // ---------------------- FOR ----------------------
   @Override
   public void enterFor(idParser.ForContext ctx) {
-    tableInstance.addContext(currentScope);
+    tableInstance.addFunctionContext(currentScope);
     shouldAddContext = false;
   }
 

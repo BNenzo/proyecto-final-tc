@@ -95,6 +95,7 @@ declarador_inicializado:
 	| IDENTIFICADOR EQUAL IDENTIFICADOR
 	| IDENTIFICADOR EQUAL NUMERO_DOUBLE
 	| IDENTIFICADOR EQUAL NUMERO
+	| IDENTIFICADOR EQUAL llamada_funcion_expresion
 	| IDENTIFICADOR EQUAL expresion_booleana
 	| IDENTIFICADOR EQUAL expresion_aritmetica;
 

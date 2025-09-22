@@ -1,4 +1,29 @@
+FUNC DECLARE suma : int (int , int );
 DEF_FUNC main() : int
-DECLARE x int
-x = 3
+DECLARE num1 int
+DECLARE num2 int
+DECLARE num3 int
+num3 = 3
+DECLARE num4 int
+DECLARE double_num1 double
+DECLARE double_num2 double
+DECLARE double_num3 double
+double_num3 = 3.14
+DECLARE double_num4 double
+DECLARE ch_1 char
+DECLARE ch_2 char
+ch_2 = 'c'
+DECLARE resultadoSuma int
+t0 = CALL suma, num2,num4
+resultadoSuma = t0
+CALL suma, num2,num4
+DECLARE opArit int
+t1 = num3 + 5
+opArit = t1
+END_FUNC
+DEF_FUNC suma(int x, int y) : int
+DECLARE resultado int
+t2 = x + y
+resultado = t2
+RETURN resultado
 END_FUNC
