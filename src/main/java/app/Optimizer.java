@@ -31,7 +31,8 @@ public class Optimizer {
     Utils.saveInstructionsToFile(instructions, "src/outputs/codigo_intermedio_optimizado.txt");
   }
 
-  private void propagateConstants() {
+  private List<String> propagateConstants() {
+    Map<String, String> constants = new HashMap<>();
     List<String> newInstructions = new ArrayList<>();
 
     for (String instr : instructions) {
@@ -40,21 +41,25 @@ public class Optimizer {
         String left = parts[0].trim();
         String right = parts[1].trim();
 
-        if (right.matches("\\d+")) {
+        // 🚫 Evitar self-assignments como "i = i + 1"
+        if (right.matches("\\d+") && !right.contains(left)) {
           constants.put(left, right);
         } else {
           for (Map.Entry<String, String> entry : constants.entrySet()) {
             String var = entry.getKey();
             String val = entry.getValue();
+            // Sustituir solo variables conocidas
             right = right.replaceAll("\\b" + var + "\\b", val);
           }
         }
+
         newInstructions.add(left + " = " + right);
       } else {
         newInstructions.add(instr);
       }
     }
-    instructions = newInstructions;
+
+    return newInstructions;
   }
 
   private void foldConstants() {

@@ -25,61 +25,61 @@ enum TipoDato {
 }
 
 public class MiId {
-  private String Token;
-  private Boolean Inicializada;
-  private TipoDato tipoDato;
-  private Boolean Usada;
+  private String token;
+  private Boolean initialized;
+  private TipoDato type;
+  private Boolean used;
   private int line;
   private int column;
 
-  public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato) {
-    this.Token = token;
-    this.Inicializada = inicializada;
-    this.Usada = usada;
-    this.tipoDato = tipoDato;
+  public MiId(String token, Boolean initialized, Boolean used, TipoDato type) {
+    this.token = token;
+    this.initialized = initialized;
+    this.used = used;
+    this.type = type;
     this.line = 0;
     this.column = 0;
   }
 
-  public MiId(String token, Boolean inicializada, Boolean usada, TipoDato tipoDato, int line, int column) {
-    this.Token = token;
-    this.Inicializada = inicializada;
-    this.Usada = usada;
-    this.tipoDato = tipoDato;
+  public MiId(String token, Boolean initialized, Boolean used, TipoDato type, int line, int column) {
+    this.token = token;
+    this.initialized = initialized;
+    this.used = used;
+    this.type = type;
     this.line = line;
     this.column = column;
   }
 
   public String getToken() {
-    return Token;
+    return token;
   }
 
   public void setToken(String token) {
-    Token = token;
+    this.token = token;
   }
 
-  public Boolean getInicializada() {
-    return Inicializada;
+  public Boolean getInitialized() {
+    return initialized;
   }
 
-  public void setInicializada(Boolean inicializada) {
-    Inicializada = inicializada;
+  public void setInitialized(Boolean initialized) {
+    this.initialized = initialized;
   }
 
-  public TipoDato getTipoDato() {
-    return tipoDato;
+  public TipoDato getType() {
+    return type;
   }
 
-  public void setTipoDato(TipoDato tipoDato) {
-    this.tipoDato = tipoDato;
+  public void setType(TipoDato type) {
+    this.type = type;
   }
 
-  public Boolean getUsada() {
-    return Usada;
+  public Boolean getUsed() {
+    return used;
   }
 
-  public void setUsada(Boolean usada) {
-    Usada = usada;
+  public void setUsed(Boolean used) {
+    this.used = used;
   }
 
   public int getLine() {
@@ -100,9 +100,9 @@ public class MiId {
 
   @Override
   public String toString() {
-    return "Token: " + Token +
-        ", Inicializada: " + Inicializada +
-        ", Usada: " + Usada +
-        ", Tipo de Dato: " + tipoDato;
+    return "Token: " + token +
+        ", Inicializada: " + initialized +
+        ", Usada: " + used +
+        ", Tipo de Dato: " + type;
   }
 }

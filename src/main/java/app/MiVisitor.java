@@ -1,7 +1,5 @@
 package app;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,10 +69,14 @@ public class MiVisitor extends idBaseVisitor<String> {
       return ctx.NUMERO().getText();
     } else if (ctx.NUMERO_DOUBLE() != null) {
       return ctx.NUMERO_DOUBLE().getText();
-    } else if (ctx.identificador_aritmetico() != null) {
-      return ctx.identificador_aritmetico().getText();
-    } else {
+    } else if (ctx.identificador_aritmetico() != null && ctx.identificador_aritmetico().IDENTIFICADOR() != null) {
+      return ctx.identificador_aritmetico().IDENTIFICADOR().getText();
+    } else if (ctx.PARENTESIS_APERTURA() != null && ctx.expresion_aritmetica() != null) {
       return visit(ctx.expresion_aritmetica());
+    } else {
+      String temp = newTemp();
+      instructions.add(temp + " = ???");
+      return temp;
     }
   }
 
@@ -313,15 +315,16 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitFor_autoincremental(idParser.For_autoincrementalContext ctx) {
-    String var = ctx.IDENTIFICADOR().getText();
-
-    if (ctx.INCREMENTADOR() != null) {
-      instructions.add(var + " = " + var + " + 1");
-    } else if (ctx.DECREMENTADOR() != null) {
-      instructions.add(var + " = " + var + " - 1");
+    if (ctx.IDENTIFICADOR() != null) {
+      String var = ctx.IDENTIFICADOR().getText();
+      if (ctx.INCREMENTADOR() != null) {
+        instructions.add(var + " = " + var + " + 1");
+      } else if (ctx.DECREMENTADOR() != null) {
+        instructions.add(var + " = " + var + " - 1");
+      }
     }
 
-    if (ctx.for_autoincremental() != null) {
+    if (ctx.for_autoincremental() != null && !ctx.for_autoincremental().isEmpty()) {
       for (idParser.For_autoincrementalContext subInc : ctx.for_autoincremental()) {
         visit(subInc);
       }

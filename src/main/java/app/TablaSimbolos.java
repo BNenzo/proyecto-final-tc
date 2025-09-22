@@ -8,8 +8,9 @@ import java.util.Map;
 public class TablaSimbolos {
   private static TablaSimbolos tabla_instance = null;
 
-  private Map<String, Function> tablaFunciones;
+  private Map<String, Function> functionTable;
   private Map<String, MiId> globalVariables;
+  private List<String> errors = new ArrayList<>();
   private List<String> warnings = new ArrayList<>();
 
   public List<String> getWarnings() {
@@ -20,8 +21,6 @@ public class TablaSimbolos {
     this.warnings = warnings;
   }
 
-  private List<String> errors = new ArrayList<>();
-
   public List<String> getErrors() {
     return errors;
   }
@@ -30,21 +29,21 @@ public class TablaSimbolos {
     this.errors = errors;
   }
 
-  public Map<String, Function> getTablaFunciones() {
-    return tablaFunciones;
+  public Map<String, Function> getFunctionTable() {
+    return functionTable;
   }
 
   private TablaSimbolos() {
-    this.tablaFunciones = new HashMap<>();
+    this.functionTable = new HashMap<>();
     this.globalVariables = new HashMap<>();
   }
 
   public void AddFunctionToTable(String functionName) {
-    tablaFunciones.put(functionName, new Function());
+    functionTable.put(functionName, new Function());
   }
 
   public void closeLastActiveContext(String functionName) {
-    List<Context> contexts = tablaFunciones.get(functionName).getFunctionContexts();
+    List<Context> contexts = functionTable.get(functionName).getFunctionContexts();
     for (int i = contexts.size() - 1; i >= 0; i--) {
       Context ctx = contexts.get(i);
       if (ctx.isActive()) {
@@ -61,12 +60,12 @@ public class TablaSimbolos {
       return;
     }
 
-    Context lastActiveContext = Utils.getLastActiveContext(tablaFunciones.get(functionName).getFunctionContexts());
+    Context lastActiveContext = Utils.getLastActiveContext(functionTable.get(functionName).getFunctionContexts());
     lastActiveContext.getVariables().put(id.getToken(), id);
   }
 
   public void addContext(String functionName) {
-    tablaFunciones.get(functionName).getFunctionContexts().add(new Context());
+    functionTable.get(functionName).getFunctionContexts().add(new Context());
   }
 
   public void displayTable() {
@@ -80,7 +79,7 @@ public class TablaSimbolos {
     System.out.println("");
 
     System.out.println("Contextos");
-    for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
+    for (Map.Entry<String, Function> entry : functionTable.entrySet()) {
       System.out.println(entry.getValue());
     }
   }
@@ -89,44 +88,44 @@ public class TablaSimbolos {
     for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
       MiId valor = entry.getValue();
       System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
-          valor.getToken(), valor.getTipoDato(), "variable", valor.getLine(), valor.getColumn(), "global",
-          valor.getUsada(), valor.getInicializada());
+          valor.getToken(), valor.getType(), "variable", valor.getLine(), valor.getColumn(), "global",
+          valor.getUsed(), valor.getInitialized());
     }
-    for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
+    for (Map.Entry<String, Function> entry : functionTable.entrySet()) {
       MiId functionId = entry.getValue().getFunctionId();
       System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
           Utils.getFunctionNameFromSign(functionId.getToken()),
-          functionId.getTipoDato(),
+          functionId.getType(),
           "function",
           functionId.getLine(),
           functionId.getColumn(),
           "global",
-          functionId.getUsada(),
-          functionId.getInicializada());
+          functionId.getUsed(),
+          functionId.getInitialized());
       for (Map.Entry<String, MiId> entry2 : entry.getValue().getFunctionParameters().entrySet()) {
         MiId parameterId = entry2.getValue();
         System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
             parameterId.getToken(),
-            parameterId.getTipoDato(),
+            parameterId.getType(),
             "parameter",
             parameterId.getLine(),
             parameterId.getColumn(),
             Utils.getFunctionNameFromSign(functionId.getToken()),
-            parameterId.getUsada(),
-            parameterId.getInicializada());
+            parameterId.getUsed(),
+            parameterId.getInitialized());
       }
       for (Context context : entry.getValue().getFunctionContexts()) {
         for (Map.Entry<String, MiId> entry3 : context.getVariables().entrySet()) {
           MiId variableId = entry3.getValue();
           System.out.printf("%-15s %-8s %-12s %-7d %-8d %-10s %-10s %-10s%n",
               variableId.getToken(),
-              variableId.getTipoDato(),
+              variableId.getType(),
               "variable",
               variableId.getLine(),
               variableId.getColumn(),
               Utils.getFunctionNameFromSign(entry.getValue().getFunctionId().getToken()),
-              variableId.getUsada(),
-              variableId.getInicializada());
+              variableId.getUsed(),
+              variableId.getInitialized());
         }
 
       }
@@ -134,12 +133,11 @@ public class TablaSimbolos {
   }
 
   public void validateWarnings() {
-
     for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
       MiId valor = entry.getValue();
       Utils.getIdWarnings(valor, warnings);
     }
-    for (Map.Entry<String, Function> entry : tablaFunciones.entrySet()) {
+    for (Map.Entry<String, Function> entry : functionTable.entrySet()) {
       MiId functionId = entry.getValue().getFunctionId();
       Utils.getIdWarnings(functionId, warnings);
 
@@ -159,12 +157,12 @@ public class TablaSimbolos {
   }
 
   public MiId findIdInLastActiveContext(String idToken, String functionName) {
-    Context lastActiveContext = Utils.getLastActiveContext(tablaFunciones.get(functionName).getFunctionContexts());
+    Context lastActiveContext = Utils.getLastActiveContext(functionTable.get(functionName).getFunctionContexts());
     return lastActiveContext.getVariables().get(idToken);
   }
 
   public MiId checkIfIdIsAlreadyDeclarated(String idToken, String functionName) {
-    Function function = tablaFunciones.get(functionName);
+    Function function = functionTable.get(functionName);
     List<Context> contexts = function.getFunctionContexts();
     MiId id = null;
     for (int i = contexts.size() - 1; i >= 0; i--) {
