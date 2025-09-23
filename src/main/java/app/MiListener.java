@@ -5,12 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 public class MiListener extends idBaseListener {
   TablaSimbolos tableInstance = TablaSimbolos.getInstance();
 
   // Utilidades
-  String idAux = "";
-  private TipoDato tipoDatoAux;
+  private TipoDato typeAux;
   private Function functionAux = null;
   private Boolean shouldAddContext = true;
   private String currentScope = "";
@@ -42,26 +43,27 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterBloque(idParser.BloqueContext ctx) {
     if (shouldAddContext == true) {
-      tableInstance.addContext(currentScope);
+      tableInstance.addFunctionContext(currentScope);
     }
     shouldAddContext = true;
   }
 
   @Override
   public void exitBloque(idParser.BloqueContext ctx) {
-    tableInstance.closeLastActiveContext(currentScope);
+    tableInstance.closeFunctionLastActiveContext(currentScope);
   }
 
   /* ---------------------- DECLARACIONES ------------------------------- */
   @Override
   public void enterDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
     // Obtener el tipo de dato de la variable
-    this.tipoDatoAux = TipoDato.fromString(ctx.tipo_variable().getText());
+    this.typeAux = TipoDato.fromString(ctx.tipo_variable().getText());
+
   }
 
   @Override
   public void exitDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
-    this.tipoDatoAux = TipoDato.UNDEFINED;
+    this.typeAux = TipoDato.UNDEFINED;
   }
 
   @Override
@@ -79,12 +81,12 @@ public class MiListener extends idBaseListener {
   /*
    * Variables cargadas de otras reglas
    * 
-   * enterDeclaracion_variable -> tipoDatoAux (tipo de la variable/s)
+   * enterDeclaracion_variable -> typeAux (tipo de la variable/s)
    * enterDefinicion_funcion_nombre -> functionAux (funcion en la que estamos, si
    * es null significa que es el ambito global)
    */
   private void validateVariableDeclarations(String idTokenStr, int line, int column, Boolean inicializado) {
-    MiId newId = new MiId(idTokenStr, inicializado, false, tipoDatoAux, line, column);
+    MiId newId = new MiId(idTokenStr, inicializado, false, typeAux, line, column);
     String scope = getCurrentScope();
     MiId id = (functionAux != null)
         ? tableInstance.findIdInLastActiveContext(idTokenStr, currentScope)
@@ -121,7 +123,7 @@ public class MiListener extends idBaseListener {
     if (id == null)
       return;
 
-    id.setInicializada(true);
+    id.setInitialized(true);
   }
 
   /* ---------------------- OPERACIONES LOGICAS ------------------------------- */
@@ -143,7 +145,7 @@ public class MiListener extends idBaseListener {
     if (id == null)
       return;
 
-    id.setUsada(true);
+    id.setUsed(true);
   }
 
   /* ---------------------- OPERACIONES ARITMETICAS ---------------------- */
@@ -164,7 +166,7 @@ public class MiListener extends idBaseListener {
     if (id == null)
       return;
 
-    id.setUsada(true);
+    id.setUsed(true);
   }
 
   /* ---------------------- DECLARACION FUNCION ---------------------- */
@@ -194,13 +196,13 @@ public class MiListener extends idBaseListener {
     String functionSign = Utils.getFunctionSign(functionName, parametersList);
     tableInstance.AddFunctionToTable(functionSign);
 
-    Function function = tableInstance.getTablaFunciones().get(functionSign);
+    Function function = tableInstance.getFunctionTable().get(functionSign);
     MiId functionId = new MiId(functionSign, false, false, functionType, functionNameLine, functionNameColumn);
     function.setFunctionId(functionId);
 
     // Se cargan los parametros
     for (MiId parameter : parametersList) {
-      function.getFunctionParameters().put(parameter.getToken(), parameter);
+      function.getParameters().put(parameter.getToken(), parameter);
     }
   }
 
@@ -209,7 +211,7 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
 
-    Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
+    Map<String, Function> tablaFunciones = tableInstance.getFunctionTable();
 
     // Se obtiene la informacion basica de la funcion que esta siendo definida
     String functionDefinitionType = ctx.getStart().getText();
@@ -259,7 +261,7 @@ public class MiListener extends idBaseListener {
        * Se comprueba si la cantidad de parametros de la funcion declarada es distinto
        * a la cantidad de parametros de la nueva funcion
        */
-      if (functionAlreadyDeclarated.getFunctionParameters().size() != parametersList.size()) {
+      if (functionAlreadyDeclarated.getParameters().size() != parametersList.size()) {
         isTheSameFunction = false;
       }
 
@@ -268,10 +270,10 @@ public class MiListener extends idBaseListener {
        * 
        */
       if (isTheSameFunction == true) {
-        for (MiId paramFromMap : functionAlreadyDeclarated.getFunctionParameters().values()) {
+        for (MiId paramFromMap : functionAlreadyDeclarated.getParameters().values()) {
           MiId paramFromList = parametersList.get(i);
 
-          if (paramFromMap.getTipoDato() != paramFromList.getTipoDato()) {
+          if (paramFromMap.getType() != paramFromList.getType()) {
             isTheSameFunction = false;
             break;
           }
@@ -286,9 +288,9 @@ public class MiListener extends idBaseListener {
      * si son diferentes hay un error
      */
     if (functionAlreadyDeclarated != null && isTheSameFunction == true
-        && functionAlreadyDeclarated.getFunctionId().getTipoDato() != TipoDato.fromString(functionDefinitionType)) {
+        && functionAlreadyDeclarated.getFunctionId().getType() != TipoDato.fromString(functionDefinitionType)) {
       tableInstance.addError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
-          + ", Se espera que la definicion retorne: " + functionAlreadyDeclarated.getFunctionId().getTipoDato());
+          + ", Se espera que la definicion retorne: " + functionAlreadyDeclarated.getFunctionId().getType());
       return;
     }
 
@@ -304,7 +306,7 @@ public class MiListener extends idBaseListener {
         }
       }
       functionAlreadyDeclarated.setParameters(newParameters);
-      functionAlreadyDeclarated.getFunctionId().setInicializada(true);
+      functionAlreadyDeclarated.getFunctionId().setInitialized(true);
     }
 
     /*
@@ -322,7 +324,7 @@ public class MiListener extends idBaseListener {
       functionAlreadyDeclarated.setFunctionId(functionId);
       if (parametersList.size() != 0) {
         for (MiId parameter : parametersList) {
-          functionAlreadyDeclarated.addIdInParameters(parameter);
+          functionAlreadyDeclarated.addParameter(parameter);
         }
       }
       functionAux = functionAlreadyDeclarated;
@@ -331,16 +333,15 @@ public class MiListener extends idBaseListener {
   }
 
   public void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
-    this.tipoDatoAux = TipoDato.UNDEFINED;
+    this.typeAux = TipoDato.UNDEFINED;
     this.functionAux = null;
-    this.idAux = "";
     this.currentScope = "";
   }
 
   // ---------------------- LLAMADA FUNCION ----------------------
   @Override
   public void enterLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx) {
-    Map<String, Function> tablaFunciones = tableInstance.getTablaFunciones();
+    Map<String, Function> tablaFunciones = tableInstance.getFunctionTable();
     String functionName = ctx.llamada_nombre_funcion().getText();
 
     List<String> argumentsTypes = new ArrayList<>();
@@ -362,7 +363,8 @@ public class MiListener extends idBaseListener {
                 + ")");
             return;
           }
-          argumentsTypes.add(id.getTipoDato().toString().toLowerCase());
+          id.setUsed(true);
+          argumentsTypes.add(id.getType().toString().toLowerCase());
         }
 
         if (argumentoCtx.NUMERO() != null) {
@@ -394,7 +396,7 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    function.getFunctionId().setUsada(true);
+    function.getFunctionId().setUsed(true);
   }
 
   @Override
@@ -409,20 +411,20 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    id.setUsada(true);
+    id.setUsed(true);
     return;
   }
 
   // ---------------------- FOR ----------------------
   @Override
   public void enterFor(idParser.ForContext ctx) {
-    tableInstance.addContext(currentScope);
+    tableInstance.addFunctionContext(currentScope);
     shouldAddContext = false;
   }
 
   @Override
   public void enterFor_declaracion(idParser.For_declaracionContext ctx) {
-    tipoDatoAux = TipoDato.fromString(ctx.getStart().getText());
+    typeAux = TipoDato.fromString(ctx.getStart().getText());
   }
 
   @Override
@@ -435,7 +437,7 @@ public class MiListener extends idBaseListener {
       return;
     }
 
-    id.setUsada(true);
+    id.setUsed(true);
   }
 
   @Override

@@ -16,12 +16,20 @@ public class Context {
     return variables;
   }
 
-  public boolean isActive() {
+  public boolean getActive() {
     return active;
   }
 
   public void close() {
     this.active = false;
+  }
+
+  public MiId getVariableByTokenString(String idTokenStr) {
+    return variables.get(idTokenStr);
+  }
+
+  public void addVariable(MiId variable) {
+    variables.put(variable.getToken(), variable);
   }
 
   @Override

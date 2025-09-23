@@ -32,11 +32,11 @@ public class Function {
     return contexts;
   }
 
-  public LinkedHashMap<String, MiId> getFunctionParameters() {
+  public LinkedHashMap<String, MiId> getParameters() {
     return parameters;
   }
 
-  public void addIdInParameters(MiId id) {
+  public void addParameter(MiId id) {
     parameters.put(id.getToken(), id);
   }
 
@@ -71,4 +71,36 @@ public class Function {
     return result;
   }
 
+  public void closeLastActiveContext() {
+    for (int i = contexts.size() - 1; i >= 0; i--) {
+      Context ctx = contexts.get(i);
+      if (ctx.getActive()) {
+        ctx.close();
+        break;
+      }
+    }
+  }
+
+  public void addContext() {
+    contexts.add(new Context());
+  }
+
+  public MiId getVaribleByTokenString(String idTokenStr) {
+    MiId id = null;
+    for (int i = contexts.size() - 1; i >= 0; i--) {
+      Context context = contexts.get(i);
+      if (context.getActive() && id == null) {
+        id = context.getVariables().get(idTokenStr);
+      }
+    }
+    return id;
+  }
+
+  public MiId getParameterByTokenString(String idTokenStr) {
+    return parameters.get(idTokenStr);
+  }
+
+  public Context getLastActiveContext() {
+    return Utils.getLastActiveContext(contexts);
+  }
 }

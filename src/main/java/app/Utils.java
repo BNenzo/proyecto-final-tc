@@ -13,7 +13,7 @@ public class Utils {
   public static Context getLastActiveContext(List<Context> contexts) {
     for (int i = contexts.size() - 1; i >= 0; i--) {
       Context ctx = contexts.get(i);
-      if (ctx.isActive()) {
+      if (ctx.getActive()) {
         return ctx;
       }
     }
@@ -45,7 +45,7 @@ public class Utils {
     if (parametersList != null && !parametersList.isEmpty()) {
       for (int i = 0; i < parametersList.size(); i++) {
         MiId param = parametersList.get(i);
-        sb.append(param.getTipoDato().toString().toLowerCase());
+        sb.append(param.getType().toString().toLowerCase());
 
         if (i < parametersList.size() - 1) {
           sb.append(",");
@@ -82,7 +82,7 @@ public class Utils {
   }
 
   public static void getIdWarnings(MiId id, List<String> warnings) {
-    if (id.getUsada() == false) {
+    if (id.getUsed() == false) {
       warnings.add(
           " Warning: la variable '" +
               id.getToken() +
@@ -93,7 +93,7 @@ public class Utils {
               id.getColumn() +
               ")");
     }
-    if (id.getInicializada() == false) {
+    if (id.getInitialized() == false) {
       warnings.add(
           " Warning: la variable '" +
               id.getToken() +

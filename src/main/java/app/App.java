@@ -21,7 +21,7 @@ public class App {
     public static void main(String[] args) throws Exception {
 
         // create a CharStream that reads from file
-        CharStream input = CharStreams.fromFileName("src/inputs/programa.cpp");
+        CharStream input = CharStreams.fromFileName("src/inputs/programa_1.cpp");
 
         // create a lexer that feeds off of input CharStream
         idLexer lexer = new idLexer(input);
