@@ -1,49 +1,30 @@
+int suma(int,int);
 
 int main () { 
-  for (int i = 0; i < 4 ; i--){
-    int x = 2, x_2 = 34, x_3;
-    int num = x + x_2 + x_3;
+  int num1;
+  int num2, num3 = 3, num4;
+
+  double double_num1;
+  int double_num2, double_num3 = 3.14, double_num4;
+
+  char ch_1, ch_2 = 'c';
+  
+  if (num1 == 5) { 
+    num1 = suma(num2, num4);
+
+    for (int num_for = 5, i = 2; num_for < 6 ; num_for++){
+      ch_1 = ch_2 + 1;
+    }
+  }
+
+  while (double_num4 < 5) { 
+    num4 = suma(num2, num4) + double_num2;
   }
 
   return 0;
 }
 
-
-int suma (int param1) {
-
-int x = 2;
-  {
-     int p =3 
-    int xa =4;
-
-  }
-
-  int xa = 2;
-
-}
-{
-
-  parameters:{
-    "param1": {.......}
-  }
-  context: [
-  {
-    variables: {
-      "x" : {........},
-      "xa" : {........}
-
-      
-    }, 
-    active = true;
-  }, 
-  {
-    variables: {
-      "p" : {.........}
-      "xa" : {........}
-    }, 
-    active = false
-  }
-  ]
-  functionId: {..........}
-
+int suma (int num1, int num2) { 
+  int resultado = num1 + num2;
+  return resultado ;
 }

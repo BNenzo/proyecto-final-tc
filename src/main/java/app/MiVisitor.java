@@ -73,6 +73,9 @@ public class MiVisitor extends idBaseVisitor<String> {
       return ctx.identificador_aritmetico().IDENTIFICADOR().getText();
     } else if (ctx.PARENTESIS_APERTURA() != null && ctx.expresion_aritmetica() != null) {
       return visit(ctx.expresion_aritmetica());
+    } else if (ctx.llamada_funcion_expresion() != null) {
+      return visit(ctx.llamada_funcion_expresion());
+
     } else {
       String temp = newTemp();
       instructions.add(temp + " = ???");

@@ -64,12 +64,12 @@ instrucciones: instruccion instrucciones |;
 
 instruccion:
 	declaracion_variable
+	| llamada_funcion
 	| asignacion_variable
 	| operacion_logica
 	| operacion_aritmetica
 	| declaracion_funcion
 	| definicion_funcion
-	| llamada_funcion
 	| if
 	| while
 	| for
@@ -156,6 +156,7 @@ factor:
 	NUMERO
 	| NUMERO_DOUBLE
 	| identificador_aritmetico
+	| llamada_funcion_expresion
 	| PARENTESIS_APERTURA expresion_aritmetica PARENTESIS_CLAUSURA;
 
 identificador_aritmetico: IDENTIFICADOR;

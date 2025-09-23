@@ -10,8 +10,10 @@ int main () {
   char ch_1, ch_2 = 'c';
 
   int resultadoSuma = suma(num2, num4) + 32;
-  suma(num2, num4);
   int opArit = num3 + 5;
+  int opLogica = num3 < num4;
+  
+  return 0;
 }
 
 int suma (int x, int y) { 
