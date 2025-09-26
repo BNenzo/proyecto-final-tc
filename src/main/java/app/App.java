@@ -16,12 +16,12 @@ public class App {
     private static JFrame viewerFrame = null;
 
     public static void main(String[] args) throws Exception {
-        boolean continuar = true;
+        boolean stillSelecting = true;
 
-        while (continuar) {
-            File carpetaPermitida = new File("src/inputs");
+        while (stillSelecting) {
+            File defaultFolder = new File("src/inputs");
 
-            JFileChooser fileChooser = new JFileChooser(carpetaPermitida);
+            JFileChooser fileChooser = new JFileChooser(defaultFolder);
 
             fileChooser.setDialogTitle("Selecciona un archivo para compilar");
             int result = fileChooser.showOpenDialog(null);
@@ -133,7 +133,7 @@ public class App {
                         "¿Desea compilar otro archivo?", "Continuar",
                         JOptionPane.YES_NO_OPTION);
                 if (option != JOptionPane.YES_OPTION) {
-                    continuar = false;
+                    stillSelecting = false;
                     System.out.println("🚀 Saliendo del compilador...");
                 }
 

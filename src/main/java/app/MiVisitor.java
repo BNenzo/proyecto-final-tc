@@ -37,12 +37,12 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitExpresion_aritmetica(idParser.Expresion_aritmeticaContext ctx) {
+    // Procesa los términos aritméticos con sus operadores
     String left = visit(ctx.termino_aritmetico(0));
-
     for (int i = 1; i < ctx.termino_aritmetico().size(); i++) {
       String right = visit(ctx.termino_aritmetico(i));
       String temp = newTemp();
-      String op = ctx.getChild(2 * i - 1).getText();
+      String op = ctx.getChild(2 * i - 1).getText(); // operador entre términos
       instructions.add(temp + " = " + left + " " + op + " " + right);
       left = temp;
     }
@@ -51,8 +51,8 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitTermino_aritmetico(idParser.Termino_aritmeticoContext ctx) {
+    // Procesa multiplicaciones y divisiones dentro de la expresión
     String left = visit(ctx.factor(0));
-
     for (int i = 1; i < ctx.factor().size(); i++) {
       String right = visit(ctx.factor(i));
       String temp = newTemp();
@@ -65,6 +65,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitFactor(idParser.FactorContext ctx) {
+    // Maneja números, identificadores, llamadas a funciones o paréntesis
     if (ctx.NUMERO() != null) {
       return ctx.NUMERO().getText();
     } else if (ctx.NUMERO_DOUBLE() != null) {
@@ -75,8 +76,8 @@ public class MiVisitor extends idBaseVisitor<String> {
       return visit(ctx.expresion_aritmetica());
     } else if (ctx.llamada_funcion_expresion() != null) {
       return visit(ctx.llamada_funcion_expresion());
-
     } else {
+      // Caso raro: no sabemos qué es, generamos temporal por seguridad
       String temp = newTemp();
       instructions.add(temp + " = ???");
       return temp;
@@ -85,11 +86,10 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDeclarador_simple(idParser.Declarador_simpleContext ctx) {
+    // Solo declara la variable sin asignarle valor
     String nombreVar = ctx.IDENTIFICADOR().getText();
-
     ParseTree actual = ctx;
     idParser.Declaracion_variableContext declCtx = null;
-
     while (actual != null) {
       if (actual instanceof idParser.Declaracion_variableContext) {
         declCtx = (idParser.Declaracion_variableContext) actual;
@@ -97,15 +97,14 @@ public class MiVisitor extends idBaseVisitor<String> {
       }
       actual = actual.getParent();
     }
-
     String tipo = (declCtx != null) ? declCtx.tipo_variable().getText() : "unknown";
-
     instructions.add("DECLARE " + nombreVar + " " + tipo);
     return null;
   }
 
   @Override
   public String visitDeclarador_inicializado(idParser.Declarador_inicializadoContext ctx) {
+    // Declara la variable y le asigna un valor inicial
     String nombreVar = ctx.IDENTIFICADOR(0).getText();
 
     ParseTree actual = ctx;
@@ -122,6 +121,8 @@ public class MiVisitor extends idBaseVisitor<String> {
     String tipo = (declCtx != null) ? declCtx.tipo_variable().getText() : "unknown";
 
     instructions.add("DECLARE " + nombreVar + " " + tipo);
+
+    // Determina el valor inicial según el tipo de expresión
     if (ctx.NUMERO() != null) {
       instructions.add(nombreVar + " = " + ctx.NUMERO().getText());
     } else if (ctx.IDENTIFICADOR().size() > 1) {
@@ -173,6 +174,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitLlamada_funcion(idParser.Llamada_funcionContext ctx) {
+    // Llamada a función como instrucción
     String resultado = visit(ctx.llamada_funcion_expresion());
     instructions.add(resultado);
     return resultado;
@@ -180,6 +182,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitLlamada_funcion_expresion(idParser.Llamada_funcion_expresionContext ctx) {
+    // Construye la instrucción CALL con nombre y parámetros
     String functionName = ctx.llamada_nombre_funcion().getText();
     String arguments = "";
     if (ctx.llamada_funcion_parametros() != null) {
@@ -224,6 +227,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitTermino_comparacion(idParser.Termino_comparacionContext ctx) {
+    // Puede ser número, decimal, caracter o identificador
     if (ctx.NUMERO() != null) {
       return ctx.NUMERO().getText();
     } else if (ctx.NUMERO_DOUBLE() != null) {
@@ -237,10 +241,12 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitIf(idParser.IfContext ctx) {
+    // Genera instrucciones para if-else
     String cond = visit(ctx.expresion_booleana());
     String lfalse = newLabel();
     String lend = newLabel();
 
+    // Si no hay else
     if (ctx.ELSE() == null) {
       instructions.add("ifFalse " + cond + " goto " + lfalse);
 
@@ -277,6 +283,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitWhile(idParser.WhileContext ctx) {
+    // Genera código para bucle while
     String lstart = newLabel();
     String lend = newLabel();
 
@@ -330,6 +337,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitFor_autoincremental(idParser.For_autoincrementalContext ctx) {
+    // Maneja incremento/decremento dentro del for
     if (ctx.IDENTIFICADOR() != null) {
       String var = ctx.IDENTIFICADOR().getText();
       if (ctx.INCREMENTADOR() != null) {
@@ -350,6 +358,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitFor_declaracion(idParser.For_declaracionContext ctx) {
+    // Declaración de variables dentro del for
     String tipo = ctx.tipo_variable().getText();
 
     for (idParser.Declarador_inicializadoContext decl : ctx.declarador_inicializado()) {
@@ -377,6 +386,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDeclaracion_funcion(idParser.Declaracion_funcionContext ctx) {
+    // Genera una instrucción que declara la función
     StringBuilder sb = new StringBuilder();
 
     String tipo = ctx.tipo_funciones().getText();
@@ -400,6 +410,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDeclaracion_funciones_parametros(idParser.Declaracion_funciones_parametrosContext ctx) {
+    // Devuelve lista de parámetros separados por coma
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < ctx.declaracion_funcion_parametro().size(); i++) {
       sb.append(visit(ctx.declaracion_funcion_parametro(i)));
@@ -412,6 +423,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDeclaracion_funcion_parametro(idParser.Declaracion_funcion_parametroContext ctx) {
+    // Genera la representación de un parámetro con posible valor inicial
     String tipo = ctx.tipo_variable().getText();
     String nombre = "";
     if (ctx.IDENTIFICADOR() != null) {
@@ -426,6 +438,7 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
+    // Genera código para la definición de la función completa
     String tipo = ctx.tipo_funciones().getText();
     String nombre = ctx.definicion_funcion_nombre().getText();
 
@@ -452,6 +465,8 @@ public class MiVisitor extends idBaseVisitor<String> {
 
   @Override
   public String visitDefinicion_funcion_parametro(idParser.Definicion_funcion_parametroContext ctx) {
+    // Devuelve la representación de un parámetro de función con posible valor
+    // inicial
     String tipo = ctx.tipo_variable().getText();
     String nombre = ctx.definicion_funcion_parametro_nombre().getText();
 
