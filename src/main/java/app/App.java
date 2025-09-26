@@ -3,88 +3,132 @@ package app;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.gui.TreeViewer;
 
+import javax.swing.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.JFrame;
-
-import org.antlr.v4.gui.TreeViewer;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-
-/**
- * Hello world!
- *
- */
 public class App {
     public static void main(String[] args) throws Exception {
+        boolean continuar = true;
 
-        // create a CharStream that reads from file
-        CharStream input = CharStreams.fromFileName("src/inputs/programa_1.cpp");
+        while (continuar) {
+            File carpetaPermitida = new File("src/inputs");
+            JFileChooser fileChooser = new JFileChooser(carpetaPermitida);
 
-        // create a lexer that feeds off of input CharStream
-        idLexer lexer = new idLexer(input);
+            fileChooser.setDialogTitle("Selecciona un archivo para compilar");
+            int result = fileChooser.showOpenDialog(null);
 
-        // create a buffer of tokens pulled from the lexer
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                String filePath = selectedFile.getAbsolutePath();
+                String fileNameWithOutExtension = selectedFile.getName().substring(0,
+                        selectedFile.getName().lastIndexOf('.'));
+                System.out.println("🚀 Iniciando compilación de: " + selectedFile.getName());
+                System.out.println("============================================================");
+                System.out.println();
 
-        // create a parser that feeds off the tokens buffer
-        idParser parser = new idParser(tokens);
+                try {
+                    // === 1. ANÁLISIS LÉXICO ===
+                    CharStream input = CharStreams.fromFileName(filePath);
+                    idLexer lexer = new idLexer(input);
 
-        // Solicito al parser que comience indicando una regla gramatical
-        // En este caso la regla es el simbolo inicial
-        ParseTree tree = parser.s();
+                    // Listener para errores del lexer
+                    VerboseListener lexerErrors = new VerboseListener();
+                    lexer.removeErrorListeners(); // quitamos listeners por defecto
+                    lexer.addErrorListener(lexerErrors);
 
-        System.out.println("🚀 Iniciando compilación de: programa.txt");
-        System.out.println("============================================================");
-        System.out.println();
-        // === 1. ANÁLISIS LÉXICO ===
-        System.out.println("=== 1. ANÁLISIS LÉXICO ===");
-        System.out.println("✅ Análisis léxico completado sin errores.");
-        System.out.println("   📊 Tokens procesados: " + tokens.getTokens().size());
-        System.out.println();
-        // === 2. ANÁLISIS SINTÁCTICO ===
-        System.out.println("=== 2. ANÁLISIS SINTÁCTICO ===");
-        System.out.println("✅ Análisis sintáctico completado sin errores.");
-        System.out.println("   📊 Árbol sintáctico generado correctamente");
-        System.out.println(tree.toStringTree(parser));
-        System.out.println();
-        // === 3. VISUALIZACIÓN DEL AST ===
-        System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
-        System.out.println(" 📊 Ventana del árbol sintáctico abierta");
-        JFrame frame = new JFrame("AST - Árbol Sintáctico");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
-                tree);
-        viewer.setScale(1.5);
-        frame.add(viewer);
-        frame.setSize(800, 600);
-        frame.setVisible(true);
-        System.out.println("=== 4. ANÁLISIS SEMÁNTICO ===");
-        System.out.println("📋 Tabla de símbolos construida:");
-        System.out.printf("%-15s %-8s %-12s %-7s %-8s %-10s %-10s %-10s%n",
-                "NOMBRE", "TIPO", "CATEGORÍA", "LÍNEA", "COLUMNA", "ÁMBITO", "USADA", "INICIALIZADA");
-        System.out
-                .println("-------------------------------------------------------------------------------------------");
+                    CommonTokenStream tokens = new CommonTokenStream(lexer);
+                    idParser parser = new idParser(tokens);
 
-        ParseTreeWalker walker = new ParseTreeWalker();
-        MiListener escucha = new MiListener(parser);
-        walker.walk(escucha, tree);
-        if (TablaSimbolos.getInstance().getErrors().size() > 0) {
-            return;
+                    // Listener para errores del parser
+                    VerboseListener parserErrors = new VerboseListener();
+                    parser.removeErrorListeners();
+                    parser.addErrorListener(parserErrors);
+                    ParseTree tree = parser.s();
+
+                    if (lexerErrors.hasErrors() || parserErrors.hasErrors()) {
+                        Utils.printError("Se encontraron errores léxicos o sintácticos. Abortando compilación.");
+                        return;
+                    }
+
+                    System.out.println("=== 1. ANÁLISIS LÉXICO ===");
+                    System.out.println("✅ Análisis léxico completado sin errores.");
+                    System.out.println("   📊 Tokens procesados: " + tokens.getTokens().size());
+                    System.out.println();
+
+                    // === 2. ANÁLISIS SINTÁCTICO ===
+                    System.out.println("=== 2. ANÁLISIS SINTÁCTICO ===");
+                    System.out.println("✅ Análisis sintáctico completado sin errores.");
+                    System.out.println("   📊 Árbol sintáctico generado correctamente");
+                    System.out.println(tree.toStringTree(parser));
+                    System.out.println();
+
+                    // === 3. VISUALIZACIÓN DEL AST ===
+                    System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
+                    System.out.println(" 📊 Ventana del árbol sintáctico abierta");
+                    JFrame frame = new JFrame("AST - Árbol Sintáctico");
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
+                    viewer.setScale(1.5);
+                    frame.add(viewer);
+                    frame.setSize(800, 600);
+                    frame.setVisible(true);
+                    System.out.println();
+
+                    // === 4. ANÁLISIS SEMÁNTICO ===
+                    System.out.println("=== 4. ANÁLISIS SEMÁNTICO ===");
+                    System.out.println("📋 Tabla de símbolos construida:");
+                    System.out.printf("%-15s %-8s %-12s %-7s %-8s %-10s %-10s %-10s%n",
+                            "NOMBRE", "TIPO", "CATEGORÍA", "LÍNEA", "COLUMNA", "ÁMBITO", "USADA", "INICIALIZADA");
+                    System.out.println(
+                            "-------------------------------------------------------------------------------------------");
+
+                    ParseTreeWalker walker = new ParseTreeWalker();
+                    MiListener escucha = new MiListener(parser);
+                    walker.walk(escucha, tree);
+                    if (TablaSimbolos.getInstance().getErrors().size() > 0) {
+                        continue; // Si hay errores, salta al siguiente archivo
+                    }
+                    System.out.println();
+
+                    // === 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===
+                    System.out.println("=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===");
+                    System.out.println("📝 Código de tres direcciones generado:");
+                    MiVisitor visitor = new MiVisitor();
+                    visitor.visit(tree);
+                    List<String> tac = visitor.getInstructions();
+                    visitor.printInstructions(fileNameWithOutExtension);
+                    System.out.println();
+
+                    // === 6. OPTIMIZACIÓN DE CÓDIGO ===
+                    System.out.println("=== 6. OPTIMIZACIÓN DE CÓDIGO ===");
+                    Optimizer optimizer = new Optimizer(tac);
+                    optimizer.optimize();
+                    optimizer.printInstructions(fileNameWithOutExtension);
+
+                } catch (Exception e) {
+                    System.out.println("❌ Error al procesar el archivo: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+                // Preguntar si desea continuar
+                int option = JOptionPane.showConfirmDialog(null,
+                        "¿Desea compilar otro archivo?", "Continuar",
+                        JOptionPane.YES_NO_OPTION);
+                if (option != JOptionPane.YES_OPTION) {
+                    continuar = false;
+                    System.out.println("🚀 Saliendo del compilador...");
+                }
+
+            } else {
+                System.out.println("🚀 No se seleccionó ningún archivo. Saliendo...");
+                break;
+            }
         }
-
-        System.out.println("=== 5. GENERACIÓN DE CÓDIGO INTERMEDIO ===");
-        System.out.println("📝 Código de tres direcciones generado:");
-        MiVisitor visitor = new MiVisitor();
-        visitor.visit(tree);
-        List<String> tac = visitor.getInstructions();
-        visitor.printInstructions();
-        System.out.println("=== 6. OPTIMIZACIÓN DE CÓDIGO ===");
-        System.out.println("✅ Codigo optimizado generado:");
-        Optimizer optimizer = new Optimizer(tac);
-        optimizer.optimize();
-        optimizer.printInstructions();
     }
 }

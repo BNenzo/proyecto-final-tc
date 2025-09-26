@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Optimizer {
+  private List<String> originalInstructions;
   private List<String> instructions;
   private Map<String, String> constants;
 
   public Optimizer(List<String> instructions) {
     this.instructions = new ArrayList<>(instructions);
+    this.originalInstructions = new ArrayList<>(instructions);
     this.constants = new HashMap<>();
   }
 
@@ -21,17 +23,32 @@ public class Optimizer {
       eliminateCommonSubexpressions();
       propagateConstants();
       foldConstants();
+      eliminateDeadCode();
       changed = !before.equals(instructions);
     } while (changed);
     return instructions;
   }
 
-  public void printInstructions() {
+  public void printInstructions(String fileName) {
+    this.printMetrics();
     Utils.printInstructions(instructions);
-    Utils.saveInstructionsToFile(instructions, "src/outputs/codigo_intermedio_optimizado.txt");
+    Utils.saveInstructionsToFile(instructions, "src/outputs/" + fileName + "_codigo_intermedio_optimizado.txt");
   }
 
-  private List<String> propagateConstants() {
+  public void printMetrics() {
+    int originalCount = originalInstructions.size();
+    int optimizedCount = instructions.size();
+    int eliminated = originalCount - optimizedCount;
+    double reduction = (eliminated * 100.0) / originalCount;
+    String reductionStr = String.format("%.2f", reduction);
+
+    Utils.printSuccess("📊 Instrucciones originales: " + originalCount);
+    Utils.printSuccess("📊 Instrucciones optimizadas: " + optimizedCount);
+    Utils.printSuccess("📊 Instrucciones eliminadas: " + eliminated);
+    Utils.printSuccess("📊 Reducción de código: " + reductionStr + "%");
+  }
+
+  private void propagateConstants() {
     Map<String, String> constants = new HashMap<>();
     List<String> newInstructions = new ArrayList<>();
 
@@ -41,7 +58,7 @@ public class Optimizer {
         String left = parts[0].trim();
         String right = parts[1].trim();
 
-        // 🚫 Evitar self-assignments como "i = i + 1"
+        // Evitar self-assignments como "i = i + 1"
         if (right.matches("\\d+") && !right.contains(left)) {
           constants.put(left, right);
         } else {
@@ -59,7 +76,7 @@ public class Optimizer {
       }
     }
 
-    return newInstructions;
+    instructions = newInstructions;
   }
 
   private void foldConstants() {
@@ -135,4 +152,48 @@ public class Optimizer {
 
     instructions = newInstructions;
   }
+
+  private void eliminateDeadCode() {
+    List<String> newInstructions = new ArrayList<>();
+    // Conjunto de variables que siguen siendo necesarias
+    java.util.Set<String> live = new java.util.HashSet<>();
+
+    // Recorremos de abajo hacia arriba
+    for (int i = instructions.size() - 1; i >= 0; i--) {
+      String instr = instructions.get(i).trim();
+
+      // Caso: asignación x = expr
+      if (instr.contains("=") && !instr.startsWith("if") && !instr.startsWith("goto")) {
+        String[] parts = instr.split("=");
+        String left = parts[0].trim();
+        String right = parts[1].trim();
+
+        if (live.contains(left) || left.startsWith("t")) {
+          // Se necesita: mantenemos la instrucción
+          newInstructions.add(0, instr);
+          live.remove(left);
+
+          // Agregar variables usadas en la derecha como vivas
+          for (String token : right.split("\\W+")) {
+            if (token.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+              live.add(token);
+            }
+          }
+        }
+      } else {
+        newInstructions.add(0, instr);
+        // Agregar variables usadas en condiciones o returns
+        if (instr.startsWith("ifFalse") || instr.startsWith("RETURN")) {
+          for (String token : instr.split("\\W+")) {
+            if (token.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+              live.add(token);
+            }
+          }
+        }
+      }
+    }
+
+    instructions = newInstructions;
+  }
+
 }

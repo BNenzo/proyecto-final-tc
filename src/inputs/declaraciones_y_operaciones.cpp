@@ -3,7 +3,6 @@ int suma(int, int);
 int main () { 
   int num1;
   int num2, num3 = 3, num4;
-
   double double_num1;
   double double_num2, double_num3 = 3.14, double_num4;
 
@@ -15,6 +14,7 @@ int main () {
   
   return 0;
 }
+
 
 int suma (int x, int y) { 
   int resultado = x + y;
