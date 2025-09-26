@@ -13,11 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class App {
+    private static JFrame viewerFrame = null;
+
     public static void main(String[] args) throws Exception {
         boolean continuar = true;
 
         while (continuar) {
             File carpetaPermitida = new File("src/inputs");
+
             JFileChooser fileChooser = new JFileChooser(carpetaPermitida);
 
             fileChooser.setDialogTitle("Selecciona un archivo para compilar");
@@ -25,6 +28,7 @@ public class App {
 
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
+                TablaSimbolos.getInstance().reset();
                 String filePath = selectedFile.getAbsolutePath();
                 String fileNameWithOutExtension = selectedFile.getName().substring(0,
                         selectedFile.getName().lastIndexOf('.'));
@@ -53,7 +57,7 @@ public class App {
 
                     if (lexerErrors.hasErrors() || parserErrors.hasErrors()) {
                         Utils.printError("Se encontraron errores léxicos o sintácticos. Abortando compilación.");
-                        return;
+                        continue;
                     }
 
                     System.out.println("=== 1. ANÁLISIS LÉXICO ===");
@@ -71,14 +75,20 @@ public class App {
                     // === 3. VISUALIZACIÓN DEL AST ===
                     System.out.println("=== 3. VISUALIZACIÓN DEL AST ===");
                     System.out.println(" 📊 Ventana del árbol sintáctico abierta");
-                    JFrame frame = new JFrame("AST - Árbol Sintáctico");
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                    if (viewerFrame == null) {
+                        viewerFrame = new JFrame("AST - Árbol Sintáctico");
+                        viewerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        viewerFrame.setSize(800, 600);
+                        viewerFrame.setVisible(true);
+                    }
+
+                    viewerFrame.getContentPane().removeAll(); // limpia contenido anterior
                     TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
                     viewer.setScale(1.5);
-                    frame.add(viewer);
-                    frame.setSize(800, 600);
-                    frame.setVisible(true);
-                    System.out.println();
+                    viewerFrame.add(viewer);
+                    viewerFrame.revalidate();
+                    viewerFrame.repaint();
 
                     // === 4. ANÁLISIS SEMÁNTICO ===
                     System.out.println("=== 4. ANÁLISIS SEMÁNTICO ===");
@@ -92,6 +102,8 @@ public class App {
                     MiListener escucha = new MiListener(parser);
                     walker.walk(escucha, tree);
                     if (TablaSimbolos.getInstance().getErrors().size() > 0) {
+                        Utils.printError("Se encontraron errores semanticos. Abortando compilación.");
+
                         continue; // Si hay errores, salta al siguiente archivo
                     }
                     System.out.println();

@@ -177,6 +177,13 @@ public class TablaSimbolos {
     errors.add(error);
   }
 
+  public void reset() {
+    this.functionTable.clear();
+    this.globalVariables.clear();
+    this.errors.clear();
+    this.warnings.clear();
+  }
+
   public static TablaSimbolos getInstance() {
     if (tabla_instance == null)
       tabla_instance = new TablaSimbolos();
