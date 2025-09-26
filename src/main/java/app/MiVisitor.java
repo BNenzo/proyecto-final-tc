@@ -13,9 +13,9 @@ public class MiVisitor extends idBaseVisitor<String> {
     return instructions;
   }
 
-  public void printInstructions() {
+  public void printInstructions(String fileName) {
     Utils.printInstructions(instructions);
-    Utils.saveInstructionsToFile(instructions, "src/outputs/codigo_intermedio.txt");
+    Utils.saveInstructionsToFile(instructions, "src/outputs/" + fileName + "_codigo_intermedio.txt");
   }
 
   private int tempCount = 0;

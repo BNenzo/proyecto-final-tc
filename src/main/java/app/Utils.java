@@ -32,6 +32,12 @@ public class Utils {
     System.out.println(YELLOW + "⚠️ " + text + RESET);
   }
 
+  public static void printSuccess(String text) {
+    final String GREEN = "\u001B[32m"; // Verde
+    final String RESET = "\u001B[0m";
+    System.out.println(GREEN + text + RESET);
+  }
+
   public static String printAlreadyDeclarationError(String idTokenStr, String scope, int line, int column) {
     return ("Error: La variable '" + idTokenStr + "' ya está declarada en el ámbito '"
         + scope + "'" + " (línea " + line + ", columna "
@@ -119,6 +125,8 @@ public class Utils {
   }
 
   public static void printInstructions(List<String> instructions) {
+    System.out.println("\n✅ Codigo optimizado generado: \n");
+
     for (String instruction : instructions) {
       System.out.println(instruction);
     }
