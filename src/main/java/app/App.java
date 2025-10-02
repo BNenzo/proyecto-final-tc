@@ -61,14 +61,14 @@ public class App {
                     }
 
                     System.out.println("=== 1. ANÁLISIS LÉXICO ===");
-                    System.out.println("✅ Análisis léxico completado sin errores.");
-                    System.out.println("   📊 Tokens procesados: " + tokens.getTokens().size());
+                    Utils.printSuccess("✅ Análisis léxico completado sin errores.");
+                    Utils.printSuccess("   📊 Tokens procesados: " + tokens.getTokens().size());
                     System.out.println();
 
                     // === 2. ANÁLISIS SINTÁCTICO ===
                     System.out.println("=== 2. ANÁLISIS SINTÁCTICO ===");
-                    System.out.println("✅ Análisis sintáctico completado sin errores.");
-                    System.out.println("   📊 Árbol sintáctico generado correctamente");
+                    Utils.printSuccess("✅ Análisis sintáctico completado sin errores.");
+                    Utils.printSuccess("   📊 Árbol sintáctico generado correctamente");
                     System.out.println(tree.toStringTree(parser));
                     System.out.println();
 
