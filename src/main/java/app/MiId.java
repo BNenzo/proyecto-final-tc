@@ -3,12 +3,12 @@ package app;
 public class MiId {
   private String token;
   private Boolean initialized;
-  private TipoDato type;
+  private TypeVar type;
   private Boolean used;
   private int line;
   private int column;
 
-  public MiId(String token, Boolean initialized, Boolean used, TipoDato type) {
+  public MiId(String token, Boolean initialized, Boolean used, TypeVar type) {
     this.token = token;
     this.initialized = initialized;
     this.used = used;
@@ -17,7 +17,7 @@ public class MiId {
     this.column = 0;
   }
 
-  public MiId(String token, Boolean initialized, Boolean used, TipoDato type, int line, int column) {
+  public MiId(String token, Boolean initialized, Boolean used, TypeVar type, int line, int column) {
     this.token = token;
     this.initialized = initialized;
     this.used = used;
@@ -42,11 +42,11 @@ public class MiId {
     this.initialized = initialized;
   }
 
-  public TipoDato getType() {
+  public TypeVar getType() {
     return type;
   }
 
-  public void setType(TipoDato type) {
+  public void setType(TypeVar type) {
     this.type = type;
   }
 

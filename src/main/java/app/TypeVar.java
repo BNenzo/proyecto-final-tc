@@ -1,6 +1,6 @@
 package app;
 
-public enum TipoDato {
+public enum TypeVar {
   VOID,
   INT,
   DOUBLE,
@@ -8,7 +8,7 @@ public enum TipoDato {
   CHAR,
   UNDEFINED;
 
-  public static TipoDato fromString(String str) {
+  public static TypeVar fromString(String str) {
     if (str == null)
       return UNDEFINED;
     str = str.toLowerCase();

@@ -9,7 +9,7 @@ public class MiListener extends idBaseListener {
   TablaSimbolos tableInstance = TablaSimbolos.getInstance();
 
   // Utilidades
-  private TipoDato typeAux;
+  private TypeVar typeAux;
   private Function functionAux = null;
   private Boolean shouldAddContext = true;
   private String currentScope = "";
@@ -55,13 +55,13 @@ public class MiListener extends idBaseListener {
   @Override
   public void enterDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
     // Obtener el tipo de dato de la variable
-    this.typeAux = TipoDato.fromString(ctx.tipo_variable().getText());
+    this.typeAux = TypeVar.fromString(ctx.tipo_variable().getText());
 
   }
 
   @Override
   public void exitDeclaracion_variable(idParser.Declaracion_variableContext ctx) {
-    this.typeAux = TipoDato.UNDEFINED;
+    this.typeAux = TypeVar.UNDEFINED;
   }
 
   @Override
@@ -178,14 +178,14 @@ public class MiListener extends idBaseListener {
     String functionName = functionDeclarationIdCtx.getText();
     int functionNameLine = functionDeclarationIdCtx.getStart().getLine();
     int functionNameColumn = functionDeclarationIdCtx.getStart().getCharPositionInLine();
-    TipoDato functionType = TipoDato.fromString(ctx.getStart().getText());
+    TypeVar functionType = TypeVar.fromString(ctx.getStart().getText());
 
     // Se obtienen todos los parametros que estan siendo usados en la declaracion
     List<MiId> parametersList = new ArrayList<>();
     idParser.Declaracion_funciones_parametrosContext parametrosCtx = ctx.declaracion_funciones_parametros();
     if (parametrosCtx != null) {
       for (idParser.Declaracion_funcion_parametroContext parametroCtx : parametrosCtx.declaracion_funcion_parametro()) {
-        TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
+        TypeVar parameterType = TypeVar.fromString(parametroCtx.tipo_variable().getText());
         // El nombre no nos importa, solo el tipo, asi que autogeneramos nombres
         parametersList.add(new MiId("param_" + parametersList.size(), true, false, parameterType));
       }
@@ -213,7 +213,7 @@ public class MiListener extends idBaseListener {
 
     // Se obtiene la informacion basica de la funcion que esta siendo definida
     String functionDefinitionType = ctx.getStart().getText();
-    TipoDato functionDefinitionTypeParsed = TipoDato.fromString(functionDefinitionType);
+    TypeVar functionDefinitionTypeParsed = TypeVar.fromString(functionDefinitionType);
     idParser.Definicion_funcion_nombreContext functionDefCtx = ctx.definicion_funcion_nombre();
     String functionDefinitionName = functionDefCtx.getText();
     int functionDefinitionLine = functionDefCtx.getStart().getLine();
@@ -225,7 +225,7 @@ public class MiListener extends idBaseListener {
     idParser.Definicion_funcion_parametrosContext parametrosCtx = ctx.definicion_funcion_parametros();
     if (parametrosCtx != null) {
       for (idParser.Definicion_funcion_parametroContext parametroCtx : parametrosCtx.definicion_funcion_parametro()) {
-        TipoDato parameterType = TipoDato.fromString(parametroCtx.tipo_variable().getText());
+        TypeVar parameterType = TypeVar.fromString(parametroCtx.tipo_variable().getText());
         idParser.Definicion_funcion_parametro_nombreContext paramNameCtx = parametroCtx
             .definicion_funcion_parametro_nombre();
         int parameterNameLine = paramNameCtx.getStart().getLine();
@@ -286,7 +286,7 @@ public class MiListener extends idBaseListener {
      * si son diferentes hay un error
      */
     if (functionAlreadyDeclarated != null && isTheSameFunction == true
-        && functionAlreadyDeclarated.getFunctionId().getType() != TipoDato.fromString(functionDefinitionType)) {
+        && functionAlreadyDeclarated.getFunctionId().getType() != TypeVar.fromString(functionDefinitionType)) {
       tableInstance.addError("Error: Ambigua nueva declaracion para la funcion: " + functionDefinitionName
           + ", Se espera que la definicion retorne: " + functionAlreadyDeclarated.getFunctionId().getType());
       return;
@@ -331,7 +331,7 @@ public class MiListener extends idBaseListener {
   }
 
   public void exitDefinicion_funcion(idParser.Definicion_funcionContext ctx) {
-    this.typeAux = TipoDato.UNDEFINED;
+    this.typeAux = TypeVar.UNDEFINED;
     this.functionAux = null;
     this.currentScope = "";
   }
@@ -422,7 +422,7 @@ public class MiListener extends idBaseListener {
 
   @Override
   public void enterFor_declaracion(idParser.For_declaracionContext ctx) {
-    typeAux = TipoDato.fromString(ctx.getStart().getText());
+    typeAux = TypeVar.fromString(ctx.getStart().getText());
   }
 
   @Override

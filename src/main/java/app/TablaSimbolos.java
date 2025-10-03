@@ -126,22 +126,23 @@ public class TablaSimbolos {
   }
 
   public void validateWarnings() {
-    for (Map.Entry<String, MiId> entry : globalVariables.entrySet()) {
-      MiId valor = entry.getValue();
-      Utils.getIdWarnings(valor, warnings);
+    for (Map.Entry<String, MiId> globalVariableEntry : globalVariables.entrySet()) {
+      MiId globalVariableId = globalVariableEntry.getValue();
+      Utils.getIdWarnings(globalVariableId, warnings);
     }
-    for (Map.Entry<String, Function> entry : functionTable.entrySet()) {
-      MiId functionId = entry.getValue().getFunctionId();
+    for (Map.Entry<String, Function> functionEntry : functionTable.entrySet()) {
+      MiId functionId = functionEntry.getValue().getFunctionId();
       Utils.getIdWarnings(functionId, warnings);
 
-      for (Map.Entry<String, MiId> entry2 : entry.getValue().getParameters().entrySet()) {
-        MiId parameterId = entry2.getValue();
-        Utils.getIdWarnings(parameterId, warnings);
-
+      for (Map.Entry<String, MiId> parameterEntry : functionEntry.getValue().getParameters().entrySet()) {
+        MiId parameterId = parameterEntry.getValue();
+        if (functionId.getInitialized() == true) {
+          Utils.getIdWarnings(parameterId, warnings);
+        }
       }
-      for (Context context : entry.getValue().getFunctionContexts()) {
-        for (Map.Entry<String, MiId> entry3 : context.getVariables().entrySet()) {
-          MiId variableId = entry3.getValue();
+      for (Context context : functionEntry.getValue().getFunctionContexts()) {
+        for (Map.Entry<String, MiId> contextVariableEntry : context.getVariables().entrySet()) {
+          MiId variableId = contextVariableEntry.getValue();
           Utils.getIdWarnings(variableId, warnings);
         }
 
