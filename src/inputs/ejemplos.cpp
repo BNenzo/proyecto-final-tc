@@ -11,7 +11,7 @@ int main () {
 int suma (int param1) {
   int x = 2;
   {
-    int p =3 
+    int p =3;
     int xa =4;
   }
 
